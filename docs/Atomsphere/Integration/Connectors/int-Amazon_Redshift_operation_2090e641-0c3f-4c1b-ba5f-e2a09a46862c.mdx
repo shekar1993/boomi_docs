@@ -1,0 +1,121 @@
+import OperationEnd from './_operationEnd.md'
+
+# Amazon Redshift \(Tech Preview\) operation 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-2090e641-0c3f-4c1b-ba5f-e2a09a46862c"/>
+</head>
+
+
+Amazon Redshift Connector enables you to connect to an Amazon Redshift database cluster setup via Amazon Redshift JDBC driver.
+
+The Amazon Redshift Connector operations define how to interact with your Redshift cluster and represent a specific action (Insert, Update, Upsert, Upload and Delete) to be performed against one/many redshift database objects. Create a separate operation component for each action combination that your integration requires. The Amazon Redshift Connector supports the following actions: Insert, Update, Upsert, Unload and Delete.
+
+## Options tab
+
+Click **Import Operation**, then use the Import wizard to select the object to integrate. Provide the specific redshift database table as Object Type. When you configure an action, the following fields appear on the connector operation- **Options** tab.
+
+ 
+
+**Connector Action \(All Operations\)**   
+Determines the type of operation the connector is performing related to Inbound or Outbound. Depending on how you create the operation component, the action type is either configurable or non-configurable from the drop-down list.
+
+**Object \(All Operations\)**   
+Defines a specific redshift database table you want to integrate, which you selected in the **Import Operation** wizard.
+
+**Request Profile \(Insert, Update, Upsert, Delete\)**    
+Select or add JSON profile representing the structure that is being sent by the connector.
+
+**ARN Name \(Insert, Upsert, Unload\) \(Optional\)**   
+Provide your IAM role associated with the Amazon Resource Names \(ARNs\). ARN is used to uniquely identifying an AWS resource and an IAM role defines a set of permissions for accessing the AWS resource. IAM role can be used while copying the files from Amazon S3 to Redshift. You can access to the AWS resources using the access and secret key. However, If an IAM role is provided here, it takes the priority compared to access key entered in the **Connection** settings.
+
+**Stage Table \(Upsert\)**   
+Provide a unique name for stage \(temporary\) table in Redshift database. This table is used for transferring data from the Amazon S3 bucket to Redshift cluster. Make sure the table name is not present in the database, as the table is deleted post the completion of the operation. If the stage table name is not provided, stage table is created programmatically as a part of the Upsert operation.
+
+**Use an existing bucket \(Insert, Upsert\)**   
+Select this check box to use an existing S3 bucket for uploading objects.
+
+**S3 Bucket Name \(Insert, Upsert, Unload\)**   
+Enter the S3 bucket name. Mandatory for Unload operation. For Insert and Upsert operation, mandatory only if the Use an existing bucket check box is selected. If a bucket name is not provided, then a temporary bucket is created and deleted once the operation is complete.
+
+**Truncate Table \(Insert\)**   
+Select the check box to delete the table before loading the data into Redshift during an insert operation. This deletes all the rows from a table without doing a table scan and it is a faster alternative compared to an unqualified delete operation.
+
+**Object Key Name\* \(Insert, Upsert\)**   
+Provide the name of the object file which you are uploading into the S3 bucket along with the desired extension type. An object key name identifies an object in your bucket in a unique manner. Supported file extension types are: CSV, TXT, JSON, ORC, PARQUET, AVRO, GZIP, LZOP, MANIFEST.
+
+:::note
+
+You can't use PARQUET object with DELIMITER, FIXEDWIDTH, ADDQUOTES, ESCAPE, NULL AS, HEADER, GZIP, BZIP2, or ZSTD. The PARQUET object supports server-side encryption with an AWS Key Management Service key \(SSE-KMS\) encryption only.
+
+:::
+
+**Delimiter \(Insert, Upsert, Unload\) \(Optional\)**   
+Provide a character delimiter applicable for the given object file. The COPY command used expects the source data to be character-delimited UTF-8 text. The default delimiter is a pipe character \(\|\).
+
+**File Extension Type \(Unload\)**   
+Select the appropriate file extension type for unload operation. Supported formats are: CSV, PARQUET, MANIFEST, GZIP, BZIP2, ZSTD.
+
+Encryption Type \(Insert, Upsert, Unload\)
+Select the required encryption type to protect and encrypt the object. The available options are
+
+-   Default \(SSE\_S3\)
+-   SSE\_KMS
+-   Client Side Encryption
+
+If the SSE\_S3 or SSE\_KMS encryption is selected, the encryption is handled at the AWS server side and no further input required. For Client Side Encryption, you are responsible for creating and managing the Symmetric Master Key and the same must be provided in the Symmetric Master Key field. For PARQUET object, only SSE-KMS option is supported.
+
+**Symmetric Master Key \(Insert, Upsert, Unload\)**   
+Click on **Click to Set** and then enter the symmetric master key ID for encrypting the object. Mandatory, if the **Encryption Type** is selected as **Client Side Encryption** option.
+
+**KMS Key ID \(Unload\)**   
+Click on **Click to Set** and then enter the KMS key ID for encrypting the object. Mandatory for Unload operation, if you have chosen SSE\_KMS server-side encryption.
+
+**Data Conversion Parameters \(Insert, Upsert, Unload\)**   
+Specify the parameters separated by a space to manage data conversions. This is used if you need to specify a conversion that is different from the default behavior, or if the default conversion results in errors. Example: ACCEPTANYDATE, ACCEPTINVCHARS etc, Refer to AWS document for Data conversion parameters.
+
+:::note
+
+DATEFORMAT is already a part of the connector. Please do not add it.
+
+:::
+
+**Parallel Off \(Unload\)**   
+Select this check box, if you want to write to one or more data files into a single file in a serial manner, sorted based on the ORDER BY clause. If cleared, the Unload operation writes data in parallel into multiple files, according to the number of slices in the cluster. The maximum size of each file is decided based on the **Maximum File Size** field value.
+
+**Maximum File Size \(Unload\)**   
+Specify the maximum size \(in MB\) of files that the Unload operation creates in the Amazon S3 bucket. Specify a decimal value between 5 MB and 6.2 GB. The default unit is MB. If maximum file size is not specified, the default maximum file size is 6.2 GB. The max file size does not have any impact on the Manifest file size.
+
+**Part Size \(Insert, Upsert\)**   
+Specify the size \(in megabytes\) to be considered for each part during the multi-part upload of the object file. If your object file size is more than 16 MB, it is considered for multi-part upload where the object is uploaded in parts \(multiple chunks\). The minimum part size is 5 MB, the maximum is 2 GB, and the last part can be less than 5 MB.
+
+**SQL Query\* \(Update, Unload, Delete\)**   
+Type or paste a SQL statement that is valid for the selected operation \(Update/Unload/Delete\).
+
+**Delete Operation Type \(Delete\)**   
+Select the required SQL query mode for performing Delete operation. The available options are,
+
+-   Standard Delete- User must enter the prepared SQL statement for data insertion in the SQL Query field. Make sure the sequence of the input parameters and the respective values passed are in the same order.
+-   Dynamic Delete- The SQL statement is generated dynamically based on the input parameters in the Request Profile.
+
+**Commit Option \(Delete\) \(Mandatory\)** - 
+Select the required commit type to be applied when the connector deletes data from the database. The available options are,
+
+-   Commit By Profile- Performs a single commit after all SQL statements in the profile have been executed.
+-   Commit By Number of Rows- Commit action is performed based on the row count specified in the Batch Count field using JDBC batching.
+
+**Batch Count \(Update, Delete\)** - 
+Enter the number of statements to be considered for batching. For Update, if the Batch Count value is not provided commit operation is performed based on the user profile. For Delete operation, mandatory only if **Commit Option**is set as **Commit By Number of Rows**.
+
+## Insert
+
+Insert is an outbound action that allows you to insert data objects into a target table in the Redshift database. Use the **Import Operation** wizard to select the target table in the Redshift database as Object Type. The Request Profile contains the metadata of the selected table and the Response Profile contains response message, record count, status code and the error details \(if any\). During the Insert action, the connector takes data from the source system, compresses the data into files, then transfers those files \(single-threaded\) into an Amazon S3 bucket. The S3 bucket can either be created as a temporary bucket \(to be deleted after the data load\), or it can be an existing S3 bucket \(created by the customer\). To use an existing S3 bucket, select the Use an existing bucket check box and specify the bucket name in the S3 Bucket Name field. Once the data is stored in the S3 bucket, the connector issues a single COPY command to copy each file from the S3 bucket into the leader node in the Amazon Redshift cluster. Data encryption is implemented based on the selected Encryption Type. The input data for insert operation can be provided using the Disk or Message step connector.
+
+## Update
+
+Update is an outbound action that allows you to update the existing records in the Redshift database either in bulk or a single record. In the **Import Operation** wizard, provide the specific redshift database table name as Object Type. The Request Profile comprises all fields/columns available in the given table. The SQL statement for update operation must be provided in the SQL Query field. If batch execution is required, specify the batch count value.
+
+
+
+<OperationEnd />

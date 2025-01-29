@@ -1,0 +1,48 @@
+import TrackedProperties from './_TrackedProperties.md'
+
+# Workday Prism Analytics V2 connector
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-ced6832f-3832-4325-926a-350bbdc2d64b"/>
+</head>
+
+
+The Workday Prism Analytics V2 connector allows Workday customers to bring together data from any source, in order to prepare, analyze, and securely share it within your organization. By doing so, business insights are enabled to drive better business decisions and outcomes.
+
+With the ability to bring in external data sources into Workday Prism Analytics and govern them along with existing Workday Prism Analytics data, the business will be enabled to generate financial and HR insights that can be shared across your organization.
+
+Through this connector, you can use a Boomi Integration process to perform operations such as Get, Create, \(Dataset/Table and Bucket\), Upload, Complete Bucket, and Import.
+
+## Connector configuration
+
+Using the Workday Prism Analytics connector, you can use an Integration process to upload large data files to a Workday Prism Analytics table. To improve performance and efficiency, the connector breaks up the files into smaller chunks.
+
+To configure the connector to communicate with Workday Prism Analytics, set up two components:
+
+-   Workday Prism Analytics V2 connection
+-   Workday Prism Analytics V2 operation
+
+This design provides reusable components containing connection settings and operation settings. After building the connection and operation, set up your connector within a process. When the process is configured properly, Integration can map to and from any system using the Workday Prism Analytics V2 connector to create a table, create a bucket to load files into a table, upload files to a table, and complete the bucket. The connector manages all the steps to load big data into Workday Prism Analytics tables.
+
+:::note
+
+New to the V2 connector is support for the Workday Table object in the Data Catalog, added in the Workday 33 release.
+
+:::
+
+## Prerequisites
+
+To use the connector and implement a connection to Workday Prism Analytics from Integration, have the following information and access rights:
+
+-   **API Service Endpoint** — The URL to your Workday REST API service endpoint. You can find this endpoint in Workday using the View API Client task.
+-   **Workday Client ID and Secret** — The client ID and secret are generated for you in Workday when you register the API client in your tenant using the Register API Client for Integrations task.
+-   **Refresh Token** — You can generate a refresh token in Workday when you register the API client in your tenant using the Register API Client for Integrations task.
+-   Have the appropriate access rights and permissions to create Workday Prism Analytics datasets and tables using the Workday user interface. The API uploads are performed with this user.
+
+## Supported editions
+
+The Workday Prism Analytics V2 connector supports all available editions of the Workday services.
+
+
+<TrackedProperties />

@@ -1,0 +1,93 @@
+# Query paging 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-f5c7070d-9743-431b-8bf5-305bf314d307"/>
+</head>
+
+
+Query paging helps you manage the number of results returned by an AtomSphere API request.
+
+The results from QUERY requests are paged to keep the size of responses at acceptable levels. The maximum number of results returned per QUERY response is 100. When there are more than 100 results, the response contains a `queryToken`. You can retrieve additional results by specifying the `queryToken` in a `queryMore` request.
+
+:::note
+
+The AtomSphere API connector and AtomSphere Partner API connector handle query paging for you. When you use an API connector in a process, there is no limit to the number of results returned by a Query request.
+
+:::
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+  <TabItem value="rest" label="REST" default>
+
+The following is an example of an XML response that contains a `queryToken`:
+
+```xml
+<bns:QueryResult numberOfResults="100" xmlns="http://api.platform.boomi.com/">
+    <bns:queryToken>EXAMPLE_QUERY_TOKEN</bns:queryToken>
+    <bns:result xsi:type="bns:">
+    </bns:result>
+    ...
+    <bns:result xsi:type="bns:">
+    </bns:result>
+ </bns:QueryResult>
+```
+
+To perform the `queryMore` request, send an HTTP POST to:
+
+```powershell
+https://api.boomi.com/api/rest/v1/{accountId}/objectType/queryMore
+```
+
+where `accountId` is the ID of the authenticating account for the request and `objectType` is the type of object you are querying \(such as Account\).
+
+To make a `queryMore` request, you need to provide *only the token value* in the body of an XML or JSON request to obtain the next page of results, for example:
+
+```json
+{
+    "@type": "QueryResult",
+    "queryToken": "/nd0PlROcmuUK8MV8KPzCVXwA/pgZZ0NfsYjhqLNyothPzrFIh0OQLP6Hq3ERMSAl38Dz3NV5otJ/0+aCDDsTypO0QdfW8E1g6HO418jvP/H9FnMVfnwQV1Pmj3jnXGDSUVHo0HTYVmviVUzkmAy5jpnvtp027TSARqhxhzoXC3pt+FjHwNl9I4pE5cuL6AecN9PQyiBdgpYlDbF3qQa1c6fQialqOb+89OUK9TrPSURlE9bimahVdnHawpwXKB56GMhafmc4AEyFMPiU0emBaI4mFEN3zNjVww3RDucc9lUyHEV12ih2NhCLythmBJ7gGcme4fhcfyVr6o5QGRs3Qu1fWWO2bcf3eSEXwTB8z5LC+qqWSqqIhf4Y/hK6zBmscOuLSY4H2Rcqg6Td7PznjbcN/6w6/MxneOQgTRrvnJqD3VGXB1FVS+vZNx/peeu5BueaaHw8v1/rOr1X/8O+o8LZcK3BCw8cot4Jd9mqJaqsDD1oR0lpSXOIDgKkpVCePJwD6rVDSvoZpOmm25fKQxY3UH+tdp5NmBGjb2QU2Gn0Hwr0R41wvgEBwbRDU5Cb/LLzAswRILNE8sxKAiE3nKm/uH4a1fvYp+VtLQNXjN4YlL3+q19nYQ4zggPQsZlYf7IqEw7z1/33Yfv/ZRFu5mblii+eQlNAQI/lzTvA+WDn6lEoloHPcNiEzTNTS3H8P25oNAmhHWg0jQbZ6lvamS8F9KFc+r4ebMH4rPaKS2foA+xQKVJrUC9K3i7p6x/fFxgXwbwGlUeMbWquC/mDQh+1c3uZczNLTEDeFkRAVJwSJrTMoR3hsd4S/RxS3LMYpD/LuR+IhlnbTvO6YWgnUgIqFqGgWJUXUgT+rarHie1ERfNN3EXseTR/saOgcl5HR/djqrpdFLXuzXAZrI6pt6h2U7gnjZZ4BEGDKRZVCj8M7PoD0/8MP4NIfcE9FyxPvjFO8D7M7QGAHqmHllCPj6TpUstDmi3lQOSC4EYyTBbqFbODiThRzSptsuo9fdbsbd8Vl/KYP9OZcXGLyoZwC3rgOvXdzBeuOhQb7VoljBCN4dmlOLguyYoAXO7kPMMOB58raE5/vjndPkjdx1W4fGyhtbE1zrHZ11JXgvGVG+UEr+2Oc0ibmztm6JbyTZ4CRH+WWz2rQWHauti1XEIPg3An4kvN7zmENouQ4uoshXIGFelicB8PmKVG+eWEnZBNfOiJ9QbmGDsu4qGLzDpWX1uR3UoEMNFiAVwiw42XysTGRssL6c8AIARsI0GzxeVjrmuMHumfaif337zf3qFM7hsK2ram9NsRzFM+fNBDKeJBf1pbA/m6nke3dH5vtmf08zBwkYHCcMAL3+GFv/d7D47q5nhpAV4ok08v3ZJVHFXEbMcNhmhtmhKlKiE7um2gS5V6NRo4DILh46Mp5PYXJFX67yAEb5EeOAOG8/QxndBj4Mecvm9rDS8hlzot9t7dsEL6pnEFhzmXWNSOg91Pp4dJc4ZlthzTmc3oYHnVjugRWddx0CUQ9Gj7goZ971w",
+    "result": [
+      ...
+    ]
+}
+```
+</TabItem>
+
+  <TabItem value="soap" label="SOAP">
+
+The following is an example of a SOAP response that contains a `queryToken`:
+
+```xml
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+   <S:Body>
+      <ns4:queryResponse xmlns:api="http://api.platform.boomi.com/" xmlns:bns="http://api.platform.boomi.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns4="http://soap.api.platform.boomi.com/">
+         <api:results numberOfResults="100">
+            <bns:queryToken>EXAMPLE_QUERY_TOKEN</bns:queryToken>
+            ...
+         </api:results>
+      </ns4:queryResponse>
+   </S:Body>
+</soapenv:Envelope>
+
+```
+
+Here is the `queryMore` request for the next page of results:
+
+```xml
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.api.platform.boomi.com/" xmlns:api="http://api.platform.boomi.com/">
+   <soapenv:Header/>
+      <soapenv:Body>
+            <soap:queryMore>
+            ...
+            </soap:queryMore>
+      </soapenv:Body>
+</soapenv:Envelope>
+
+```
+  </TabItem>
+
+</Tabs>
+

@@ -1,0 +1,457 @@
+# Authentication Source User object 
+
+<head>
+  <meta name="guidename" content="API Management"/>
+  <meta name="context" content="GUID-618b400a-a9d9-4a8a-85a0-1e32a659cac8"/>
+</head>
+
+
+The Authentication Source User object enables you to create, update, delete, query, or get an Authentication Source User without using the API Management interface.
+
+## Structure 
+
+```xml
+<AuthenticationSourceUser userName="" userId="" authSourceId="" credential="" enabled="" groups=""> </AuthenticationSourceUser>
+```
+
+|Field|Type|Description|
+|-----|----|-----------|
+|`userName`|*string*|The name of the Authentication Source User.|
+|`userId`|*string*|A unique ID for the Authentication Source User.|
+|`authSourceId`|*string*|A unique ID for the Authentication Source.|
+|`credential`|*string*|A unique password for the Authentication Source User.|
+|`enabled`|*boolean*|Indicates if API access for the Authentication Source User is enabled.|
+|`groups`|*string*|A list of groups consisting of the groupId and groupName.|
+
+## Supported operations 
+
+The following operations support the Authentication Source User object:
+
+| GET       | QUERY      | CREATE     | UPDATE     | DELETE     |
+|-----------|------------|------------|------------|------------|
+| ✅ Supported | ✅ Supported | ✅ Supported | ✅ Supported | ✅ Supported |
+
+
+
+You can use the following fields as QUERY filters for the Authentication Source User object:
+
+| Field        | Allowed values                                                                                                          |
+|--------------|-------------------------------------------------------------------------------------------------------------------------|
+| `userName`     | Any string value.                                                                                                       |
+| `authSourceId` | Any string value.                                                                                                       |
+| `groupName`    | Any string value.                                                                                                       |
+| `enabled`      | • `True` – The Authentication Source User is enabled. <br /> • `false` – The Authentication Source User is not enabled. |
+              
+## Implementation
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+  <TabItem value="rest" label="REST" default>
+    <Tabs>
+  <TabItem value="get" label="GET" default>
+
+Send an HTTP GET to:
+
+```shell
+https://api.boomi.com/apim/api/rest/v1/{accountId}/AuthenticationSourceUser/id
+```
+
+where `accountId` is the Boomi API Management account from which you are authenticating, and id is the Authentication Source User object you are attempting to GET.
+
+For a JSON response, send the request with the following HTTP header:
+
+`Accept: application/json`
+
+#### Response
+
+```json
+{
+  "@type": "AuthenticationSourceUser",
+  "groups": [
+    {
+      "@type": "AuthSourceGroup",
+      "groupId": "45af2826-abf9-4c8f-b21a-08588e0e7b36",
+      "groupName": "testGroup2"
+    }
+  ],
+  "userId": "d522ec16-fc3d-42bf-b080-55c2c6ef133b",
+  "authSourceId": "0f799d03-b5a6-4ad5-bcea-ee4b002e8ddc",
+  "userName": "createNewUser",
+  "enabled": true
+}
+```
+  </TabItem>
+
+  <TabItem value="query" label="QUERY">
+
+Send an HTTP POST to:
+
+```shell
+https://api.boomi.com/apim/api/rest/v1/{accountId}/AuthenticationSourceUser/query
+```
+
+where `accountId` is the ID of the authenticating account for the request.
+
+For a JSON request, send the request with the following HTTP header:
+
+`Content-Type: application/json`
+
+#### Request \(for the user with userName=createNewUser\):
+
+```json
+{
+  "QueryFilter" : {
+  "expression" :
+  { "argument":["createNewUser"],"operator":"EQUALS","property":"userName" }
+  }
+}
+```
+
+For a JSON response, send the request with the following HTTP header:
+
+`Accept: application/json`
+
+#### Response
+
+```json
+{
+  "@type": "ApimQueryResult",
+  "result": [
+    {
+      "@type": "AuthenticationSourceUser",
+      "groups": [
+        {
+          "@type": "AuthSourceGroup",
+          "groupId": "45af2826-abf9-4c8f-b21a-08588e0e7b36",
+          "groupName": "testGroup2"
+        }
+      ],
+      "userId": "d522ec16-fc3d-42bf-b080-55c2c6ef133b",
+      "authSourceId": "0f799d03-b5a6-4ad5-bcea-ee4b002e8ddc",
+      "userName": "createNewUser",
+      "enabled": true
+    }
+  ],
+  "numberOfResults": 1
+}
+```
+  </TabItem>
+
+  <TabItem value="create" label="CREATE">
+
+Send an HTTP POST to:
+
+```shell
+https://api.boomi.com/apim/api/rest/v1/{accountId}/AuthenticationSourceUser/
+```
+
+where `accountId` is the API Management account from which you are authenticating.
+
+For a JSON request, send the request with the following HTTP header:
+
+`Content-Type: application/json`
+
+#### Request
+
+```json
+{
+  "userName" : "createNewUser",
+  "credential":{"password":"password"},
+  "authSourceId" : "0f799d03-b5a6-4ad5-bcea-ee4b002e8ddc",
+  "groups":[{"groupId": "7df7c3bd-11bd-4661-aac0-e65e9b3d151c", "groupName":"testGroup1"},{"groupId": "45af2826-abf9-4c8f-b21a-08588e0e7b36", "groupName":"testGroup2"}]
+}
+```
+
+For a JSON response, send the request with the following HTTP header:
+
+`Accept: application/json`
+
+#### Response
+
+```json
+{
+  "@type": "AuthenticationSourceUser",
+  "groups": [
+    {
+      "@type": "AuthSourceGroup",
+      "groupId": "7df7c3bd-11bd-4661-aac0-e65e9b3d151c",
+      "groupName": "testGroup1"
+    },
+    {
+      "@type": "AuthSourceGroup",
+      "groupId": "45af2826-abf9-4c8f-b21a-08588e0e7b36",
+      "groupName": "testGroup2"}
+  ],
+  "userId": "d522ec16-fc3d-42bf-b080-55c2c6ef133b",
+  "authSourceId": "0f799d03-b5a6-4ad5-bcea-ee4b002e8ddc",
+  "userName": "createNewUser",
+  "enabled": true
+}
+```
+  </TabItem>
+
+  <TabItem value="update" label="UPDATE">
+
+Send an HTTP POST to:
+
+```shell
+https://api.boomi.com/apim/api/rest/v1/{accountId}/AuthenticationSourceUser/id/update
+```
+
+where `accountId` is the API Management account from which you are authenticating, and id is the Authentication Source User object you are attempting to UPDATE.
+
+For a JSON request, send the request with the following HTTP header:
+
+`Content-Type: application/json`
+
+#### Request
+
+```json
+{
+   "userName":"createNewUser",
+   "userId":"d522ec16-fc3d-42bf-b080-55c2c6ef133b",
+   "credential":{
+      "password":"password2"
+   },
+   "authSourceId":"0f799d03-b5a6-4ad5-bcea-ee4b002e8ddc",
+   "groups":[
+      {
+         "groupId":"45af2826-abf9-4c8f-b21a-08588e0e7b36",
+         "groupName":"testGroup2"
+      }
+   ]
+}
+```
+
+For a JSON response, send the request with the following HTTP header:
+
+`Accept: application/json`
+
+#### Response
+
+```json
+{
+  "@type": "AuthenticationSourceUser",
+  "groups": [
+    {
+      "@type": "AuthSourceGroup",
+      "groupId": "45af2826-abf9-4c8f-b21a-08588e0e7b36",
+      "groupName": "testGroup2"}
+    ],
+    "userId": "d522ec16-fc3d-42bf-b080-55c2c6ef133b",
+    "authSourceId": "0f799d03-b5a6-4ad5-bcea-ee4b002e8ddc",
+    "userName": "createNewUser",
+    "enabled": true
+}
+```
+  </TabItem>
+
+  <TabItem value="delete" label="DELETE">
+
+Send an HTTP DELETE to:
+
+```shell
+https://api.boomi.com/apim/api/rest/v1/{accountId}/AuthenticationSourceUser/id
+```
+
+where `accountId` is the API Management account from which you are authenticating, and id is the Authentication Source User object you are attempting to DELETE.
+
+The response is `<true/>` if you delete the role successfully.
+
+For a JSON response, send the request with the following HTTP header:
+
+`Accept: application/json`
+
+The response is `<true/>` if you delete the role successfully.
+
+  </TabItem>
+
+</Tabs>
+  </TabItem>
+
+  <TabItem value="soap" label="SOAP">
+    <Tabs>
+  <TabItem value="get" label="GET" default>
+
+#### Request
+
+```xml
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.apim.api.platform.boomi.com/" xmlns:apim="http://apim.api.platform.boomi.com/">
+  <soapenv:Header/>
+  <soapenv:Body>
+    <soap:get>
+      <!--Optional:-->
+      <apim:objectType>AuthenticationSourceUser</apim:objectType>
+      <!--Optional:-->
+      <apim:objectId>d85fe67b-966a-435b-9756-75db1d19425c</apim:objectId>
+    </soap:get>
+  </soapenv:Body>
+</soapenv:Envelope>
+```
+
+#### Response
+
+```xml
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+  <S:Body>
+    <ns4:getResponse xmlns:apim="http://apim.api.platform.boomi.com/" xmlns:bns="http://api.platform.boomi.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns4="http://soap.apim.api.platform.boomi.com/">
+      <apim:result xsi:type="apim:AuthenticationSourceUser" enabled="true" userName="createNewUser3354454" authSourceId="0f799d03-b5a6-4ad5-bcea-ee4b002e8ddc" userId="d85fe67b-966a-435b-9756-75db1d19425c"
+        <apim:groups groupName="testGroup1" groupId="7df7c3bd-11bd-4661-aac0-e65e9b3d151c"/>
+        <apim:groups groupName="testGroup2" groupId="45af2826-abf9-4c8f-b21a-08588e0e7b36"/>
+      </apim:result>
+    </ns4:getResponse>
+  </S:Body>
+</S:Envelope>
+```
+  </TabItem>
+
+  <TabItem value="query" label="QUERY">
+
+The following example queries the Application named createNewUser.
+
+#### Request
+
+```xml
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.apim.api.platform.boomi.com/" xmlns:apim="http://apim.api.platform.boomi.com/" xmlns:api="http://api.platform.boomi.com/">
+  <soapenv:Header/>
+  <soapenv:Body>
+    <soap:query>
+      <!--Optional:-->
+      <apim:objectType>AuthenticationSourceUser</apim:objectType>
+      <!--Optional:-->
+      <api:queryConfig>
+        <api:QueryFilter>
+        <api:expression operator="and"xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="api:GroupingExpression"
+          <api:nestedExpression operator="EQUALS" property="userName"xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="api:SimpleExpression">
+            <api:argument>createNewUser</api:argument>
+          </api:nestedExpression>
+          </api:expression>
+        </api:QueryFilter>
+      </api:queryConfig>
+    </soap:query>
+  </soapenv:Body>
+</soapenv:Envelope>
+```
+
+#### Response
+
+```xml
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+  <S:Body>
+    <ns4:queryResponse xmlns:apim="http://apim.api.platform.boomi.com/" xmlns:bns="http://api.platform.boomi.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns4="http://soap.apim.api.platform.boomi.com/">
+      <apim:results numberOfResults="1">
+        <bns:result xsi:type="apim:AuthenticationSourceUser" enabled="true" userName="createNewUser" authSourceId="0f799d03-b5a6-4ad5-bcea-ee4b002e8ddc" userId="d522ec16-fc3d-42bf-b080-55c2c6ef133b">
+          <apim:groups groupName="testGroup1" groupId="7df7c3bd-11bd-4661-aac0-e65e9b3d151c"/>
+        </bns:result>
+      </apim:results>
+    </ns4:queryResponse>
+  </S:Body>
+</S:Envelope>
+```
+  </TabItem>
+
+  <TabItem value="create" label="CREATE">
+
+#### Request
+
+```xml
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.apim.api.platform.boomi.com/" xmlns:apim="http://apim.api.platform.boomi.com/">
+  <soapenv:Header/>
+  <soapenv:Body>
+    <soap:create>
+      <apim:object xsi:type="apim:AuthenticationSourceUser" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" userName="createNew4567" authSourceId="0f799d03-b5a6-4ad5-bcea-ee4b002e8ddc">
+      <apim:groups groupId="7df7c3bd-11bd-4661-aac0-e65e9b3d151c" groupName="testGroup1"/>
+      <apim:groups groupId="45af2826-abf9-4c8f-b21a-08588e0e7b36" groupName="testGroup2"/>
+      <apim:credential xsi:type="apim:CredentialPassword" password="pass"/>
+      </apim:object>
+    </soap:create>
+  </soapenv:Body>
+</soapenv:Envelope>
+```
+
+#### Response
+
+```xml
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+  <S:Body>
+    <ns4:createResponse xmlns:apim="http://apim.api.platform.boomi.com/" xmlns:bns="http://api.platform.boomi.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns4="http://soap.apim.api.platform.boomi.com/">
+      <apim:result xsi:type="apim:AuthenticationSourceUser" enabled="true" userName="createNew4567" authSourceId="0f799d03-b5a6-4ad5-bcea-ee4b002e8ddc" userId="15e1b0a6-ca1c-4cfe-bdf5-507c3d7d9f5a">
+        <apim:groups groupName="testGroup1" groupId="7df7c3bd-11bd-4661-aac0-e65e9b3d151c"/>
+        <apim:groups groupName="testGroup2" groupId="45af2826-abf9-4c8f-b21a-08588e0e7b36"/>
+      </apim:result>
+    </ns4:createResponse>
+  </S:Body>
+</S:Envelope>
+```
+  </TabItem>
+
+  <TabItem value="update" label="UPDATE">
+
+#### Request
+
+```xml
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.apim.api.platform.boomi.com/" xmlns:apim="http://apim.api.platform.boomi.com/">
+  <soapenv:Header/>
+  <soapenv:Body>
+    <soap:update>
+      <apim:object xsi:type="apim:AuthenticationSourceUser" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" userName="createNewUser" userId="d522ec16-fc3d-42bf-b080-55c2c6ef133b" authSourceId="0f799d03-b5a6-4ad5-bcea-ee4b002e8ddc">
+      <apim:groups groupId="7df7c3bd-11bd-4661-aac0-e65e9b3d151c" groupName="testGroup1"/>
+      <apim:credential xsi:type="apim:CredentialPassword" password="newpassword"/>
+      </apim:object>
+    </soap:update>
+  </soapenv:Body>
+</soapenv:Envelope>
+```
+
+#### Response
+
+```xml
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+  <S:Body>
+    <ns4:updateResponse xmlns:apim="http://apim.api.platform.boomi.com/" xmlns:bns="http://api.platform.boomi.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns4="http://soap.apim.api.platform.boomi.com/">
+      <apim:result xsi:type="apim:AuthenticationSourceUser" enabled="true" userName="createNewUser" authSourceId="0f799d03-b5a6-4ad5-bcea-ee4b002e8ddc" userId="d522ec16-fc3d-42bf-b080-55c2c6ef133b">
+        <apim:groups groupName="testGroup1" groupId="7df7c3bd-11bd-4661-aac0-e65e9b3d151c"/>
+      </apim:result>
+    </ns4:updateResponse>
+  </S:Body>
+</S:Envelope>
+```
+  </TabItem>
+
+  <TabItem value="delete" label="DELETE">
+
+#### Request
+
+```xml
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.apim.api.platform.boomi.com/" xmlns:apim="http://apim.api.platform.boomi.com/">
+  <soapenv:Header/>
+  <soapenv:Body>
+    <soap:delete>
+      <!--Optional:-->
+      <apim:objectType>AuthenticationSourceUser</apim:objectType>
+      <!--Optional:-->
+      <apim:objectId>15e1b0a6-ca1c-4cfe-bdf5-507c3d7d9f5a</apim:objectId>
+    </soap:delete>
+  </soapenv:Body>
+</soapenv:Envelope>
+```
+
+#### Response
+
+```xml
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+  <S:Body>
+    <ns4:deleteResponse xmlns:apim="http://apim.api.platform.boomi.com/" xmlns:bns="http://api.platform.boomi.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns4="http://soap.apim.api.platform.boomi.com/">
+      <apim:successful>true</apim:successful>
+    </ns4:deleteResponse>
+  </S:Body>
+</S:Envelope>
+```
+  </TabItem>
+
+</Tabs>
+  </TabItem>
+
+</Tabs>

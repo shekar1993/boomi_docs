@@ -1,0 +1,200 @@
+import OperationEnd from './_operationEnd.md'
+
+# Teqtron Agile PLM – Partner operation
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-034de072-a902-4c32-be97-75eab6026e6c"/>
+</head>
+
+
+The Teqtron Agile PLM Connector operations define how to interact with your Agile PLM application.
+
+The operations represent specific actions of connecting to Agile PLM web services as well as Agile PLM application’s SFTP server. Create a separate component for each action/object combination that your integration requires.
+
+The Teqtron Agile PLM connector's supported operations are the following:
+
+-   AIS: Application Interface Services, uses XML format
+-   CustomWebServices: access custom web services, uses XML format
+-   Get: Get files from Agile PLM sftp server, uses AXML or PDX format
+-   Send: Send files to Agile PLM sftp server, uses any file extension
+
+## AIS
+
+This is an outbound operation and users can use this operation to access Application Interface services offered by Oracle Agile PLM System.
+
+Users need to import this operation by clicking the import button on the top right of the operation.
+
+No tracked properties need to be set for this operation.
+
+This Operation involves users to import profiles such as:
+
+**Request Profile**  
+Users can import a request profile by clicking on the import button in the operation.
+
+Import will take into account the SOAP Web Service information from the connector’s connection information to provide a list of web services which can be selected to import.
+
+Type: XML Profile
+
+**Response Profile**   
+Users can import a response profile by clicking on the import button in the operation.
+
+Import will take into account the SOAP Web Service information from the connector’s connection information to provide a list of web services which can be selected to import.
+
+Type: XML Profile
+
+**Web Service**   
+This involves choosing the type of web service object offered by the Oracle Agile PLM system.
+
+Below are the list of web service objects built into the connector:
+
+-   BusinessObject
+-   Search
+-   Attachment
+-   Folder
+-   PGC
+-   Table
+-   AdminMetadata
+-   Collaboration
+-   Report
+-   DocPublishing
+-   UserProfile
+-   Project
+-   PC
+
+Type: list
+
+**Return Application Error Responses**    
+If selected, the operation forwards responses through the process; failed operations are not reported on the Manage menu so you can act on them in your process.
+
+**Expose Request Envelope**    
+If selected \(the default\), the request profile contains the whole SOAP envelope.
+
+**Expose Response Envelope**    
+IIf selected, the response profile contains the whole SOAP envelope without breaking up individual objects. This setting is cleared by default.
+
+## CustomWebService   
+
+This is an outbound operation and users can use this operation to access Custom web services offered by Agile PLM System.
+
+Users need to import this operation by clicking the import button on the top right of the operation.
+
+No tracked properties need to be set for this operation.
+
+This Operation involves users to import profiles such as:
+
+
+
+**Request Profile**   
+Users can import a request profile by clicking on the import button in the operation.
+
+Import will take into account the Web Service information from the connector’s connection information to provide a list of web services which can be selected to import.
+
+Type: XML Profile
+
+**Response Profile**    
+Users can import a response profile by clicking on the import button in the operation.
+
+Import will take into account the Web Service information from the connector’s connection information to provide a list of web services which can be selected to import.
+
+Type: XML Profile
+
+**Return Application Error Responses**   
+If selected, the operation forwards responses through the process; failed operations are not reported on the Manage menu so you can act on them in your process.
+
+**Expose Request Envelope**   
+If selected \(the default\), the request profile contains the whole SOAP envelope.
+
+**Expose Response Envelope**   
+If selected, the response profile contains the whole SOAP envelope without breaking up individual objects. This setting is cleared by default.
+
+## Get
+
+This is an inbound operation which is used to get .AXML or .EDX files from the SFTP server allocated for Oracle Agile PLM system.
+
+If you are using a Get action as ‘Get’, then the connector is used as the start step. Else the connector is not used as the start step.
+
+This operation involves one tracked property ‘fileNameSftp’. This tracked property is used in the case where the Get Action is ‘Get and move’ to get the file from the ‘ACS destination directory’ to Boomi. and move it to the ‘Move to directory’. This tracked property is also used in the case where the Get Action is ‘Get and delete’ to get the file from the ‘ACS destination directory’ to Boomi and delete the file from the directory.
+
+This operation involves users to enter input information such as:
+
+**Get Action**   
+Users can select one among three types of Get actions:
+
+-   **Get**
+    -   This action retrieves the files from the remote directory location
+-   **Get and Move**
+    -   This action retrieves the files from the remote directory location and moves the files to the move directory location.
+-   **Get and Delete**
+    -   This action retrieves the files from the remote directory location and deletes and files from the remote directory location.
+
+Type : List
+
+**File Extension**  
+Users can select one among two file extension incorporated such as:
+
+-   .AXML
+    -   This option retrieves files with extension of .AXML from the remote directory location.
+-   .PDX
+    -   This option retrieves files with extension of .PDX from the remote directory location.
+
+Type: List
+
+**ACS Destination Directory**  
+Users can enter the path to the remote directory from where files can be retrieved from.
+
+Type: String
+
+**Move to Directory**  
+Users can enter the move to directory location which is used to move files to the specified directory when the Get Action is chosen as Get and Move.
+
+Type: String
+
+**File name filter** 
+Users can use regular expressions to filter the files to be retrieved from the remote directory location.\(Regular expression accepted by java Pattern class\)
+
+Type: String
+
+**Maximum number of files** 
+Users can enter the maximum number of files which should be retrieved from the remote directory location.
+
+If 0 is entered, then all the respective files from the remote directory location is retrieved.
+
+Type: Integer
+
+## Send
+
+This is an outbound operation which is used to send files from Boomi to SFTP server allocated for Oracle Agile PLM system.
+
+This operation uses a tracked property ‘fileNameSftp’ which needs to be set from Boomi for the documents being sent to the connector. This tracked property is used as the filename of the document sent from Boomi to be saved in the ‘Destination directory’. If the ‘fileNameSftp’ is not set then error is returned to indicate that the tracked property is not set.
+
+This operation involves users to enter input information such as:
+
+
+
+**SFTP Put Action** 
+Users can select an appropriate action in case of the file name set using the tracked property ‘fileNameSftp’ already exists in the ‘Destination Directory’.
+
+Below are the list of options built into the connector.
+
+-   Create unique name if file exists
+-   Append if file exists
+-   Error if file exists
+-   Overwrite if file exists
+
+Type: List
+
+**Destination Directory** 
+Users can enter the destination directory path where the documents input to the connector needs to be stored in the SFTP Server.
+
+Type: String
+
+## Additional tasks
+
+Complete the following tasks to ensure a successful implementation of the Teqtron Agile PLM connector:
+
+-   Configuring self-signed SSL in Agile PLM system. This additional task can be used to configure a self-signed SSL in Agile PLM system and the SSL certificate can be imported to Boomi and can be attached to the Trust SSL certificate property of Teqtron Agile PLM connector.
+-   Set up SSL. To learn more about setting up SSL, see the topic [Setting up SSL for the Teqtron Agile PLM connector](int-Setting_up_SSL_Teqtron_Agile_PLM_connector_c585bde2-c3bf-4119-88aa-8649eeeb8be0.md).
+-   Configure SSL on the WebLogic server. To learn more about configuring SSL on the WebLogic server, see the topic [Configuring SSL on the WebLogic server hosting the Agile PLM application](int-Configuring_SSL_Weblogic_server_Agile_PLM_453f5452-d391-4c58-a87c-9efe8022cc5b.md).
+
+<OperationEnd />

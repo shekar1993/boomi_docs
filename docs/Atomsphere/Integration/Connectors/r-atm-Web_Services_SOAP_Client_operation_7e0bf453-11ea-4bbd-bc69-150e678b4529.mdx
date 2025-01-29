@@ -1,0 +1,63 @@
+import OperationEnd from './_operationEnd.md'
+
+# Web Services SOAP Client operation 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-7e0bf453-11ea-4bbd-bc69-150e678b4529"/>
+</head>
+
+
+The Web Services SOAP Client operation performs a specific request action, defined in the connection, against a URL endpoint.
+
+Create a separate operation component for each interaction of your integration. Refer to the web service client's technical resources and be familiar with the data of the systems to be integrated.
+
+All Web Services connector calls consist of a request message and a response message. For all client operations, send request XML data to the connector that corresponds with the defined XML profile.
+
+When getting data from the web service, the request message contains selection criteria; the response message contains the resulting data records. When sending data to the web service, the request message contains the data records to save; the response contains the transaction status with any error messages.
+
+Often, request documents are the destination output of a map. Alternatively, you can supply static or dynamic request values by setting parameters on the outbound connector or on the Start step's Parameter’s tab within the process.
+
+
+:::note
+
+Because the types of messages and request/response XML profiles are different for each web service, you should obtain the specific web service documentation for mapping to or from the web service.
+
+:::
+
+The Web Services SOAP Client operation supports the Execute action, which retrieves data from and sends data to a web services SOAP client application. The executions are defined by the cached WSDL URL during the import \(browse\) process. A new import is required to update the cache.
+
+## Options tab 
+
+Click **Import Operation**, then use the Import wizard to select the object with which you want to integrate. The following table describes the field definitions for the Execute action:
+
+**Object** - 
+Defines the object with which you want to integrate and which was selected in the Import Wizard.
+
+import TrackingDir from './_TrackObject.md'
+
+<TrackingDir />
+
+import ReturnErrRes from './_ReturnResponse.md'
+
+<ReturnErrRes />
+
+**Expose Request Envelope** - 
+If selected \(the default\), the request profile contains the whole SOAP envelope.
+
+**Expose Response Envelope** - 
+If selected, the response profile contains the whole SOAP envelope without breaking up individual objects. This setting is cleared by default.
+
+
+:::note
+
+Exposing the full SOAP envelope enables you to read and write SOAP headers.
+
+:::
+
+**Attachment Cache** - 
+Specifies the document cache from which MIME attachments are taken. The document cache component must contain a single index containing a dynamic document property named `WSS_ROOT_DOCUMENT_ID`.
+
+For more information about how to transmit attachments with SOAP messages, including using the **Attachment Cache** to store and retrieve attachments, see the related Boomi Community Article.
+
+<OperationEnd />

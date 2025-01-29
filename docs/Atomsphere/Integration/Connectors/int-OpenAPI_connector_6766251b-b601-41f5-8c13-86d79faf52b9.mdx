@@ -1,0 +1,139 @@
+# OpenAPI connector 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-6766251b-b601-41f5-8c13-86d79faf52b9"/>
+</head>
+
+
+Boomi's OpenAPI connector enables you to connect to REST APIs over HTTP adhering to the OpenAPI specification version 3.0 and greater, previously known as Swagger. The OpenAPI connector reads the API definitions to understand the metadata and available operations.
+
+## Getting started 
+
+There are thousands of applications utilizing REST APIs. With the OpenAPI connector, you can connect to the service quickly without having to build a custom application connector.
+
+Previously, there was no standard way to describe a REST API. The OpenAPI specification has changed all of this. The OpenAPI specification defines a REST API in an easy to read format. Boomi's OpenAPI connector reads the specification and understands how to interact with the REST API.
+
+With the OpenAPI connector, you can read an OpenAPI specification file, in JSON or YAML, over HTTP and get the user experience of an application connector. This lays the foundation for building application connectors to OpenAPIs without having to write Java code.
+
+## OpenAPI 3.0 specification 
+
+The OpenAPI connector supports version 3.0 and greater of the OpenAPI specification. See the [OAI OpenAPI 3.0 specification](https://swagger.io/specification/) for more information.
+
+OpenAPI specification example
+
+A [sample Pet Store Server](https://petstore3.swagger.io/), based on the OpenAPI 3.0 specification, is available from Swagger. Also of interest is the sample JSON and YAML:
+
+-   Sample JSON — [https://petstore3.swagger.io/api/v3/openapi.json](https://petstore3.swagger.io/api/v3/openapi.json)
+
+-   Sample YAML — [https://petstore3.swagger.io/api/v3/openapi.yaml](https://petstore3.swagger.io/api/v3/openapi.yaml)
+
+
+## OpenAPI 3.0 specification feature support 
+
+The OpenAPI connector currently supports the following feature areas of the OpenAPI 3.0 specification:
+
+#### Request profiles
+
+-   In the OpenAPI 3.0 specification, request profiles are optional for OPTIONS, PATCH, POST, PUT, and TRACE, and not available for DELETE, GET, and HEAD. The connector supports requests without a content type \(no `requestBody` in the schema definition\). As a result, no request profile is generated. To learn more, see the [Describing Request Body](https://swagger.io/docs/specification/describing-request-body/) topic in the Swagger documentation.
+
+
+#### Response profiles
+
+-   The service must have at least one successful JSON response in the 200-299 range. The response selected by the connector is the lowest number in a set of successful responses. For example, if there is a response with code 204, 200, 280, or 299, the connector selects 200 to build the response profile. Additionally, when no response schema is defined for codes in the 200 through 299 range, and if there is a schema defined with the `default` tag, the schema definition is used to build the response profile.
+
+    The connector also supports a successful response schema without a content type, and considers this a `no response` profile. To learn more, see the [Describing Responses](https://swagger.io/docs/specification/describing-responses/) topic in the Swagger documentation.
+
+
+#### $ref, anyOf, oneOf, and allOf keywords
+
+-   Requests and responses referencing a specification utilizing the `$ref`, `allOf`, `anyOf`, and `oneOf` keywords are supported, retrieve the appropriate component definition, and successfully generate the corresponding profiles. To learn more, see the [Using $ref](https://swagger.io/docs/specification/using-ref/) and [one of, anyOf, allOf, not](https://swagger.io/docs/specification/data-models/oneof-anyof-allof-not/) topics in the Swagger documentation.
+
+:::note
+
+`oneOf` is currently limited. Composed schema nodes \(parent or child nodes\) have properties combined from multiple sub schemas, and the properties appear under their respective parent nodes. You select the properties to match the keyword from the sub schemas. To further assist you in selecting the correct properties, review the Comments provided by the specification \(under the **Data Format Options** section\) for each data element \(field\) in the profile.
+
+:::
+
+
+#### Query Parameters
+
+-   The connector supports Query Parameters, appearing on the Operation page after browsing \(**Import Wizard**\). Query Parameters allow you to customize and/or extend the way the operation interacts with the service and its data. If provided in the specification \(as `in: query parameters`\), and data is provided for them on the Operation page, they are added to the query string of the URL in each request and appear at the end of the request URL after a question mark. To learn more, see the [Query Parameters](https://swagger.io/docs/specification/describing-parameters/#query-parameters) topic in the Swagger documentation.
+ 
+:::note
+
+Query Parameters are not required, and you do not have to provide a value for every Query Parameter on the Operation page. Additionally, all parameters on the Operation page are prefaced with their type before the parameter name. For example, the Query Parameter fromDate appears as Query fromDate.
+
+:::
+
+
+#### Path Parameters
+
+-   The connector supports Path Parameters, appearing on the Operation page after browsing \(**Import Operation**\). Path Parameters allow you to reference a specific resource within a collection such as a user identified by an ID. If provided in the specification \(as `in: path parameters`\), and data is provided for them on the Operation page, they are added as variable parts of a URL path, and a URL can have several path parameters with each denoted with curly braces `{}`. To learn more, see the [Path Parameters](https://swagger.io/docs/specification/describing-parameters/#path-parameters) topic in the Swagger documentation.
+
+    
+:::note
+
+Path Parameter values are required, and you must provide a value for every Path Parameter on the Operation page. The connector uses all Path Parameters to build the request URL, and if left blank, the process fails during execution. Additionally, all parameters on the Operation page are prefaced with their type before the parameter name. For example, the Path Parameter fromDate appears as Path fromDate.
+
+:::
+
+
+#### Header Parameters
+
+-   The connector supports Header Parameters, appearing on the Operation page after browsing \(**Import Operation**\). Header Parameters \(provided in the specification as `in: header` parameters\), indicate that custom headers be sent with an HTTP request. To learn more, see the [Header Parameters](https://swagger.io/docs/specification/describing-parameters/#header-parameters) topic in the Swagger documentation.
+
+    
+:::note
+
+Header Parameters are not required, and you do not have to provide a value for every Header Parameter on the Operation page. Additionally, all parameters on the Operation page are prefaced with their type before the parameter name. For example, the Header Parameter fromDate appears as Header fromDate.
+
+:::
+
+
+#### Enumerated Parameters
+
+-   The connector supports Enumerated Parameters, appearing on the Operation page after browsing \(**Import Operation**\). Enumerated Parameters allow you to restrict a parameter to a fixed set of values by adding `enum` to the parameter's schema. To learn more, see the [Enum Parameters](https://swagger.io/docs/specification/describing-parameters/) topic in the Swagger documentation.
+
+
+#### Parameter Serialization
+
+-   The connector supports Parameter Serialization for Header, Query, and Path Parameters, allowing you to specify how multiple values are delimited and whether arrays should generate separate parameters for each array item. Requests are built based on the values of the `style` and `explode` keywords. To learn more, see the [Parameter Serialization](https://swagger.io/docs/specification/serialization/) topic in the Swagger documentation.
+
+    
+:::note
+
+Cookie Parameter Serialization is not currently supported.
+
+:::
+
+
+## Prerequisites 
+
+The OpenAPI connector requires the following:
+
+-   Basic knowledge of RESTful APIs.
+-   Basic knowledge of JSON and YAML.
+-   You create or reference a valid OpenAPI specification in JSON or YAML format describing all of the required information about the target service. The specification must be available over HTTP or HTTPS, and you reference the specification in the OpenAPI connection. You can review, modify, add, and remove profiles generated from the specification.
+
+    
+:::note
+
+A [sample OpenAPI 3.0 specification](https://swagger.io/docs/specification/basic-structure/) is available in the Swagger documentation.
+
+:::
+
+
+## Connector configuration 
+
+To configure the OpenAPI connector to connect and communicate with the REST API, set up the following components:
+
+-   OpenAPI connection
+-   OpenAPI operation
+
+This design provides reusable components containing connection settings and operation settings. After building the connection and operation, set up the connector within a process. When the process is defined properly, Integration can map to and from virtually any system using the OpenAPI \(Tech Preview\) connector to exchange data through HTTP.
+
+import TrackedProperties from './_TrackedProperties.md'
+
+<TrackedProperties />
+

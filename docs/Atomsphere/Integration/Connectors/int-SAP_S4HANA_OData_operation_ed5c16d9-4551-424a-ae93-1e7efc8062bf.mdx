@@ -1,0 +1,146 @@
+
+import OperationEnd from './_operationEnd.md'
+import TrackingDirection from './_TrackingDirection.md'
+import ReturnErrRes from './_ReturnResponse.md'
+
+# SAP S/4HANA OData operation
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-ed5c16d9-4551-424a-ae93-1e7efc8062bf"/>
+</head>
+
+
+The SAP S/4HANA OData connector operations define how to interact with SAP S/4HANA and represent a specific action to be performed against one/many SAP S/4HANA business object via an OData V2 API. Create a separate operation component for each action/object combination that your integration requires.
+
+The SAP S/4HANA OData connector operations use JSON format and support the following actions:
+
+-   Create — Create a new business record in the SAP S/4HANA system.
+-   Get — Retrieve a business record from the SAP S/4HANA system.
+-   Update/Patch/Merge — Update an existing business record.
+-   Query — Retrieve one or many business records from a single Query request based on filters applied.
+-   Delete — Delete existing business records.
+
+**Note:** $Batch is not currently supported via the SAP S/4HANA OData connector.
+
+**Note:** The SAP S/4HANA OData connector does not accept dates formatted in S/4HANA format for updates. The correct date format is: `SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")`.
+
+## Options tab
+
+Click **Import Operation**, then use the Import wizard to select the object to integrate. When you configure an action, the following fields appear on the **Options** tab.
+
+
+
+**Connector Action \(All Operations\)**   
+Determines the type of operation the connector is performing related to Inbound or Outbound. Depending on how you create the operation component, the action type is either configurable or non-configurable from the drop-down list.
+
+**Object \(All Operations\)**   
+An object defines what you want to integrate or the action to execute, which you select in the Import Wizard. The SAP S/4HANA OData API selected during the import action is displayed.
+
+**Request Profile \(Create, Get, Update/Patch/Merge, Delete\)**   
+The profile represents the JSON structure required to process a specific request on the selected object type. Import the Request Profile by choosing the business entity from the **Object Type** drop down.
+
+**Response Profile \(Create, Get, Query\)**   
+The response profile highlights the format in which the response should be processed.
+
+<TrackingDirection />
+
+<ReturnErrRes />
+
+
+**Fetch X-CSRF and SAP SessionID \(Create\)**   
+This setting controls if the connector should automatically get the X-CSRF token and SAP SessionID which is required for performing any create/update operation using the OData APIs. This selection is mandatory and by default this check box remains selected. The setting is shown to provide clarity to indicate that the X-CSRF token and the SAP Session ID are being managed by the SAP S/4HANA OData connector.
+
+**Service URL Path \(Create, Get, Query, Update/Patch/Merge\)**   
+Displays the URL path of the OData service selected during the import operation. This is appended to the SAP S/4HANA server endpoint URL provided in the Connection settings.
+
+**Extra URL Query Parameters \(Get\)**   
+Provide any additional query parameters to be appended to the given OData API URL path. Do not include parameters starting with "?" and "&" . Example format: $expand=XXX,YYY.
+
+**Note:** For specific parameters associated with this API, please consult the SAP API Business Hub documentation.
+
+**Page Size \(Query\)**    
+Enter the maximum number of documents to be returned per page.
+
+**Maximum Documents \(Query\)** - 
+Enter the maximum number of documents to be returned. If the value is less than 1, all matching records are returned.
+
+**Allow Field Selection \(Query\)** - 
+Select this check box to allow individual fields selection. Else, only related child entities are available for field selection. And, the response includes all the child entities along with all the fields for each selected entity.
+
+**Note:** Returning individual fields requires large API calls and should only be used when relatively few fields are required.
+
+**Prefetch E-tag \(Update/Patch/Merge, Delete\)** - 
+Select this check box to configure the connector to capture the E-Tag value required for updating/deleting the documents over OData. E-Tag can be returned either in the response header or the response body.
+
+**Note:** Please consult SAP documentation to determine whether E-tag is required for the specific API.
+
+## Import Wizard
+
+The following fields are available on the Import Wizard. The **Atom\*** and **Connection\*** field remains common for all operations.
+
+
+
+**SAP S/4HANA Service Catalog \(Create, Get, Query, Update/Patch/Merge, Delete\)** - 
+Select the required SAP/S4HANA service that you want to integrate to.
+
+**Note:** The APIs must be configured in the S/4HANA Cloud and SAP S/4HANA solutions.
+
+**Custom SAP S/4 OData API \(Create, Get, Query, Update/Patch/Merge, Delete\)** - 
+Use this option, if the required OData API does not exist in the above SAP S/4HANA Service Catalog list. Please review SAP API Business Hub for the latest APIs which may not be in the list but available in the SAP S/4HANA system. Example: /sap/opu/odata/sap/API\_COMPANYCODE\_SRV/
+
+**Child Creation Mode \(Create\)** - 
+Select the preference for child entities creation/insertion. The available options are:
+
+-   Link to Existing Children — Allows mapping of key fields to indicate which existing child entities should be linked to.
+-   Create Children \(Must be supported by API for this Object Type\) — Allows creating both the parent and child entity types, only if supported by the given SAP S/4HANA entity type. For example, A\_BusinessPartner supports deep create. Otherwise, only keys for child entities can be specified to link to those existing entities.
+
+**Note:** User should consult the SAP API Business Hub for the details.
+
+**Maximum Entity Depth for Deep Create \(Create\)** - 
+Select the maximum entity relationship level for including the child objects in the profile, in case of deep entity creation.
+
+**Maximum Entity Depth for Deep Get \(Get\)** - 
+Select the maximum entity relationship level for including the child objects in the profile, in case of deep entity retrieval.
+
+**Maximum Browse Depth \(Query\)**   
+Select the maximum entity relationship level for including the child objects in profile, during deep query operation.
+
+**Include recursive navigations \(Query\)**   
+This setting controls the inclusion of recursive navigations that loops back to parent object types. For example: Order \> Order\_Details \> Order.
+
+Refer to [Importing with SAP S/4HANA OData Import Wizard](int-importing_with_SAP_S4HANA_OData_Import_Wizard_bf587952-a3f0-4adc-849c-8429b07de6ac.md).
+
+## Create
+
+The Create action is an outbound action that you can use to create a new business entity in your SAP S/4HANA system. Use the Import Wizard to select the required SAP S/4HANA OData service, request and response profile. You can define the child objects creation preference, if supported by the selected OData service.
+
+## Get
+
+The Get action is an inbound action to retrieve existing records from the SAP S/4HANA system. Using the Import Wizard, select the object type \(OData service\) and attach the request / response profile. You can define the child objects retrieval preference, if supported by the selected OData service. If required, include the additional query parameters in the **Extra URL Query Parameters** field on the **Options** tab. For Get operation, the value for input parameter must be defined on the connector’s **Parameters**tab.
+
+## Update/Patch/Merge
+
+The Update action is an outbound action that allows you to update the existing records in the SAP S/4HANA system. In the Import Wizard, provide the specific OData service name as Object Type for request profile generation. The value for input parameters to perform the update operation must be defined on the connector’s **Parameters** tab.
+
+**Note:** The SAP S/4HANA OData connector does not accept dates formatted in S/4HANA format for updates. The correct date format is: `SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")`.
+
+## Query
+
+The Query action allows to look up for existing records based on the given search criteria. The Query action returns zero-to-many documents from a single Query request based on zero or more filters. Use the Import wizard to select the required OData service for response profile generation. You can also specify the preference for business objects retrieval using the **Maximum Browse Depth** and **Include recursive navigations** settings. After you select the Query action and use the Import Wizard, you can select required fields, add query filters, and sort the results by field.
+
+On the **Filters** tab, you can refine the query by applying the required filter and defining expressions to create the required query logic for the following fields:
+
+-   **Filter Name** -  Specify a name for the filter expression.
+-   **Field** -  Select the required field based on which the search is performed.
+-   **Operator** -  Specify the filter operator value to be applied for the search.
+
+The filter expression can also be created with AND/OR Logical Sub-Group using the Filter - Add Logical Sub-Group option.
+
+On the **Sorts** tab, include the required field and the sorting order preference to get the query results sorted based on the fields selected.
+
+## Delete
+
+Delete is an outbound action to delete records from the SAP S/4HANA OData system based on the user input.
+
+<OperationEnd />

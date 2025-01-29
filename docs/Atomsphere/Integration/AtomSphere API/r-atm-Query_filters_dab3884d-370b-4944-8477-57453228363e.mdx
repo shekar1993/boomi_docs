@@ -1,0 +1,140 @@
+# Query filters 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-dab3884d-370b-4944-8477-57453228363e"/>
+</head>
+
+
+QUERY filters let you use API object fields and a range of operators to customize the results of a request.
+
+The flexible structure of QUERY filters allows you to perform complex queries. You can compose a query filter with simple expressions and by grouping expressions.
+
+## Simple expressions in query filters 
+
+A simple expression consists of:
+
+-   A property, or field, whose value is to be tested
+
+-   An operator, which describes the type of comparison to perform
+
+-   Zero or more arguments
+
+
+The following table lists all available operators and the acceptable number of arguments. See the specific API object topics for information about what fields you can use as query filters and the allowed operators for that object.
+
+|Operator|Description|Number of Arguments|
+|--------|-----------|-------------------|
+|EQUALS|Equal To|1|
+|LIKE|Like|1|
+|NOT\_EQUALS|Not Equal To|1|
+|IS\_NULL|Is Null|0|
+|IS\_NOT\_NULL|Is Not Null|0|
+|STARTS\_WITH|Starts With|1|
+|BETWEEN|Between|2|
+|GREATER\_THAN|Greater Than|1|
+|GREATER\_THAN\_OR\_EQUAL|Greater Than Or Equal|1|
+|LESS\_THAN|Less Than|1|
+|LESS\_THAN\_OR\_EQUAL|Less Than Or Equal|1|
+
+## Grouping expressions in query filters 
+
+A grouping expression contains a logical operator \(AND or OR\) and contains nested expressions. These can be either simple expressions or grouping expressions. The following examples illustrate a complex grouping expression.
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+  <TabItem value="REST" label="REST" default>
+
+### Nested Examples
+
+
+#### JSON
+
+```json
+    {
+        "QueryFilter": {
+            "expression": {
+                "operator": "and",
+                "nestedExpression": [
+                    {
+                        "argument" : ["123"],
+                        "operator":"EQUALS",
+                        "property":"ABC"
+                    },
+                    {
+                        "argument" : ["456", "789"],
+                        "operator":"BETWEEN",
+                        "property":"DEF"
+                    },
+                    {
+                        "operator":"and",
+                        "nestedExpression": [
+                            {
+                                "argument" : ["123"],
+                                "operator":"GREATER_THAN",
+                                "property":"GHI"
+                            },
+                            {
+                                "argument" : ["0"],
+                                "operator":"EQUALS",
+                                "property":"JKL"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+```
+
+#### XML
+    
+```xml
+<expression operator="and" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="GroupingExpression">
+    <nestedExpression operator="EQUALS" property="ABC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SimpleExpression">
+        <argument>123</argument>
+    </nestedExpression>
+    <nestedExpression operator="BETWEEN" property="DEF" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SimpleExpression">
+        <argument>456</argument>
+        <argument>789</argument>
+    </nestedExpression>
+    <nestedExpression operator="and" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="GroupingExpression">
+        <nestedExpression operator="GREATER_THAN" property="GHI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SimpleExpression">
+            <argument>123</argument>
+        </nestedExpression>
+        <nestedExpression operator="EQUALS" property="JKL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SimpleExpression">
+            <argument>0</argument>
+        </nestedExpression>
+    </nestedExpression>
+</expression>
+```
+
+
+
+</TabItem>
+
+<TabItem value="SOAP" label="SOAP">
+
+```xml
+<expression operator="and" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="api:GroupingExpression">
+    <nestedExpression operator="EQUALS" property="ABC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="api:SimpleExpression">
+        <argument>123</argument>
+    </nestedExpression>
+    <nestedExpression operator="BETWEEN" property="DEF" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="api:SimpleExpression">
+        <argument>456</argument>
+        <argument>789</argument>
+    </nestedExpression>
+    <nestedExpression operator="and" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="api:GroupingExpression">
+        <nestedExpression operator="GREATER_THAN" property="GHI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="api:SimpleExpression">
+            <argument>123</argument>
+        </nestedExpression>
+        <nestedExpression operator="EQUALS" property="JKL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="api:SimpleExpression">
+            <argument>0</argument>
+        </nestedExpression>
+    </nestedExpression>
+</expression>
+```
+</TabItem>
+</Tabs>

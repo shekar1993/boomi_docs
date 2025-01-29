@@ -1,0 +1,42 @@
+import TestConnection from './_TestCon.md'
+
+# SAP S/4HANA OData connection
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-65c9c117-e445-4a62-862f-1522b9ec839b"/>
+</head>
+
+
+The SAP S/4HANA OData connector's connection represents a single SAP Client for SAP S/4HANA or a specific tenant for SAP S/4HANA Cloud via specific login credentials. If you have multiple systems or login credentials, you need a separate connection for each. This connector supports Basic authentication method.
+
+## Connection tab
+
+
+
+**Server Endpoint URL** - 
+Provide the endpoint URL of the SAP S/4HANA system. For example, the URL for SAP S/4HANA Cloud is your tenant id appended with "-api", for example: `https://<tenant>-api.s4hana.ondemand.com:443`.
+ 
+**Authentication Type** - 
+Displays the supported authentication method "Basic".
+
+**User Name** - 
+Specify the user name to log-on to the SAP S/4HANA system.
+
+**Note:** User Name is the Technical User in the SAP S/4HANA Cloud system.
+
+**Password** - 
+Click to enter the password associated with the user account.
+ 
+**Client Number**   
+Provide the unique SAP client ID used for remote login to the SAP S/4HANA system.
+
+**Note:** This is applicable only for on-premise SAP S/4HANA system.
+
+**Test Connection Service \(Optional\)** - 
+Provide a specific OData service URL to be used for connection testing. Make sure the logged-in user has access permission on the given OData service.
+
+**Note:** If this field is left blank, the connection testing will be performed using the default OData service URL.
+
+
+<TestConnection />

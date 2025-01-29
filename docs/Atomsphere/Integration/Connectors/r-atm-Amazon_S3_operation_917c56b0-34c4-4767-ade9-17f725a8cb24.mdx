@@ -1,0 +1,90 @@
+import OperationEnd from './_operationEnd.md'
+
+# Amazon S3 operation 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-917c56b0-34c4-4767-ade9-17f725a8cb24"/>
+</head>
+
+
+The Amazon S3 operation defines how to interact with your Amazon S3 account.
+
+The operation represents a specific action \(Get, Create, Delete\) run against a specific Amazon S3 record type or object. Create a separate operation component for each action or object combination required for your integration.
+
+Amazon S3 supports the following actions:
+
+-   Get — \(inbound\) retrieves a single file or a list of files. Use a single parameter ID \(the Amazon key for the file in the Amazon S3 system\). You cannot GET files encrypted with a client-side encryption nor can you use custom keys to encrypt files.
+
+    Simulate Amazon’s folder structure by concatenating the folder path with the final file name ending with a forward slash “/”. Use these objects:
+
+    -   Get object retrieves a single file from the bucket.
+
+    -   Get Object \(Binary\) retrieves a single file that is 50 MBs or greater.
+
+    -   Get Listing retrieves a list of files and folders in the specified bucket, but not the contents of a file that include key, folderName, filename, isDirectory, lastModified, size, and bucketName.
+
+-   Delete — \(outbound\) deletes data based on the ID for the Amazon S3 object key.
+
+-   Create — \(outbound\) uploads the current document into the Amazon S3 Cloud as object data.
+
+
+Click **Import Operation**, then use the Import wizard to select the object\(s\) to integrate. The wizard uses the connector browser and imports the request and response profiles for the selected action.
+
+**Document properties** - 
+
+The Amazon S3 connector supports the document properties listed below for the Get, Delete, and Create operations. Previous limitations, where dynamic properties for Get and Delete required input documents and assigning a folder name could be applied only to Create operations, are amended. If you are already using dynamic document properties, they continue to operate successfully when you add document properties because older dynamic document properties override newer document properties. For example, your process has a message step with a dynamic document property S3\_KEY and you add a Set Properties step with the new File Key document property. When the process runs, the S3\_Key value overrides the File Key property.
+
+|Document property|Dynamic document property|
+|-----------------|-------------------------|
+|File Key|S3\_KEY|
+|Folder|S3\_FOLDER|
+|File Name|S3\_FILENAME|
+
+**Data Process step** - 
+
+Two processing types in the Data Process step can help process your Amazon S3 files and lists:
+
+-   Base64decode and Base64encode — use with the GET and CREATE objects to decode and encode binary data as follows:
+    -   Base64decode — use with the GET objects to decode binary data stored and transferred over media. Base64 ensures that data is intact during transport. Files that you download from Amazon must be base64decode.
+
+    -   Base64encode — use with CREATE objects to encode binary data stored and transferred over media. Base64 ensures that data is intact during transport. Files that you upload to Amazon must be base64encode.
+
+-   Split Documents — use with the GETListing Object to process results to either perform another operation or to store the results \(Save to Disk\).
+
+
+**Note:** Only decode an encoded field on the file object, such as the objectContent field. Otherwise, it could pass non-printable characters to the next step.
+
+## Options tab 
+
+The following table describes the default field definitions for each action type:
+
+
+**Tracking Direction** - 
+
+Select the document tracking direction for the operation, either **Input Documents** or **Output Documents**. This setting enables you to choose which document appears in **Process Reporting. Start** steps always track output documents regardless of your selection.
+
+:::note
+
+If the tracking direction is read-only, the feature to change the direction is either unavailable or the developer set the configuration to read-only. The default value you see shows you which document appears in **Process Reporting**.
+
+:::
+
+**Return Application Error Responses** - 
+
+This setting controls whether an application error prevents an operation from completing:
+
+- If you clear the setting, the process stops and reports the error on the **Process Reporting** page.
+- If you select the setting, processing continues and passes the error response to the next component processed as the connection output.
+
+**Use Server Side Encryption** \(Create only\)  
+This setting controls whether to use the Amazon S3 Key Management Service \(KMS\) to encrypt and decrypt your data.
+
+**AWS KMS Key ARN/ID** \(Create only\)  
+Amazon S3 supports three different server-side encryption options to protect data: SSE-S3, SSE-KMS, and SSE-C. The Amazon S3 connector only supports SSE-KMS that enforces server-side encryption with AWS KMS-Managed Keys \(SSE-KMS\).
+
+You can configure AES256 encryption with SSE-KMS when creating and saving objects by turning on **Use Server Side Encryption** and leaving this field blank. In this case, the connector passes the "s3:x-amz-server-side-encryption": "kms" header and Amazon uses the default AWS KMS key \(the master key\) to protect the data.
+
+ Alternatively, you can specify your user-created encryption key in this field. In this case, the connector passes the x-amz-server-side-encryption-aws-kms-key-id header to specify the ID of the user-created AWS Key Management Service \(AWS KMS\) master encryption key.
+
+<OperationEnd />

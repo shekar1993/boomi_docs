@@ -1,0 +1,101 @@
+[data-theme="light"] .home-page-banner-dark-mode,
+[data-theme="dark"] .home-page-banner-light-mode {
+  display: none;
+}
+
+.home-page-banner-container{
+  width: 100%;
+  padding: var(--exo-spacing-none) var(--exo-spacing-2x-large)
+    var(--exo-spacing-4x-large);
+    display: flex;
+    justify-content: center;
+}
+
+.home-page-banner {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  height: calc(2.5 * var(--exo-size-1));
+  border-radius: calc(1.6 * var(--exo-radius-large));
+  border: var(--exo-spacing-4x-small) solid var(--exo-color-border-secondary);
+  width: 100%;
+}
+
+.home-page-banner .banner-content {
+  color: var(----exo-color-font);
+  padding: var(--exo-spacing-medium) var(--exo-spacing-2x-large);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.home-page-banner .banner-content .banner-content-headline {
+  padding-top: var(---exo-spacing-small);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-family: var(--exo-font-brand);
+  font-size: var(--exo-font-size-3x-large);
+  font-style: normal;
+  font-weight: var(--exo-font-weight-bold);
+  line-height: 125%;
+  margin-bottom: var(--exo-spacing-large);
+  width: calc(0.5 * (100% - var(--exo-spacing-2x-large)));
+  color: var(--exo-color-font);
+}
+
+.home-page-banner
+  .banner-content
+  .banner-content-button
+  .banner-content-button-link {
+  color: unset;
+  text-decoration: none;
+  transition: none;
+}
+
+.home-page-banner
+  .banner-content
+  .banner-content-button
+  .banner-content-button-link:hover {
+  color: unset;
+  text-decoration: none;
+}
+
+@media screen and (max-width: 996px) {
+  .home-page-banner-container {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 1200px) and (max-width: 1400px) {
+  .home-page-banner .banner-content {
+    padding: var(--exo-spacing-medium) var(--exo-spacing-4x-large);
+  }
+
+  .home-page-banner .banner-content .banner-content-headline {
+    max-width: var(--exo-size-7);
+  }
+}
+
+@media screen and (min-width: 1400px) {
+  .home-page-banner-container{
+    padding: var(--exo-spacing-none)
+    calc(var(--exo-spacing-x-small) + var(--exo-spacing-4x-large))
+    var(--exo-spacing-4x-large);
+  }
+  .home-page-banner {
+    max-width: 1400px;
+  }
+
+  .home-page-banner .banner-content {
+    padding: var(--exo-spacing-medium) var(--exo-spacing-4x-large);
+  }
+
+  .home-page-banner .banner-content .banner-content-headline {
+    font-size: var(--exo-font-size-5x-large);
+    max-width: var(--exo-size-7);
+  }
+}
+

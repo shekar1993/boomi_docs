@@ -1,0 +1,81 @@
+.footer-wrapper {
+  width: 100%;
+  height: calc((2 * var(--exo-size-2)) - 6);
+  border-radius: var(--exo-radius-x-large) var(--exo-radius-x-large) 0px 0px;
+  background: var(--exo-color-background-secondary);
+}
+
+[data-theme="light"] .footer-wrapper .boomi-logo-footer-dark-mode,
+[data-theme="dark"] .footer-wrapper .boomi-logo-footer-light-mode {
+  display: none;
+}
+
+.copyright-container {
+  margin-top: var(--exo-spacing-2x-large);
+  padding: var(--exo-spacing-standard);
+} 
+
+@media screen and (max-width: 767px) {
+  .footer-wrapper {
+    width: 100%;
+  }
+  .footer-container {
+    margin-left: var(--exo-spacing-medium) !important;
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+  .footer-wrapper {
+    width: 100%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .footer-wrapper {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 543px) {
+  .platform-wrapper {
+    margin-top: var(--exo-spacing-large);
+    margin-bottom: var(--exo-spacing-x-large);
+  }
+  .company-wrapper {
+    margin-bottom: var(--exo-spacing-none);
+  }
+  .copyright-container {
+    margin-top: var(--exo-spacing-none);
+    padding: var(--exo-spacing-x-small) var(--exo-spacing-x-small) var(--exo-spacing-x-small) var(--exo-spacing-medium);
+  }
+}
+
+.footer-wrapper .ex-row {
+  margin-right: var(--exo-spacing-none);
+}
+
+.footer-links {
+  color: var(--exo-color-font);
+  font-feature-settings: "clig" off, "liga" off;
+  font-family: var(--exo-font-family);
+  font-size: var(--exo-text-label-medium);
+  font-style: var(--exo-font-family);
+}
+.footer-link-header {
+  font-weight: var(--exo-font-weight-bold);
+}
+.footer-link {
+  font-weight: var(--exo-font-weight-regular);
+}
+.footer-link a {
+  color: var(--exo-color-font);
+  text-decoration-line: underline;
+  text-decoration-color: var(--exo-color-font-secondary);
+}
+.footer-copyright {
+  color: var(--exo-color-font-secondary);
+  font-feature-settings: "clig" off, "liga" off;
+  font-family: var(--exo-font-family);
+  font-size: var(--exo-text-label-standard);
+  font-weight: var(--exo-font-weight-regular);
+}

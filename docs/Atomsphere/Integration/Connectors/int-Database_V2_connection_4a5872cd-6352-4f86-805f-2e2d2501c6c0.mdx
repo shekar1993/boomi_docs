@@ -1,0 +1,109 @@
+# Database V2 connection 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-4a5872cd-6352-4f86-805f-2e2d2501c6c0"/>
+</head>
+
+
+The Database V2 connection represents a single account including login credentials. If you have multiple systems, you need a separate connection for each.
+
+## Connection tab
+
+**Connection URL** -  Refers to the Database URL \(Uniform Resource Locator\). It is mandatory to include database name in the connection URL. For example:
+
+MySQL database - `jdbc:mysql://localhost:3306/testdb`.
+
+-   `localhost` is the name of the server hosting your MySQL database. It can also be an IP address of the database server. Server can be on-premise/cloud \(public or private\).
+-   `3306` is the port number.
+-   `testdb` is the name of the database to connect to.
+
+MS SQL database - `jdbc:sqlserver://localhost:1433;databaseName=boomi`
+
+- `localhost` is the server hosting the MS SQL database.
+- `1433` is the port number \(default\) of the SQL server.
+- `databaseName` is the name of the database to connect to.
+
+PostgreSQL database takes one of the following forms:
+
+-   jdbc:postgresql:database
+-   jdbc:postgresql://host/database
+-   jdbc:postgresql://host:port/database
+
+Oracle database - `jdbc:oracle:thin:@localhost:1521:xe`.
+
+- `localhost` is the server name on which oracle is running. It can also be IP address.
+- `1521` is the port number.
+- `xe` is the Oracle service name.
+
+**Class Name** -  Class name of the database driver to be sent to the respective database.
+
+:::info
+Below are examples of class names:
+
+  - Postgre: org.postgresql.Driver
+  - MS SQL: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  -  MySql: com.mysql.jdbc.Driver
+  - Oracle: oracle.jdbc.driver.OracleDriver
+:::
+
+**User Name** -  The database user on whose behalf the connection is made.
+
+**Password** -  The user's password.
+
+**Schema Name** -  Enter the database schema name to fetch the table names. The schema name must be specified either in Operation UI, Connection UI or Connection URL. If the Schema name is defined in all the above settings, the order of preference will be Operation UI, Connection UI and then the Connection URL.
+
+**Connection Timeout \(ms\)** -  Enter the maximum time \(in milliseconds\) that the connector can wait to complete the connection handshake with the database.
+
+**Read Timeout \(ms\)** -  Enter the maximum time \(in milliseconds\) that the Molecule or Atom Cloud can spend attempting to read data from the database.
+
+#### Connection Pooling Settings
+
+**Enable Connection Pooling \(Optional\)** -  Select the check box to use the connection pooling feature. If selected, then the connection pooling settings fields \(listed below\) will be displayed. If the check box is not selected, then the values defined in the below fields will not be considered for connection pooling.
+
+**Maximum Connections \(Optional\)** - Enter the maximum number of connections allowed in the pool. The default is `-1`, which indicates an unlimited number of connections. You will receive an error, if you attempt to exceed the maximum.
+
+**Minimum Connections \(Optional\)** -  Enter the minimum number of connections allowed in the pool. The default is 0.
+
+**Maximum Idle Time \(Optional\)** -  Enter the maximum amount of time \(in seconds\) that a connection can remain open in an idle state. The default is 0.
+
+**When Exhausted Action \(Optional\)** -  Indicate whether to wait for a connection or immediately fail, when a connection pool is exhausted.
+
+**Maximum Wait Time \(Optional\)** -  Enter the maximum amount of time \(in seconds\) to wait for a connection from the pool. The default is 0.
+
+**Test Connection When Borrowing from Pool \(Optional\)** -  Select this option to verify if a connection is still valid while taking it from the pool.
+
+**Test Connection When Returning from Pool \(Optional\)** -  Select this option to test if a connection is still valid, when returning it back to the pool.
+
+**Test Idle Connections \(Optional\)** -  Select this option to test if the idle connections are still valid.
+
+**Validation Query \(Optional\)** -  Enter a simple SQL Statement to return a single row of data, if the connection is valid.
+
+**Connection Properties** -  Use the **Add Property** button to add additional connection properties, if required to establish connection to the database.
+
+:::info
+To optimize the performance of your Boomi Database V2 connector for the MySQL INSERT operation, set the `rewriteBatchedStatements` property to TRUE. For more details, refer to the [blog post](https://developer.boomi.com/blog/Boomidatabaseconnector) on Boomi Dev Docs.
+:::
+
+:::note
+
+
+-   PostgreSQL database — When passing multiple input documents, or using batching, make sure to add the property "autosave=always". This sets a savepoint before each query, and rolls back to that savepoint, in case of failure.
+-   Oracle database — There are chances of getting TNS admin error while performing the Test Connection/ Import/ Process execution on the Boomi cloud \(public and private\). To run the connector successfully on the Boomi cloud, the `oracle.net.tns_admin` property must be defined as **Key** with **Value** set to the directory path of the tnsnames.ora file containing the DB connection details. Every time, you want to execute the process on the cloud, make sure the directory and the ORA file exist and you have required access permission on it. It is recommended to place the ORA file in the **Work** folder within the connector account of the cloud atom as it is allowed with high security policy. Sample tnsnames.ora file content:
+
+```
+XE= 
+  (DESCRIPTION —
+    (ADDRESS_LIST = 
+     (ADDRESS — (PROTOCOL — TCP) (HOST — 13.126.74.41) (PORT — 1521))
+    )
+  (CONNECT_DATA —
+      (SERVICE_NAME = XE)
+  )
+)
+```
+:::
+
+import TestConnection from './_TestCon.md'
+
+<TestConnection />

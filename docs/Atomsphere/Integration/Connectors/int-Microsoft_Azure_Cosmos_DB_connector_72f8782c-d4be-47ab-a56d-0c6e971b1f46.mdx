@@ -1,0 +1,60 @@
+
+import TrackedProperties from './_TrackedProperties.md'
+
+# Microsoft Azure Cosmos DB connector
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-72f8782c-d4be-47ab-a56d-0c6e971b1f46"/>
+</head>
+
+
+Microsoft Azure Cosmos DB connector allows you to transfer data from/to Microsoft Azure Cosmos DB server, using Integration and REST APIs. These REST APIs provide access to Microsoft Azure Cosmos DB resources to Get, Update, Delete, Create, Upsert and Query documents from Collections and Databases.
+
+APIs are governed by a master key or a resource token. To access a resource, the selected token is included in the REST authorization header, as part of the authorization string.
+
+Master Key Tokens - 
+The master key token is the all-access key token that allows users to have full control of Microsoft Azure Cosmos DB resources in an account. The master key is created during the creation of an account.
+
+Resource Tokens - Resource tokens are created when users in a database are set up with access permissions for precise access control on a resource, also known as a permission resource. A permission resource contains a hash resource token constructed with the information regarding the resource path and access type a user has access to. The permission resource token is time-bound, and the validity period can be overridden.
+
+The Microsoft Azure Cosmos DB connector processes input data and output data in JSON format only.
+
+
+:::note
+
+- The maximum size for the input file is 1MB. The connector will throw an error if the file size exceeds 1MB. We recommended using the “Try/Catch step” to catch the failed input files and to list them to the user.
+
+- This is an open source connector and you can access the code in the [Microsoft Azure Cosmos DB](https://bitbucket.org/officialboomi/cosmosdb) connector repository.
+
+:::
+
+## Connector configuration
+
+To configure the connector to communicate with Microsoft Azure Cosmos DB, set up two components:
+
+-   Microsoft Azure Cosmos DB connection — The connection represents the Cosmos DB server in Microsoft Azure
+-   Microsoft Azure Cosmos DB operation — The operation represents an action against a specific record type. You will create one or more operations, one for each type of interaction required by your integration scenario.
+
+This design provides reusable components containing connection settings and operation settings. After building the connection and operation, set up your connector within a process. When the process is configured properly, Boomi Integration can transfer data from/to Microsoft Azure Cosmos DB.
+
+## Supported editions
+
+This connector supports the Rest APIs version 2017-02-22 from the [Azure Cosmos DB: Rest API Reference](https://docs.microsoft.com/en-us/rest/api/cosmos-db/).
+
+## Prerequisites
+
+To use the connector and implement a connection to your Microsoft Azure Cosmos DB server from Boomi Integration, ensure you have the following:
+
+-   Hostname or URL for the Microsoft Azure Cosmos DB server.
+
+-   Deployed Atom on your local machine or host it with Boomi Integration.
+
+-   Microsoft Azure account for using Microsoft Azure Cosmos DB with the necessary credentials to access Microsoft Azure Cosmos DB APIs and either of the below key tokens.
+
+    -   Master Key Tokens
+
+    -   Resource Tokens
+
+
+<TrackedProperties />

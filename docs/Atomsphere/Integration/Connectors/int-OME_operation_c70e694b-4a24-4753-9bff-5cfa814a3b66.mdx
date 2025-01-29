@@ -1,0 +1,49 @@
+import OperationEnd from './_operationEnd.md'
+import TrackingDir from './_TrackObject.md'
+import ReturnErrRes from './_ReturnResponse.md'
+
+# OpenManage Enterprise operation
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-c70e694b-4a24-4753-9bff-5cfa814a3b66"/>
+</head>
+
+
+The OpenManage Enterprise operations define how to interact with DELL OME and represent a specific action \(Query\) to be performed against a specific file.
+
+Create a separate operation component for each action/object combination that your integration requires.
+
+The OpenManage Enterprise operations support the following action:
+
+-   Inbound: Query
+
+## Options tab 
+
+Click **Import Operation**, then use the Import wizard to select the object to integrate. When you configure an action \(Query\), the following fields appear on the **Options** tab:
+
+**Connector Action** - 
+Determines the type of operation the connector is performing related to inbound, specify the proper connector action. Depending on how you create the operation component, the action type is either configurable or non-configurable from the drop-down list.
+
+**Response Profile** - 
+The response profile highlights the format \(Structured or Unstructured\) in which the response is to be processed. The format will always be set as Unstructured as this connector deals with files and not the content within the file.
+
+<TrackingDir />
+
+<ReturnErrRes />
+
+**Filters**   
+Only one filter expression can be created. If you need to set multiple filter expressions, you need a separate connection for each. The current OpenManage Enterprise connector does not allow nested expressions in query strings. The filter expression can also be created within AND/OR Logical Sub-Group. The following are the fields under the filter expression section.
+
+-   Filter Name — The name of the filter expression.
+-   Field — Criteria based on what you want the files to be searched \(ID, SeverityType, TimeStamp\).
+-   Operator — These field values vary based on the search criteria previously selected.
+    -   ID: Equal To.
+    -   SeverityType: Equal To.
+    -   TimeStamp: Greater Than or Equal, Less Than or Equal.
+
+## Query
+
+Query is an inbound action that looks up data in Dell OME and returns zero to many object records from a single Query request based on filters. After you select the Query action and use the **Import Wizard**, the operation component page contains configuration options to add filters and set parameters as connection property to limit the results. You can refine the query on the **Filters** tab and define expressions to create required query logic.
+
+<OperationEnd />

@@ -1,0 +1,197 @@
+# API Key Call Count object 
+
+<head>
+  <meta name="guidename" content="API Management"/>
+  <meta name="context" content="GUID-9b95ec7a-b02c-48be-ae2a-a1c6e9abeba5"/>
+</head>
+
+
+Use the API Key Call Count object to query the number of API Keys used in a specified time frame.
+
+## Structure 
+
+```xml
+<KeyCallCount apiKey="" timeBlock="" httpStatus="" environmentId="" count="">
+</KeyCallCount>
+```
+
+|Field|Type|Description|
+|-----|----|-----------|
+|`apiKey`|*string*|A valid API Key.|
+|`count`|*string*|Total number of calls for the API Key for the timeBlock.|
+|`environmentId`|*string*|The ID of the environment.|
+|`httpStatus`|*string*|A standard HTTP status code.|
+|`timeBlock`|*dateTime yyyy-MM-dd'T'HH:mm:ss'Z'* — for example, 2013-01-31T15:32:00Z|The start time of the represented time block.|
+
+## Supported operations 
+
+The API Key Call Count object supports the following operations:
+
+| GET          | QUERY      | CREATE        | UPDATE        | DELETE        |
+|---------------|------------|---------------|---------------|---------------|
+| x Not supported | ✅ Supported | x Not supported | x Not supported | x Not supported |
+
+
+
+You can use the following fields as QUERY filters for the API Key Call Count object:
+
+|Field|Allowed value|
+|-----|-------------|
+|`apiKey`|A valid API Key.|
+|`count`|Total number of calls for the API Key for the timeBlock.|
+|`environmentId`|The ID of the environment.|
+|`httpStatus`|A standard HTTP status code.|
+|`timeBlock`|Date with the format *yyyy-MM-dd'T'HH:mm:ss'Z'* — for example, 2017-06-07T13:02:00Z.<br></br>To specify a time block, use the BETWEEN operator with two arguments, one representing the start time and the other representing the end time. Boomi recommends specifying a time block in all queries, particularly for heavy users of Low Latency processes, as a means of preventing the return of excessively large amounts of data.
+
+
+## Implementation
+
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+  <TabItem value="rest" label="REST" default>
+
+Send an HTTP POST to:
+
+```shell
+https://api.boomi.com/apim/api/rest/v1/{accountId}/KeyCallCount/query
+```
+
+where `accountId` is the ID of the authenticating account for the request.
+
+The following example queries all HTTP status codes that are not 200 in the period between January 1 and April 1, 2017.
+
+For a JSON request, send the request with the following HTTP header:
+
+`Content-Type: application/json`
+
+#### Request:
+
+```json
+{
+	"QueryFilter" : {
+		"expression" : {
+			"operator" : "and",
+			"nestedExpression" : [
+			{
+				"argument" : [
+				"200"
+			],
+				"operator" : "NOT_EQUALS",
+				"property" : "httpStatus"
+			},
+			{
+				"argument" : [
+						"2017-01-01T00:00:00Z",
+						"2017-04-01T00:00:00Z"
+					],
+					"operator" : "BETWEEN",
+					"property" : "timeBlock"
+				}
+			]
+		}
+	}
+}
+```
+
+For a JSON response, send the request with the following HTTP header:
+
+`Accept: application/json`
+
+#### Response:
+
+```json
+{
+	"@type": "ApimQueryResult",
+	"result": [
+		{
+			"@type": "KeyCallCount",
+			"apiKey": "8db3f6f2-33ec-4c42-a077-6ff8f07335e3",
+			"timeBlock": "2017-03-17T00:00:00Z",
+			"httpStatus": 503,
+			"environmentId": "e96b6e8a-7835-40c3-9db2-37095f2e3949",
+			"count": 45
+		},
+		{
+			"@type": "KeyCallCount",
+			"apiKey": "8db3f6f2-33ec-4c42-a077-6ff8f07335e3",
+			"timeBlock": "2017-03-20T00:00:00Z",
+			"httpStatus": 503,
+			"environmentId": "e96b6e8a-7835-40c3-9db2-37095f2e3949",
+			"count": 50
+		},
+		{
+			"@type": "KeyCallCount",
+			"apiKey": "8db3f6f2-33ec-4c42-a077-6ff8f07335e3",
+			"timeBlock": "2017-03-27T00:00:00Z",
+			"httpStatus": 503,
+			"environmentId": "e96b6e8a-7835-40c3-9db2-37095f2e3949",
+			"count": 133
+		},
+		{
+			"@type": "KeyCallCount",
+			"apiKey": "f5aa274d-deb8-4710-96ca-fdaf703454d9",
+			"timeBlock": "2017-03-17T00:00:00Z",
+			"httpStatus": 503,
+			"environmentId": "e96b6e8a-7835-40c3-9db2-37095f2e3949",
+			"count": 8
+		}
+	],
+	"numberOfResults": 4
+}
+```
+  </TabItem>
+
+  <TabItem value="soap" label="SOAP">
+
+The following example query returns API Keys with a count equal to 50 in the period between March 13 and April 11, 2017.
+
+#### Request:
+
+```xml
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.apim.api.platform.boomi.com/"xmlns:apim="http://apim.api.platform.boomi.com/" xmlns:api="http://api.platform.boomi.com/"
+	<soapenv:Header/>
+	<soapenv:Body>
+		<soap:query>
+			<apim:objectType>Keycallcount</apim:objectType><!--Optional:-->
+			<api:queryConfig>
+				<api:QueryFilter>
+					<api:expression operator="and"xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="api:GroupingExpression"
+					<api:nestedExpression operator="EQUALS" property="count"xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="api:SimpleExpression"
+						<api:argument>50</api:argument>
+					</api:nestedExpression>
+					<api:nestedExpression operator="BETWEEN" property="timeBlock"xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="api:SimpleExpression"
+						<api:argument>2017-03-13T04:00:00Z</api:argument>
+						<api:argument>2017-04-11T00:00:00Z</api:argument>
+					</api:nestedExpression>
+					</api:expression>
+					<api:nestedExpression operator="EQUALS" property="apiKey"xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="api:SimpleExpression"
+					<api:argument>8db3f6f2-33ec-4c42-a077-6ff8f07335e3</api:argument>
+					</api:nestedExpression>
+				</api:QueryFilter>
+			</api:queryConfig>
+		</soap:query>
+	</soapenv:Body>
+</soapenv:Envelope>
+```
+
+#### Response:
+
+```xml
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"
+	<S:Body>
+		<ns4:queryResponse xmlns:apim="http://apim.api.platform.boomi.com/" xmlns:bns="http://api.platform.boomi.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns4="http://soap.apim.api.platform.boomi.com/"
+			<apim:results numberOfResults="2"
+				<bns:result xsi:type="apim:KeyCallCount" count="50" environmentId="e96b6e8a-7835-40c3-9db2-37095f2e3949" httpStatus="503" timeBlock="2017-03-20T00:00:00Z" apiKey="8db3f6f2-33ec-4c42-a077-6ff8f07335e3"/>
+				<bns:result xsi:type="apim:KeyCallCount" count="50" environmentId="e96b6e8a-7835-40c3-9db2-37095f2e3949" httpStatus="200" timeBlock="2017-03-16T00:00:00Z" apiKey="f5aa274d-deb8-4710-96ca-fdaf703454d9"/>
+			</apim:results>
+		</ns4:queryResponse>
+	</S:Body>
+</S:Envelope>
+```
+  </TabItem>
+
+</Tabs>
+

@@ -1,0 +1,31 @@
+import TestConnection from './_TestCon.md'
+
+# Twilio connection
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-f04b6180-6d44-4716-a671-abf0cece99ec"/>
+</head>
+
+
+The Twilio connection represents a single Twilio account.
+
+If you use multiple accounts, you need a separate connection component for each account. You can pair the connection with different Twilio operations to perform a unique action against a Twilio instance.
+
+## Connection tab 
+
+
+**Account SID** -
+Enter the unique Twilio Account SID, obtained from Twilio.
+
+**Auth Token** -
+Enter the Authentication token, obtained from Twilio.
+
+:::note
+
+The connector automatically handles the HTTPS certificate. You do not need to manually import a certificate component.
+
+:::
+
+<TestConnection />
+

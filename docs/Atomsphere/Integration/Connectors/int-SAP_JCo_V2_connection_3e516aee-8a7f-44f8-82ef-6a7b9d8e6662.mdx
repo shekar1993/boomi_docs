@@ -1,0 +1,222 @@
+
+import TestConnection from './_TestCon.md'
+
+# SAP JCo V2 connection
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-3e516aee-8a7f-44f8-82ef-6a7b9d8e6662"/>
+</head>
+
+
+The SAP JCo V2 connection represents an SAP User, Password, System, and Client. If you have a combination, you need to create a separate connection for each combination. All fields in the connection are extensible and SAP JCo properties can be configured using the SAP JCo properties file.
+
+## Connection tab
+
+
+
+**Connection Type** - 
+:   Required. Select one of the available SAP connection types to use to connect to SAP:
+
+-   Application Server Host — \(ASHOST\) is a host-based connection.
+-   Message Server Host — \(MSHOST\) is a load-balanced connection where you specify an optional server group to use for load balancing.
+
+**Application or Message Server** - 
+:   Required. Enter the hostname or IP address of the SAP Application or Message Server server. \(include the SAProuter string if applicable\). The SAP JCo property is jco.client.ashost if you set the **Connection Type** to Application Server Host. When you set the **Connection Type** to Message Server Host, the SAP JCo property is jco.client.mshost. The option you do not select will have an empty string for its corresponding JCo property file.
+
+**SAP System Number** - 
+:   Required. If the **Connection Type** is Application Server Host, enter the SAP system number \(SYSNR\). If the **Connection Type** is Message Server Host, the value is set to an empty string. The SAP JCo property is jco.client.sysnr. If you set the **Connection Type** to Message Server Host, the JCo property value is set to an empty string. This field is extensible.
+
+**SAP SID** - 
+:   If the **Connection Type** is Application Server Host, the value is set to an empty string. If the **Connection Type** is Message Server Host, enter the name of the SAP back-end system ID \(SID\). The SAP JCo property is jco.client.r3name. If you set the **Connection Type** to Application Server Host, the JCo property value is set to an empty string. This field is extensible.
+
+**SAP Logon Group Name** - 
+:   This field is applicable only if the **Connection Type** is Message Server Host, enter the name of the SAP server group \(group\). The SAP JCo property is jco.client.group. This field is extensible.
+
+**SAP Client** - 
+:   Required. Enter the SAP client number. The SAP JCo property is jco.client.client.
+
+**User Name** - 
+:   Required. Enter the SAP Username used to connect to an SAP system. The SAP JCo property is jco.client.user.
+
+**Password** - 
+:   Required. Enter the SAP Password used to connect to an SAP system. The SAP JCo property is jco.client.passwd.
+
+**Language Code** - 
+:   Required. Enter the two letter language code. The default value is EN. Language code examples are EN \(English\), DE \(German\), IT \(Italian\), and JA \(Japanese\). The SAP JCo property is jco.client.lang.
+
+**Note:** In the Listen operation, if the listener is not active and an invalid language code is used, an error occurs. However, the relevant language error gets captured only in the dev\_jco\_rfc file in the logs directory.
+
+**SAP Maximum Idle Connections** - 
+:   Sets the maximum number of idle connections to keep open by the destination. A value of 0 creates no connection pooling and connections are closed after each request. The SAP property is jco.destination.pool\_capacity. There is no default number in Integration.
+
+**SAP Maximum Active Connections** - 
+:   Sets the maximum number of active connections that can be created simultaneously for a destination. The SAP JCo property is jco.destination.peak\_limit. There is no default number in Integration.
+
+**SAP Idle Time** - 
+:   Sets the interval in milliseconds \(ms\) after which connections held by the destination can be closed. The SAP JCo property is jco.destination.expiration\_time. There is no default number in Integration.
+
+**JCo Trace Level** - 
+:   Specify the trace level value based on the level of content to be captured in the trace logs to debug SAP connector calls. The allowed trace level value is 0 to 10. For details on the level of content captured for the respective trace level, refer to [SAP JCo - Trace Levels](https://wiki.scn.sap.com/wiki/display/ASJAVA/SAP+JCo+Introduction).
+
+**Note:** By default, the trace log files will be created in the Atom  logs directory. If you have configured values for the -Djco.trace\_path and -Djco.trace\_level parameters in the atom.vmoptions file then the value given in the atom.vmoptions will be override the trace level defined in the Connection settings UI and default trace logs path. It is critical that to adjust the trace level as each level will increase the amount of details generated and could potentially consume your disk storage in the file system in an unpredictable manner!
+
+The SAP JCo property is jco.client.trace. For more information about SAP trace activation, go to [SAP JCo \(Java Connector\) and tracing](https://help.sap.com/docs/SAP_IDENTITY_MANAGEMENT/4773a9ae1296411a9d5c24873a8d418c/fce4391d1b1f4d87820d48d9bc74488e.html).
+
+**JCo Properties Setting** - 
+:   Optional. Specify a properties file to configure additional JCo properties to be used by the connection. To use SNC connection, make sure to configure the SNC parameters in the JCo Properties file and specify the file name here. Refer to the SAP JCo properties file section.
+
+**TID Management options** - 
+:   Select your preference for persisting IDoc TID status details in the TID management database table. The available options are the following:
+
+-   None — Do not persist any data. Persistence of TID management status and IDoc payload details will not be performed. Database details for tables creation are not required in the connection settings. This option is generally suited for non-production scenarios, or if alternative approach has been defined to handle this function. Boomi does not recommended using this mode in any production scenario due to lack of auditability of the TIDs.
+
+    **Note:** It is the user’s responsibility to manage any data loss either in the source or any other receiving system.
+
+-   Minimum — Persist TID data only. TID Management ID and status will be persisted as required for SAP TID handling specified in the SAP CA-ALE certification requirements. This is the default option.
+-   Full — Persist TID data and actual IDoc payload. In addition to persistence of TID Management ID and status, the IDoc payload details will also be stored in a separate database table IDOC\_PAYLOAD.
+
+**Listen operation connection fields** - 
+
+The following fields are applicable for the Listen operation:
+
+**Note:** If you are using SAP JCo 3.1 and the selected Connection Type is Message Server Host, the connector supports using more than one SAP App Server gateway for IDoc Listener. In this case, it is not required to provide the following Listener details \(Gateway Host and Service\).
+
+
+
+**Listener Gateway Host** - 
+:   Required. Enter the Gateway Hostname \(GWHOST name\) of the SAP server. Include the SAProuter string if applicable. This field is mandatory if the Connection type is Application Server Host. The SAP JCo property is jco.server.gwhost.
+
+**Listener Gateway Service** - 
+:   Required. Enter the Gateway port name or number of the SAP server. Typically, the entry is sapgwXX or 33XX, where XX is the system number defined in the Settings tab. This field is mandatory if the Connection type is Application Server Host. The SAP JCo property is jco.server.gwserv.
+
+**Listener Connection Count** - 
+:   The number of server connections for Listen operation per node. By default, there are two listener connections per Atom or Molecule node. One listener per node is the minimum. The SAP JCo property is jco.server.connection\_count.
+
+**Tip:** During the listen operation, if you encounter duplicate entries of IDOCs being pulled by the connector, do any one of the following configuration as a workaround:
+
+-   In the SAP JCo V2 Connector - Connection settings, set the**Listener Connection Count** to 1. \(or\)
+-   In your SAP System - Server Connection Pool Configuration, set the**Max Connections** value as 1.
+
+**Transaction Storage Options database fields** - 
+
+The following fields are associated with the database for the Transaction Storage Options:
+
+In Transaction Storage Options, you define the database that manages the SAP Outbound IDoc processing \(Listen operation\). For information about setting up the database, see the connector topic. In the TID management table that is created during initialization, the following row is used to validate database connections and must remain in the table. If you delete this row, the connector stops until you restart the Atom.
+
+|TID|PROG\_ID|STATUS|PREVIOUS\_STATUS|
+|---|--------|------|----------------|
+|EXISTS\_CHECK|EXISTS\_CHECK|DONT\_DELETE|DONT\_DELETE|
+
+**Field**
+:   **Description**
+
+**Database User Name** - 
+:   Enter the database username.
+
+**Database Password** - 
+:   Enter the database user password.
+
+**Database Driver Type** - 
+:   Required. Select the Driver Type used to connect to the database.
+
+-   SQL Server \(jTDS\)
+-   Oracle
+-   MySQL
+-   SQL Server \(Microsoft\)
+-   SAP Hana
+-   Custom
+
+    Select the type of driver to connect to or specify the connection URL directly by selecting Custom and adding the driver\(s\) to the Atom.
+
+    Upload the Database Driver JAR files into your Integration account library \(Setup \> Account Libraries\), add those files to a Custom Library component, and deploy the component to the appropriate Atom, Molecule, Atom Cloud, or environment.
+
+    **Note:** Uploaded or imported files are first passed through a virus scanner. The upload or import results in an error if a virus is detected, and the file is rejected. Contact Support if an error persists.
+
+**Custom Driver Class Name** - 
+:   This field is required only if the Database Driver Type is selected as Custom. Enter the qualified Java class name of the JDBC driver, which you can get from the JDBC vendor's documentation, for example, sun.jdbc.odbc.JdbcOdbcDriver
+
+**Custom Connection URL** - 
+:   This field is required only if the Database Driver Type is selected as Custom. Refer to the JDBC vendor's documentation for the connection URL syntax. The syntax may have a pattern and URL as follows:
+
+-   Example pattern: `jdbc:<database type>://<host>:<port>/<database name>;<additional options name/value pairs>`
+-   Example URL: jdbc:mysql//localhost:3306/MyDatabase;option1=value;option2=value
+
+Provide the following database details only if you are not using the “Custom” Database Driver option. If your using the “Custom” driver type, the below details are not required and will be ignored if populated:
+
+Database Host
+:   Required. Enter the name or IP Address of the database server.
+
+Database Port
+:   Enter the Port number used to connect to the database server. Some common defaults are:
+
+-   SQL Server: 1433
+-   Oracle: 1521
+-   Sybase: 5000
+-   Derby: 1527
+-   MySQL: 3306
+
+**Database Name** - 
+:   Required. Enter the name of your database.
+
+**Database Additional Options** - 
+:   Enter any additional configurable options to be specified in the database URL. These options are appended to the end of the connection URL according to your database vendor. The options can be name/value pairs delimited by semicolons, such as:
+
+-   `;instance=DB01`
+-   `;domain=<Your Windows Domain Name> (when connecting to SQL Server as a Windows user)`
+
+    **Note:** When using SQL Server, connecting as a Windows user, and connecting to a named instance, the order of the properties for the JDBC URL is important. For example: `instance=<value>;domain=<value>`.
+
+**Database Minimum Connections** - 
+:   Minimum database connections for TID required for connection pooling.
+
+**Database Maximum Connections** - 
+:   Maximum database connections for TID required for connection pooling \(-1 for unlimited\).
+
+## SAP JCo properties
+
+The following table matches fields associated with the connection settings with their corresponding JCo property. The table also notes if a JCo property only applies to an Application Server Host \(ASHOST\) or Message Server Host \(MSHOST\).
+
+|Field|Corresponding JCo Property|
+|-----|--------------------------|
+|Connection Type: Server \(ASHOST\)|jco.client.ashost|
+|Connection Type: Server \(MSHOST\)|jco.client.mshost|
+|User Name|jco.client.user|
+|Password|jco.client.passwd|
+|SAP Client|jco.client.client|
+|Language Code|jco.client.lang|
+|SAP System Number|jco.client.sysnr|
+|SAP SID \(For MSHOST\)|jco.client.r3name|
+|SAP Logon Group Name \(For MSHOST\)|jco.client.group|
+|JCo Trace Level|jco.client.trace|
+|SAP Maximum Idle Connections|jco.destination.pool\_capacity|
+|SAP Maximum Active Connections|jco.destination.peak\_limit|
+|SAP Idle Time|jco.destination.expiration\_time|
+|Listener Gateway Host|jco.server.gwhost|
+|Listener Gateway Service|jco.server.gwserv|
+|IDoc Name \(SAP Listen operation\)|jco.server.repository\_destination|
+|Program ID \(SAP Listen operation\)|jco.server.repository\_destination|
+|Listener Connection Count|jco.server.connection\_count|
+
+**Note:** All JCo properties are supported. However, the behavior of each property is dependent upon SAP. The previous list is not comprehensive, and you should review the SAP documentation for the available options which are relevant.
+
+## SAP JCo Properties file
+
+The JCo properties you specify in a properties file depend on your use case. A properties file can contain as many properties as needed. The properties are recognized if they are valid and located in the file name entered in **JCo Properties Setting** field. It is best practice to save your properties file in the following format: `<unique_name>_jco.properties`.
+
+The following example shows the contents of a properties file and how it should be formatted:
+
+```java
+
+jco.client.ashost=/H/#.###.###.#/H/###.##.##.##/H/xxx####
+jco.client.user=username
+jco.client.passwd=password
+jco.client.client=###
+jco.client.lang=EN
+jco.client.sysnr=#
+jco.client.trace=1
+jco.server.gwhost=/H/#.###.###.#/H/###.##.##.##/H/xxx####
+jco.server.gwserv=sapgw##
+```
+
+<TestConnection />

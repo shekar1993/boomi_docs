@@ -1,0 +1,55 @@
+import TrackedProperties from './_TrackedProperties.md'
+
+# Oracle Fusion connector
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-c8a70026-8fda-4e9a-8ea3-af5ea88fc1c8"/>
+</head>
+
+
+The Oracle Fusion connector supports connectivity to Oracle Fusion/Oracle ERP Cloud via Simple Object Access Protocol \(SOAP\) services and BASIC authentication protocol.
+
+The Oracle Fusion connector includes two actions, EXECUTE and QUERY. The SOAP APIs include various types of operations and you can make a SOAP call by executing EXECUTE or QUERY actions for any of the following operation types from the connector:
+
+-   Via EXECUTE Operation:
+    -   CREATE
+    -   GET
+    -   UPDATE
+    -   DELETE
+    -   MERGE
+    -   CUSTOM
+    -   PROCESS
+    -   PROCESSCS
+-   Via QUERY Operation:
+    -   FIND OR FINDFILTER
+
+## Features
+
+The Oracle Fusion connector supports the following features:
+
+-   Discovery of SOAP APIs using service name from list of services or WSDL URL of any specific service.
+-   Import of specific type of APIs based on type of operation selected by the user on UI.
+-   Execution of certain operation that is generated with profiles.
+-   Sending and receiving request and response.
+
+## Connector configuration
+
+To configure Oracle Fusion connector and to communicate with SOAP APIs, you need to setup the below components:
+
+-   Oracle Fusion connector connection
+-   Oracle Fusion connector operation
+
+This design provides reusable components which contain connection settings and operation settings. After building your connection and operation, set up your connector within a process. When the process is defined properly, Integration can map to and from virtually any system using the Oracle Fusion connector to fetch the desired response or data by authenticating through BASIC protocol.
+
+## Prerequisites
+
+-   Boomi Atom/Molecule/Cloud \(Private or Public\)
+-   All required SOAP services must be configured and active in the Oracle Fusion environment.
+-   User must have necessary access permission to execute the required SOAP services for the selected service operation. For access request, contact your Oracle Fusion Administrator.
+
+## Supported editions
+
+This connector supports APIs with active status and these API versions change upon enhancements. The latest version would be in active status and the previous version will be updated as deprecated status.
+
+<TrackedProperties />

@@ -1,0 +1,121 @@
+import OperationEnd from './_operationEnd.md'
+
+
+# Aible AI – Partner operation 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-7b7b02f1-ac22-4d40-a513-479643ef09e7"/>
+</head>
+
+
+The Aible AI – Partner operation defines how the connector interacts with your Aible project.
+
+The Aible AI – Partner operation supports the following actions:
+
+-   Execute — scores data and returns with Aible recommendations, scores, and metadata.
+-   Create — creates a complete dataset in Aible.
+-   Send — appends documents to incrementally create a dataset in Aible.
+
+## Execute
+
+The Execute action sends data documents to an Aible prediction Rest API deployed from an Aible Optimized project. It is configured using the **Import Operation** wizard. You must first supply an Aible connection and the Aible project ID. The Aible project ID can be found in the **Integrate Deployed AI** hex in Aible Optimize:
+
+
+
+In this example, the project ID is 1916.
+
+The Object Type for the execute action is the Aible tenant. If you have access to multiple Aible tenants, select the one with the tenant ID corresponding to the integration information in the **Integrate Deployed AI** hex in Aible Optimize. In this example the tenant ID is 313.
+
+The **Import Operation** wizard builds JSON request and response profiles for the communication with the Aible prediction scoring endpoint.
+
+\(optional\) Enable the Monitor setting in the execute operation to log and monitor the prediction results in the cloud account.
+
+#### Request Profile
+
+The request profile is an array of JSON objects with each object representing a single input record to be scored. Aible will score each record by appending a predicted value of the outcome modeled in the Aible project.
+
+The request profile normally includes all of the fields supplied in the original model training data except for those that Aible dropped during data validation. During data analysis and AI training, Aible will drop fields that do not contribute insights \(model drivers\) to the targeted AI predicted outcome. For example, fields that have only one value will not help in determining the prediction results.
+
+#### Response Profile
+
+The response profile represents the output returned by Aible after processing. Like the request profile, the response is also an array of JSON objects with each object representing a single scored record. Each record includes all of the fields sent in the Request Profile plus the following output values:
+
+|**Field**|**Format**|**Description**|
+| ---- | ---- | ----- |
+|predict|Number|0 or 1 representing the Aible prediction.|
+|predict\_score|Number|A decimal between 0.0 and 1.0 representing the prediction score.|
+|driver \[1 - 5\]|Text|Names of the top 5 fields driving the variation in the prediction result.|
+|impact \[1 - 5\]|Number|Decimal value with the impact variation of the respective drivers.|
+
+It also includes the following metadata fields used for troubleshooting:
+
+|**Field**|**Format**|**Description**|
+| ---- | ---- | ----- |
+|job\_id|Number|Identifier of the scoring request.|
+|model\_name|Text|Name of the AI model that generated the prediction.|
+|project\_segment\_id|Text|Identifier of the project subgroup.|
+|scoring\_warning\_messages|Text|Normally blank|
+
+#### Batching Requests
+
+Where possible it is recommended that input data to be scored is grouped into batches as this is much quicker than scoring records one by one.
+
+As a rule of thumb a good starting point is to use batches of 1,000 records. The actual record limit is defined by the Aible AI – Partner connector's payload limit of 1MB and your actual batch size limit will depend on the number and size of the fields in your request records. For large input records with several hundred columns, the batch limit will be significantly lower than that for small records with only a few tens of columns.
+
+Also, be sure to consider the memory limits of your Atom Sphere environment where you may have lower memory limits that won't support the 3MB maximum.
+
+Monitoring and downstream processing
+
+In most projects, collecting Aible predictions is not the end of a process and further operations are carried out on the scored results \(such as writing predictions to a database\).
+
+In this case you need to tell Aible to pass-through the unique identifier for each input record to the output by enabling the Monitoring setting in the Aible AI – Partner connection.
+
+In addition, you will need to set the column representing the unique identifier in Aible. This is set on the **Advanced Options** tab under **Monitoring - Unique Identifier** when deploying the project.
+
+## Create
+
+The Create action sends a batch of data documents to create a complete dataset in Aible. Each execution of the process creates a new dataset.
+
+On the first tab of the wizard make the standard Atom and Connection selection. On the second tab of the wizard, the **Object Type** represents the Aible tenant in which the dataset will be created.
+
+After completing the wizard the ACCOUNT ID and FOLDER pick lists will be updated to list the AWS/Azure/GCP cloud accounts linked to your tenant and the folders accessible by your Aible user.
+
+The filename field is free text and contains the name of the dataset to create.
+
+#### Input Data
+
+There is not a request profile for this operation. The input document is simply the file to be uploaded to your cloud account. This must be a plain or gzipped CSV file. It's important that all documents are combined into a single document prior to presenting them to the Aible Connector component otherwise each record will result in a separate dataset.
+
+The easiest way to format the data is to create a flat file profile and transform your data to that using a Map component.
+
+#### Output Data
+
+There is not a response profile for this operation, however there is an output document containing JSON metadata for the created dataset including the dataset ID and path to the file the cloud storage.
+
+## Send
+
+The Send action appends records to a dataset in Aible. Each execution of the process adds new records to the same dataset.
+
+On the first tab of the wizard, make the standard Atom and Connection selection. On the second tab of the wizard, the **Object Type** represents the Aible tenant in which the dataset will be created.
+
+After completing the wizard the ACCOUNT ID and FOLDER pick lists will be updated to list the AWS/Azure/GCP cloud accounts linked to your tenant and the folders accessible by your Aible user.
+
+The filename field is free text and contains the name of the dataset to create.
+
+
+:::note
+
+The target dataset in Aible is only updated when you run the **Import Operation** wizard.
+
+:::
+
+#### Input Data
+
+There is not a request profile for this operation. The input document is simply the data to be uploaded to your cloud account. This can be in flat file, JSON, or XML format. Each record \(or set of records\) is appended to the same dataset in Aible.
+
+#### Output Data
+
+There is not a response profile for this operation. The input to the step is passed-through to the output unchanged so the previous output profile can be applied if required.
+
+<OperationEnd />

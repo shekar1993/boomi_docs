@@ -1,0 +1,29 @@
+import OperationEnd from './_operationEnd.md'
+
+
+# UBIX Advanced Analytics - Partner operation 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-f73ab501-ddca-4322-bc59-ec6b4a6cb177"/>
+</head>
+
+
+The UBIX Advanced Analytics - Partner operation defines how to interact with your UBIX account and represents a specific data transfer action, the default is SEND.
+
+The UBIX Advanced Analytics - Partner operation supports the following action:
+
+-   SEND - This is the default action supported by the UBIX - Partner connector. This action transfers your data into your UBIX DataSpace cloud storage for access to a full suite of ready-made data analytics and artificial intelligence business tools. Datasets transferred to UBIX are required to use JSON format.
+
+    :::info Important
+
+    It is recommended to use UTF-8 to encode input JSON data to preserve special characters and ensure the operations work properly.
+
+    :::
+
+
+## Options tab
+
+In this tab, you must provide the unique **Table name** as the destination in your UBIX DataSpace. If you do not set the table name, the connector returns an error message.
+
+<OperationEnd />

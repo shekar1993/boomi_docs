@@ -1,0 +1,90 @@
+import TrackedProperties from './_TrackedProperties.md'
+
+# Database V2 connector
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-7b04dbdd-ef36-4a2f-b6ff-b038b3f60ff2"/>
+</head>
+
+
+The Database V2 connector allows you to process or retrieve data in any JDBC supported database using Database drivers. It enables you to Insert, Get, Update, Upsert, Delete and Execute Stored procedures on the data available in the database.
+
+The connector uses the Java JDBC to communicate to the user-defined database and manipulate the records. You can insert the SQL statement manually or dynamically build the statement based on the input parameters. The JDBC driver establishes a connection to the database through the connection \(e.g., creating a statement to execute SQL queries against tables\). Additionally, you can connect to relational databases like MySQL, PostgreSQL, MS SQL Server, Oracle etc. Boomi Integration uses JDBC to connect to the database. The JDBC API in the connector makes it possible to query and update relational databases, call stored procedures, and obtain metadata about the database. The Java JDBC API is part of the core Java SE SDK, making JDBC available to all Java applications that want to use it.
+
+
+:::note
+
+- The Database V2 connector is now supported on Atom, Molecule and Atom Cloud \(Public and Private\).
+
+- This is an open source connector and you can access the code in the [Database V2](https://bitbucket.org/officialboomi/database-v2) connector repository.
+
+:::
+
+The Database V2 connector supports the following features:
+
+-   Connection Properties:
+    -   Ability to use connection pooling to increase the performance.
+    -   Predefine preferred database connection and data read wait time.
+-   Profile Generation:
+    -   Generate request and response profile for database tables with special characters. Supported in both dynamic and standard - Insert, Get, Update, Delete and Upsert operation.
+    -   Accommodate different database data types including BIGINT, CHAR, DECIMAL, DOUBLE, FLOAT, etc., in generating request and response JSON input. For the list of supported data types, see the [Database V2 operation](int-Database_V2_operation_36b0cb58-24e1-42b7-8e2d-7343edcc73ac.mdx) section.
+    -   Build SQL Query in the Operation UI based on the column names of the database table, during profile import. Supported in all the dynamic and standard operations for all the data types.
+    -   Ability to specify Schema name in connection, or operation settings. This facilitates fetching the names of the database tables in the given schema.
+-   Provision for Document Batching and Fetch Size in Get operation supports in improving the performance.
+
+## Connector configuration
+
+To configure the connector to communicate with your database, set up the following two components:
+
+-   Database connection — The connection represents a specific database instance and its associated user authentication details.
+-   Database operation — The operation represents an action against a specific database table \(Object Type\). You create one or more operations, one for each type of interaction required by your integration scenario.
+
+This design provides reusable components which contain connection settings \(such as username, password\) and operation settings. After building your connection and operation, set up your connector within a process. When the process is defined properly, Boomi Integration can map to and from virtually any system using the connector to communicate with the database instance.
+
+## Supported databases and editions
+
+The connector supports any JDBC-compliant or ODBC-compliant database \(tested with Microsoft SQL Server, MySQL, Oracle, PostgreSQL database\).
+
+## Limitations
+
+The following known limitations affect this connector:
+
+-   Upsert operation —
+    -   MS SQL and Oracle database - If the input request does not contain the primary or unique key for the record already posted in the batch and not executed, the record is added to the batch. However, batch execution is not successful. As a workaround and to efficiently process all inputs, do one of the following:
+        -   Choose the Commit Option as Commit By Profile.
+        -   Update the Batch Count to 1.
+    -   PostgreSQL database - Supports only primary key and not the unique key as the Upsert statement for PostgreSQL database can have only one constraint at a time.
+    -   MS SQL database - If the "Time" data type is used as a primary or unique key, then the following connection property must be set. `sendTimeAsDateTime=false`. This is a MS SQL JDBC Driver limitation.
+-   Storedprocedure operation — The batch processing is only applicable for procedures with input parameters.
+-   Max Field Size \(Get and Storedprocedure OUT and INOUT parameter\) — This feature is dependent on the database driver. If the database driver does not support the Max Field Size functionality, the connector does not support it either. However, the connector does not throw an error, but retrieves the full value as is. The Max Field Size option is not supported in the MySQL database.
+-   Insert operation \(Auto incremented IDs\)
+    -   Only the auto-incremented/auto-generated ids of the inserted records are visible in the output payload.
+    -   In MSSQL, you cannot get the auto-incremented/auto-generated id in the batching operation. This is a known limitation in MSSQL.
+    -   In Oracle, the auto-incremented/auto-generated id can only be retrieved in the Static Query.
+-   Get operation - Importable SQL field is not be supported for multiple tables feature.
+-   JSON Request and Response
+    -   Special character "Comma \(,\)" is not supported during execution of execute operation involving multiple database tables.
+    -   Special character "Backslash \(\\\)" is not supported in JSON input request for operations involving multiple tables. This is because, tablename.columname has to be used to pass input parameters for multiple tables.
+    -   Oracle database does not support usage of following data types: TINYINT , BIGINT, LONGBLOB.
+    -   PostgreSQL database does not support usage of following data types: TINYINT and LONGBLOB.
+    -   PostgreSQL transaction error - When passing multiple input documents, or using batching, if any of the input document/batch fails, then the entire transaction gets aborted without committing the successful records to the database. To avoid this, make sure to add the connection property "autosave=always" in the Connection UI. This sets a savepoint before each query execution, and rolls back to that savepoint, in case of failure.
+    -   MS SQL database doesn’t support insertion of external value to TIMESTAMP data type column.
+    -   MySQL database - Atom Cloud \(Private and Public\) usage is not supported with the MySQL JDBC Driver version 8.0.24. Please refer to the MySQL 8.0.24 release notes, [https://dev.mysql.com/doc/relnotes/connector-j/8.0/en/news-8-0-24.html](https://dev.mysql.com/doc/relnotes/connector-j/8.0/en/news-8-0-24.html).
+
+## Prerequisites
+
+The Database V2 connector requires the following:
+
+-   URL of the database instance.
+-   Username and password for a database account.
+-   An Atom/Molecule/Atom Cloud that can access the database.
+-   Database driver JAR configured in Boomi Integration. To do this:
+    1.  Obtain a JDBC driver for the database you want connect to. A JDBC driver is a set of Java classes that implement JDBC interfaces for interacting with a specific database. Almost all database vendors such as MySQL, Oracle, Microsoft SQL Server, provide JDBC drivers. JDBC drivers can be found in the [Maven repository](https://mvnrepository.com/).
+    2.  In Boomi Integration, upload the driver JAR file to an account by using the Manage Account Libraries page \(Settings \> Account Libraries\). For more details, see the topic [Account library management](../../Platform/r-atm-Account_Library_Management_edc37905-b4fe-4cae-8001-b62221adb872.md).
+    3.  Create a Custom Library Component with the Custom Library Type as “Connector” and the Connector Type as “DatabaseConnector V2”, and then add the uploaded driver JAR file.
+    4.  Deploy the custom library component to the Atom. For more information, see the topic [Working with custom libraries](../Process%20building/c-atm-Working_with_custom_libraries_96f10864-334e-4eba-ac3f-f52b4e65fdb2.md).
+-   To connect to a different type of database, you need to obtain a JDBC driver for that database and configure it in Boomi Integration. Your database vendor should be able to provide this driver. Third-party companies also sell commercial JDBC drivers. If you cannot find a JDBC driver for your database, consider using a JDBC-ODBC bridge
+
+<TrackedProperties />
+

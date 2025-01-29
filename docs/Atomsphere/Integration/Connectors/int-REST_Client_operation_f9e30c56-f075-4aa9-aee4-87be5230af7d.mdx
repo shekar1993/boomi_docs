@@ -1,0 +1,93 @@
+import TrackingDirection from './_TrackingDirection.md'
+import ReturnErrRes from './_ReturnResponse.md'
+import ReqRes from './_ReqRes.md'
+
+# REST Client operation
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-f9e30c56-f075-4aa9-aee4-87be5230af7d"/>
+</head>
+
+
+The REST Client operation determines how to interact with the HTTP site defined in the REST Client connection.
+
+Create a separate operation component for each action/object combination that your integration requires.
+
+The REST Client operations support data in XML and JSON format, and the following actions:
+
+- DELETE — Delete an existing resource from the server.
+- GET — Retrieve information about an existing resource from the server.
+- HEAD — Retrieve header information about an existing resource from the server, and not the actual resource itself.
+- OPTIONS — Retrieve information about the communication options available for an existing resource from the server.
+- PATCH — Update and make partial changes to an existing resource without replacing the original version of the resource.
+- POST — Request that a web server accept the data enclosed in the body of the request message.
+- PUT — Replace the resource at the current URL on the server with the resource contained within the request.
+- TRACE — Perform a message loop-back test along the path to the target resource.
+
+## Options tab
+
+Select a connector action. When you configure an action, the following fields appear on the Options tab.
+
+**Object** - Not supported for this connector.
+
+**Request Profile** - Structure of the request sent by the connector. For this connector, it is unstructured.
+
+**Response Profile** - Structure of the response received by the connector. For this connector, it is unstructured.
+
+<TrackingDirection />
+
+<ReturnErrRes />
+
+
+**Follow Redirects** - Specify if the REST Client operation should follow HTTP redirects. Choose one of the following:
+- None — Disable and do not allow redirects.
+
+- Strict — Automatically redirect HEAD and GET operation methods when the server responds with one of the following HTTP status codes:
+    - 301 Moved Permanently — The resource requested has been permanently moved to the URL provided by the Location header. The browser redirects to this page. For more information, see the topic [301 Moved Permanently](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/301) in the Mozilla documentation.
+    - 302 Found — The resource requested has been temporarily moved to the URL provided by the Location header. The browser redirects to this page. For more information, see the topic [302 Found](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302) in the Mozilla documentation.
+    - 307 Temporary Redirect — The resource requested has been temporarily moved to the URL provided by the Location headers. For more information, see the topic [307 Temporary Redirect](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/307) in the Mozilla documentation.
+
+- Lax — Automatically redirect all HEAD, GET, POST, and DELETE operation requests.
+
+**Path** - The resource path that the connector interacts with for the operations. This value gets appended to the base URL to form the full URL. For example the base URL may be `http://www.google.com/` and the path may be `/api/v1/getContacts`. In this example the full URL is `http://www.google.com/api/v1/getContacts`. You can override the property per document using the Path [dynamic operation property](../Process%20building/int-Connector_shape_dialog_dynamic_operation_properties_tab_e473feba-b349-4b3b-8d82-2c3c9f94469b.md).
+
+**Query Parameters** - Query parameters that are used to limit the size of the execution response. This value is appended to the full URL, which is the `<baseUrl>/path` and you can override the property's value.
+
+**Request Headers** - You can set request headers for your Request Execution. The value of the key value pairs can be overwritten dynamically on Dynamic Operation Properties tab on the connector step, after the operation has been saved.
+
+## DELETE
+
+DELETE sends an HTTP request to delete an existing resource from the server identified by a URI. You can use this operation, for example, when you have a resource that was previously created using PUT to undo the creation.
+
+## GET
+
+GET sends an HTTP request to retrieve information about an existing resource from the server. You can use this operation, for example, when you have an API with a `/Application` endpoint. Making a GET request to that endpoint returns a list of all available applications.
+
+## HEAD
+
+HEAD sends an HTTP request to retrieve header information about an existing resource from the server, and not the actual resource itself. HEAD is identical to GET except that the server does not send a message body in the response. You can use this operation, for example, when caching data to see if a specific document has changed since it was last accessed.
+
+## OPTIONS
+
+OPTIONS sends an HTTP request to retrieve information about the communication options available for an existing resource from the server. You can use this operation, for example, to find out which request methods a server supports or to test a proxy for HTTP compliance.
+
+## PATCH
+
+PATCH sends an HTTP request to update and make partial changes to an existing resource without replacing the original version of the resource. You can use this operation, for example, to update one field for a resource, rather than the entire resource.
+
+## POST
+
+POST sends an HTTP request to request that a web server accept the data enclosed in the body of the request message. You can use this operation, for example, to store data and is typically used when uploading a file or when submitting a completed web form.
+
+## PUT
+
+PUT sends an HTTP request to replace the resource at the current URL on the server with the resource contained within the request. PUT is used to both create and update the state of a resource on the server. You can use this operation, for example, to replace or update an article or blog at a specific URL.
+
+## TRACE
+
+TRACE sends an HTTP request to perform a message loop-back test along the path to the target resource. TRACE provides a useful debugging mechanism.
+
+import OperationEnd from './_operationEnd.md'
+
+<OperationEnd />

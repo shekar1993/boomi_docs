@@ -1,0 +1,110 @@
+import ReturnErrRes from './_ReturnResponse.md'
+
+
+# Boomi for SAP operation
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-ba72c6f1-4668-4f11-850d-09eca69851fe"/>
+</head>
+
+
+The Boomi for SAP connector supports QUERY, FUNCTION, BW_GET, BW_DELETE, IDOC_SEND, ABAP_PROXY_SEND, and LISTEN operations.
+
+QUERY is used to connect to Boomi for SAP Core Table Services. FUNCTION is used to connect to Boomi for SAP Core Function Module Services. BW_GET and BW_DELETE are used to fetch and delete data, respectively, via configured Boomi for SAP Core BW Extractors. LISTEN is used to open a persistent connection to SAP and receive any event sent over a chosen EDA subscription.
+
+IDOC_SEND allows sending of IDocs to SAP, either single, or bundled in the same XML. All operations support importing services are configured in Boomi for SAP Core. The Import Wizard auto-generates JSON profiles for use in processes or XML profile for IDoc.
+
+When importing objects, a filter can be used to narrow the results. Note that "?" represents any one character and "*" represents any number of characters. If you leave the filter blank, all the objects defined and enabled in Boomi for SAP Core will be listed.
+
+## Options tab
+
+**Tracking Direction** - 
+
+Select the document tracking direction for the operation, either **Input Documents** or **Output Documents**. This setting enables you to choose which document appears in **Process Reporting. Start** steps always track output documents regardless of your selection.
+
+:::note
+
+If the tracking direction is read-only, the feature to change the direction is either unavailable or the developer set the configuration to read-only. The default value you see shows you which document appears in **Process Reporting**.
+
+:::
+
+
+<ReturnErrRes />
+
+**Max Returned Rows** - 
+How many records should default be maximum returned. Can be overwritten by the Connector-specific Document Property 'Count'. Must be positive integer or 0. \(0 equals unlimited\). For more information, see the Paging section below.
+
+**Batch Size** - 
+Max Returned Rows will be split into batches of this size. Must be a positive integer or 0. \(0 equals unlimited\). Batch Size will be ignored if the Connector-specific Document Property **Offset** has been set, because **Offset** disables batch processing. For more information, see the Paging section below.
+
+## Query
+
+This action queries Table Services and returns zero-to-many object record documents from a single Query request based on zero or more filters. If the selected view has CDS parameters, the import wizard will add all CDS parameters as operation properties. The expected format of a property is described in the help text.
+
+## Filtering
+
+Filters can be defined for each field in the configured service.
+
+## Sorting
+
+The Query operation supports ascending and descending sort order for each field in the service. It is possible to define these sort orders including which field is sorted first.
+
+## Paging
+
+Consider using the Table Service Batch Extracts feature for large extracts. The amount of data returned will have a maximum returned record number set by the back end as to ensure reliable service. This limit is default set to 100. However, it is possible to control the amount of data returned with two Connector-specific document properties.
+
+-   count = Maximum number of returned results, integer.
+-   offset = Offset for returned results, integer.
+
+
+:::note
+
+The back-end service is not keeping any state between subsequent calls, that is, changes to data in SAP can cause paging to miss records.
+
+:::
+
+## Function
+
+This action calls Function Module Services and returns one document.
+
+## BW_GET
+
+This action retrieves BW Extractors and returns one document with one or more array elements. The operation requires a BW Extractor ID, which is set as a parameter on the connection step.
+
+## BW_DELETE
+
+This action deletes BW Extractors and returns no documents. The operation requires a BW Extractor ID, which can be set as a parameter on the connection step or in the request profile. Optionally, the Direct Delete parameter in the request profile can set to 'X' to delete the BW Extractor immediately in SAP. If Direct Delete is not set, the BW Extractor is not deleted but marked for deletion in SAP.
+
+## IDOC_SEND
+
+This action can send IDocs to SAP. Use import to find the IDoc type and import the profile matching.
+
+## ABAP_PROXY_SEND
+
+`ABAP_PROXY_SEND` allows the utilization of ABAP Proxies. When using this operation, remember to set the two mandatory document properties `ProxyQualityOfService` and `ProxyReceiverService` when running v1.5. `ProxyQualityOfService` should be `BestEffort` for synchronous proxies and `ExactlyOnce` for asynchronous proxies. `ProxyReceiverService` should be set to the `[sId]_[sapClientId]` of the receiving system. If the client is running v1.6 only, `ProxyReceiverService` is mandatory.
+
+In addition to the two mandatory document properties, it is also possible for the client to set the following properties:
+
+-   `ProxyPreBodyMultipartOverwrite`: used for overwriting the multipart that comes before the message body.
+-   `ProxyPostBodyMultipartOverwrite`: used for overwriting the multipart that comes after the message body.
+-   `ProxySenderService`: used for overwriting the sender service property of the multipart. It is set to be `Boomi` by default.
+
+In some cases when using the import wizard while running v1.5 or earlier, the request and response profiles generated through browsing won't be the correct ones. The URL for manual download of the XSD will be displayed in this case. To download the XSD, copy the URL and open a new tab in your browser. Paste the URL and right-click on the page and select **View page source**. Press CTRL+S to save the XSD. The file name should end with .xsd and the type should be **Webpage, HTML Only (*.html;*.htm)**
+
+## LISTEN
+
+For listener processes. This action **opens a persistent connection to SAP** and receives any event sent over the chosen subscription. Use the import wizard to choose an Object, which for the LISTEN action is a corresponding SAP subscription. 
+
+:::info Important
+
+Importing an object through the wizard is required.
+
+:::
+
+The LISTEN action browses subscriptions for compatible websocket receivers only. Thus, having such subscriptions available is required for the LISTEN action.
+
+
+## High Performance
+
+When sending large amounts of data, or many requests per second, it is advised to consider Atom configuration for various sizing options. See the following Boomiverse article for more information: [Sizing Your File System Disk Space and Inode Limit in Linux](https://community.boomi.com/s/article/sizingyourfilesystemdiskspaceandinodelimitinlinux).

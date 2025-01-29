@@ -1,0 +1,186 @@
+import OperationEnd from './_operationEnd.md'
+
+
+# IFS REST – Partner operation 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-4c88d01b-474d-4a0c-a4e2-5142945d2b00"/>
+</head>
+
+
+The IFS REST - Partner operation defines how to interact with your IFS account and represents a specific action to perform against a specific IFS object.
+
+Create a separate operation component for each action/object combination that your integration requires.
+
+The IFS REST - Partner operations use JSON format and support the following actions:
+
+-   **Action** – Run an action within IFS to complete a complex process \(such as update multiple entities\), but not return data.
+-   **Create** – Create new records in IFS.
+-   **Delete** – Delete existing records in IFS.
+-   **Function** – Run a function in IFS to complete a complex process and return data from multiple entities in a single operation as a single document. This action is deprecated and scheduled to be removed by September 2024.
+-   **Function V2** – Run a function in IFS to complete a complex process and return data from multiple entities in a single operation. This splits an array response into multiple documents.
+-   **Get** – Retrieve a specific record from IFS based on its primary key.
+-   **Query** – Retrieve one or more records from IFS, optionally based on a filter.
+-   **Update** – Update an existing record in IFS.
+
+You can specify custom HTTP request headers using dynamic document properties. Properties having the prefix inheader\_ are included in the HTTP request. For example, when uploading a document to IFS, you can specify a dynamic document property inheader\_Content-Type to set the custom HTTP header "Content-Type".
+
+## Options tab
+
+Click **Import Operation**, then use the Import wizard to browse the API schema for IFS and select the object to integrate. When you select an object, the operation loads the relevant Request and/or Response profiles for that API. Clicking the **Edit** icon for either will allow you to view the schema for the profile.
+
+When you configure an action, the following fields appear on the **Options** tab.
+
+:::note Attention 
+
+If two entities have a hierarchical relationship defined by their navigation properties, the entities are presented in the browse list object list as a single, combined entity. For example, the relationship between CustomerInfoSet and CustomerInfoAddresses is shown in the object browse list as a single combined entity of CustomerInfoSet \> CustomerInfoAddresses. Selecting this combined entity will allow you to interact with both underlying entities simultaneously. The exact nature of this interaction varies by operation type.
+
+:::
+
+For more information about working with related entities for each operation type, see the Boomiverse article [https://community.boomi.com/s/article/Working-with-Related-Entities-in-IFS-Application-10-and-IFS-Cloud-with-Boomi-Operations](https://community.boomi.com/s/article/Working-with-Related-Entities-in-IFS-Application-10-and-IFS-Cloud-with-Boomi-Operations).
+
+**Connector Action** 
+The type of action the operation will perform.
+
+**Request Profile**   
+The JSON profile definition that represents the JSON structure that is being sent by the connector. The JSON profile built by the connector exposes the full envelope.
+
+**Response Profile**   
+Select or add a JSON profile component that represents the structure that is being received by the connector.
+
+**Tracking Direction** 
+
+Select the document tracking direction for the operation, either **Input Documents** or **Output Documents**. This setting enables you to choose which document appears in **Process Reporting. Start** steps always track output documents regardless of your selection.
+
+:::note
+
+If the tracking direction is read-only, the feature to change the direction is either unavailable or the developer set the configuration to read-only. The default value you see shows you which document appears in **Process Reporting**.
+
+:::
+
+**Return Application Error Responses**   
+This setting controls whether an application error prevents an operation from completing:
+
+- If you clear the setting, the process stops and reports the error on the **Process Reporting** page.
+- If you select the setting, processing continues and passes the error response to the next component processed as the connection output.
+
+**Projection Name**   
+The projection/REST API being called within IFS Applications to perform the relevant activity required. For example, Create, Update, Delete etc.
+
+**Time Zone Aware Request**
+To enable time zone awareness for request flows via the IFS REST - Partner connector, select the **Time Zone Aware Request** checkbox. This action adds the `X-IFS-Time-Zone-Aware-Request` OData Request header property to the request, facilitating both "Site" and "Server" time zone awareness within the IFS Cloud environment. See the topic, [How to make IFS REST - Partner connector requests Time Zone aware](https://community.boomi.com/s/article/How-to-make-IFS-REST-Partner-Connector-requests-Time-Zone-aware) for more information.
+
+**Request Headers**
+You can set header properties as key-value pairs using the Add Property action. The table below shows how you can define **Request Headers** to support the IEEE 754 standard:
+
+| Key | Value |
+| ----| ----- |
+| Content type| `application/json;IEEE754Compatible=true` |
+| Accept | `application/json;IEEE754Compatible=true` |
+
+**Option**   
+Select Prefer: return=minimal if you do not want the result of your operation returned to you, only its status.
+
+**$skip** 
+\(Query only\) Starts the query N entries into the set, and returns only the remaining entries. Like all filters, $skip reduces processing time by limiting the number of returned records. For example, when querying a set of 10,000 records when $skip = 5000, only entries 5001–10,000 are returned. The default value of -1 turns off this option.
+
+**$top**   
+\(Query only\) Selects only the first N items of the set. Like all filters, $top reduces processing time by limiting the number of returned records. For example, when querying a set of 10,000 records when $top = 200, only entries 1–200 are returned. Combining the $skip = 5000 and $top = 200 examples, the query skips the first 5000 records then returns only the next 200 records \(5001-5200\). The default value of -1 turns off this option.
+
+## Action
+
+This outbound action enables you to create or update multiple items in separate entities with one operation. For example, when a Customer Order and Customer Order Lines need to be created and associated together due to Customer Order and Customer Order Lines having a parent–child relationship. The expected output would be to create the Customer Order and the Customer Order Lines together and have then linked together in the same operation.
+
+Certain Actions are bound to an entity set. In this case, you specify the bound entity set name and the parameters for that bound entity set using the document properties "Bound Entity Set Name" and "Bound Entity Set Parameters".
+
+## Create
+
+This outbound action creates new records in the IFS system. This action is supported for most object types, including custom types.
+
+
+:::note
+
+This action does not support batching.
+
+:::
+
+## Delete
+
+This outbound action deletes an existing record in the IFS system.
+
+
+:::note
+
+The service does not support bulk or paged deletes. Additionally, this action does not support batching.
+
+:::
+
+## Function
+
+This outbound action is similar to the Get action, allowing you to get information from IFS. The difference is that Function may use information from Get to trigger another operation within IFS.
+
+Certain Function actions are bound to an entity set. In this case, you specify the bound entity set name and the parameters for that bound entity set using the document properties "Bound Entity Set Name" and "Bound Entity Set Parameters".
+
+## Function V2
+
+This action type offers the same functionality as described in the **Function** action type, with the key difference lying in the response format. When the connector returns a response containing multiple records \(an array of elements\), this action type formats these elements into separate documents. Each element is treated as an individual document and is processed accordingly.
+
+## Get
+
+This inbound action enables you to provide the details of the record you want to retrieve from IFS. Get requires an entity type and unique identifier. This action does not support paging or batching.
+
+
+:::note
+
+Attributes that have a value of null are not returned. Assume that non-returned attributes are null in the system. If you set the attribute to a value, it is returned in all subsequent Gets to match the profile.
+
+:::
+
+## Query
+
+This inbound action looks up objects in IFS and returns zero to many object records from a single Query request based on the filters applied. After you select the Query action and use the **Import Wizard**, the operation component page contains configuration options to add filters and set parameters to limit the results.
+
+
+:::note
+
+This action does not support batching or relationship entities.
+
+:::
+
+Entities can have attributes or references to other entities. The connector enables you to specify an arbitrary logic tree for top-level attributes and reference attributes.
+
+-   You can query by attribute only top-level attributes.
+-   You can query by reference for entity references.
+
+On the **Filters** tab, you can refine the query by applying the required filter and defining expressions to create required query logic. The filter expression can also be created with AND/OR Logical Sub-Group using the **Filter - Add Logical Sub-Group** option.
+
+Filters
+
+-   **Filter Name** -  Specify a name for the filter expression.
+-   **Field** -  Select the criteria to perform the file search.
+-   **Operator** -  Specify the operator value for the selected search criteria. The following operators are supported: Equal To \(eq\), Not Equal To \(ne\), Greater Than \(gt\), Greater Than or Equal To \(ge\), Less Than \(lt\), Less Than or Equal To \(le\) and Custom Expression.
+
+Any attributes that have a value of null are not returned in a query. Assume that the non-returned attributes are null in the system. If you set the attribute to a value, it is returned in all subsequent queries to match the profile.
+
+
+:::note
+
+When Custom Expression is specified as the operator, the values must be formatted based on the OData field data type using the construction rules in the OData 4.0 specification. The contents of the parameter value input is substituted into the filter expression according to the custom filter’s placement in the configured filter expression. For example, this filter: AND\(LogicalFilter\(‘price’, ‘equals’, 5\), CustomFilter\(‘NOT\(name eq ‘Smith’\)’\)\) results in the expression filter: price eq 5 and NOT\(name eq ‘Smith’\).
+
+:::
+
+## Update
+
+This outbound action enables you to update an object in IFS. You must include the primary ID of the object being updated in the request.
+
+
+:::note
+
+This action does not support batched or paged Update requests.
+
+:::
+
+If you use the Update action to upload a document to IFS, you can select the Option **Use Extended Parameter**. You then need to specify the parameters for the entity using the document property "Bound Entity Set Parameters", and also specify the field name within IFS to hold the actual uploaded document using the document property "Extended Trailing Parameter", for example "FileData".
+
+<OperationEnd />

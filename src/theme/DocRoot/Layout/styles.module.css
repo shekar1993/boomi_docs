@@ -1,0 +1,39 @@
+.docRoot {
+  display: flex;
+  width: 100%;
+}
+
+.docsWrapper {
+  display: flex;
+  flex: 1 0 auto;
+}
+
+.feedbackFormButton {
+  position: fixed;
+  top: 50%;
+  right: calc(-0.95 * var(--exo-spacing-2x-large));
+  background-color: var(--exo-color-background-action);
+  color: var(--exo-color-font-inverse);
+  font-family: var(--exo-font-family);
+  font-size: var(--exo-font-size-medium);
+  font-weight: var(--exo-font-weight-semi-bold);
+  width: calc(0.75 * var(--exo-size-2));
+  line-height: var(--exo-line-height-body);
+  transform: rotate(-90deg);
+  display: flex;
+  align-items: center;
+  padding: var(--exo-spacing-2x-small) var(--exo-spacing-standard);
+  border-radius: var(--exo-radius-standard) var(--exo-radius-standard) 0px 0px;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.feedbackButtonIcon{
+  font-size: 20px;
+}
+
+@media screen and (max-width: 996px) {
+  .feedbackFormButton{
+    display: none;
+  }
+}

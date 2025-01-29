@@ -1,0 +1,44 @@
+[[plugins]]
+  package = "@netlify/plugin-emails"
+
+[context.production.environment]
+  NEW_RELIC_ENABLED = "true"
+
+[context.deploy-preview.environment]
+  NEW_RELIC_ENABLED = "false"
+
+[context.branch-deploy.environment]
+  NEW_RELIC_ENABLED = "false"
+
+# Configuration for branch deploys for the branch named `staging`.
+# Remember to replace `npm run build` with your site's build command
+# and replace `dist` with your site's publish directory.
+[context.deploy-preview]
+  command = "npm run build && cp ./custom-headers/_noindexHeaders ./build/_headers"
+
+[context.staging]
+  command = "npm run build && cp ./custom-headers/_noindexHeaders ./build/_headers"
+
+[context.develop]
+  command = "npm run build && cp ./custom-headers/_noindexHeaders ./build/_headers"
+
+[context.hotfix-content]
+  command = "npm run build && cp ./custom-headers/_noindexHeaders ./build/_headers"
+
+[context.platform-release]
+  command = "npm run build && cp ./custom-headers/_noindexHeaders ./build/_headers"
+
+[context.runtime-release]
+  command = "npm run build && cp ./custom-headers/_noindexHeaders ./build/_headers"
+
+[build]
+  functions = "netlify/functions"
+
+[[headers]]
+  for = "/*" # Applies headers to all routes
+  [headers.values]
+  Access-Control-Allow-Origin = "*" # Allow all origins
+  Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS" # Allow common HTTP methods
+  Access-Control-Allow-Headers = "Content-Type, Authorization" # Allow common headers
+
+

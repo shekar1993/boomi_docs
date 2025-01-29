@@ -1,0 +1,543 @@
+import OperationEnd from './_operationEnd.md'
+import ReturnErrRes from './_ReturnResponse.md'
+import TrackingDir from './_TrackObject.md'
+
+# Oracle E-Business Suite V2 operation
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-72d158da-641b-4799-b2e7-c9f2c11dc790"/>
+</head>
+
+
+The Oracle EBS V2 operations define how to interact with your Oracle EBS server and represent a specific action \(REST\_EXECUTE, REST\_QUERY, PLSQL\_EXECUTE PLSQL\_QUERY, LISTEN and SEND\) to be performed against one/many Oracle EBS object types.
+
+Use the **Import Wizard** to provide the specific API to use from the list of APIs deployed in your Oracle EBS Integration Repository and select the required API service operation. The wizard automatically generates the request and response XML profiles for the specified API, representing the input and output parameters. Create a separate operation component for each action combination required for your integration.
+
+The Oracle EBS V2 connector support the following actions:
+
+-   **REST\_Execute** — Execution of PL/SQL APIs via REST.
+-   **REST\_Query** — Execution of Open Interface and Java \(Java Bean Services\) APIs via REST.
+-   **PLSQL\_Query** — Query for required Oracle EBS data by executing basic SQL SELECT queries on the E-Business database tables.
+-   **PLSQL\_Execute** — Execution of Oracle PL/SQL stored procedures.
+-   **LISTEN** —
+    -   XML Gateway: Dequeues ECXMSG message types from the ECX\_OUTBOUND queue.
+    -   Business Event — Dequeues WF\_EVENT\_T message types from the WF\_BPEL\_Q queue.
+-   **SEND \(XML Gateway\)** — Enqueues ECXMSG message types to the ECX\_INBOUND queue.
+
+## Options tab
+
+Click **Import Operation**, then use the Import wizard to select the object to integrate. When you configure an action, the following fields appear on the **Options** tab.
+
+**Connector Action \(All Operations\)** - 
+Determines the type of operation the connector is performing. Depending on how you create the operation, the action type is either configurable or non-configurable from the drop-down list.
+
+**Request Profile \(REST\_EXECUTE, PLSQL\_EXECUTE, SEND\)** - 
+The XML profile representing the structure of properties required in Oracle EBS to process a specific request on the selected object.
+
+**Response Profile \(REST\_EXECUTE, REST\_QUERY, PLSQL\_EXECUTE, PLSQL\_QUERY, LISTEN, SEND\)** - 
+The response profile highlights the format in which the response is to be processed.
+
+<TrackingDir />
+<ReturnErrRes />
+
+**Maintain Session \(PLSQL\_EXECUTE\)** - 
+If selected, any database session that is used when executing the operation is not closed upon completion. This allows multiple “initialization” operations to be executed as a series of connector steps. For example, if other procedures need to be executed prior to an operation, the operation can use the existing database session initialized in the prior steps. You cannot use the Maintain Session setting with the Flow Control step’s parallel processing option, with asynchronous sub-processes, or with the Try/Catch step or other cases where a separate execution thread is generated. This check box is off by default.
+
+**Exclude missing parameters from the procedure \(PLSQL\_EXECUTE\)** - 
+Determines if parameters missing from the input document are not included in the procedure call, or included and set to NULL.
+
+-   When selected, parameters missing from the input document are not included in the procedure call.
+-   When cleared, missing parameters are set to NULL and passed to the procedure call.
+
+#### Stored procedure example  
+
+You have a procedure my\_procedure \(x1 VARCHAR IN , x2 VARCHAR IN, x3 VARCHAR IN DEFAULT 'Hi'\) with the following input document:
+
+```
+<my_procedure>
+<x1>hello</x1>
+<x2>hey</x2>
+<my_procedure>
+```
+
+As shown, the third default variable from the procedure, X3, is missing from the input document. You want the default value ‘Hi’ to be used instead of NULL, so you select the **Exclude missing parameters from the procedure** check box. As a result, the procedure call is updated as follows:
+
+```
+my_procedure (x1=>'hello', x2=>'hey');
+```
+
+The procedure then assigns the default value of Hi to the X3 variable.
+
+**Module \(PLSQL\_EXECUTE\)** - 
+Select a module that contains a specific Oracle E-Business Suite stored procedure.
+
+**Name Filter \(PLSQL\_EXECUTE, PLSQL\_QUERY\)** - 
+For PLSQL\_EXECUTE, this is used to search by procedure name or by part of a procedure name. PL/SQL procedures are categorized by module, package, and procedure name. The search filter is case-sensitive, and all names are in uppercase. You can filter to limit the number of PL/SQL procedures for a module. This allows you to browse for global functions with common procedure names such as INITIALIZE or INIT. You can also search by package and procedure name. To add a package name to the search, the **Module** field must be set to Any Module. For example, `HR_EMPLOYEE_API.CREATE_EMPLOYEE` or `MO_GLOBAL.INIT`. For QUERY, this is used to limit the number of tables for a schema. You can enter one table name.
+
+**Schema \(PLSQL\_QUERY\)** - 
+Select a database schema. The connector queries the ALL\_PROCEDURES table.
+
+**Batch Size \(REST\_QUERY\)**   
+Specify the number of payload/records to be considered for each batch in case of the QUERY operation. This is an optional field. Each batch of records requires an individual API call. The default value is 200. Enter -1 to return all the records \(based on the records limit value specified in the **Limit** field\) in a single batch.
+
+**Limit \(REST\_QUERY\)**   
+Specify the maximum number of records to be fetched in response to a query request. The default value is 200. Enter -1 to return all the possible records applicable for the given query request. This is an optional field.
+
+###### Example: How the Batch Size and Limit parameters work
+
+Batch Size = 200 and Limit = 900. The Total no. of batch output = 5
+
+The connector will make five individual API calls to Oracle EBS, and each API call will return 200 records. All five payloads will be considered together in the output where, the first four documents will have 200 records in each, and the last document will have 100 records.
+
+**Responsibility Key \(REST\_QUERY\)** - 
+Specify the Oracle EBS responsibility name. This field is optional.
+
+**Application Short Name \(REST\_QUERY\)**   
+Provide the application short name. This field is optional.
+
+**Security Group Key \(REST\_QUERY\)**   
+Provide the security group key of the Oracle EBS instance \(STANDARD by default\). This field is optional.
+
+:::note
+
+-   In general, the previous three fields are optional for almost all EBS APIs. However, for certain APIs, the previous fields act as mandatory input to execute the operation. This can be checked in the respective APIs WADL file.
+-   After the import for the QUERY action, if the selected API requires additional input parameters to be passed, then the additional input parameters will be displayed in the Options tab for user input. It is expected that the user must be aware of the mandatory input parameters applicable for the selected API.
+
+:::
+
+## REST\_EXECUTE
+
+In the REST\_EXECUTE operation, the connector performs certain actions in the Oracle EBS based on the API selected and the request input. This operation is performed via the PL/SQL REST Interface.
+
+Use the **Import Wizard** to specify the required **Interface Type** and **Interface API** name and generate the request and response XML profile associated with the API. For details on the API name, refer to the “Searching a Specific API name in the Oracle Integration Repository” section. If the operation is successful, the new entity is created, or an existing entity is updated in the Oracle EBS database. Then, the connector returns a response in XML format. The XML input includes Input parameter and RESTHeader section.
+
+**Note:** Before invoking the PL/SQL REST service, you must pass the applications context values in the 'RESTHeader' section of the XML input. Refer to the sample shown below.
+
+```xml
+
+<RESTHeader>
+         <Language>AMERICAN</Language>
+         <NLSLanguage>AMERICAN</NLSLanguage>
+         <Org_Id>204</Org_Id>
+         <RespApplication>PER</RespApplication>
+         <Responsibility>US_SHRMS_MANAGER</Responsibility>
+         <SecurityGroup>STANDARD</SecurityGroup>
+      </RESTHeader>
+
+```
+
+Input Example: Create a New Employee Record
+
+```xml
+
+'<?xml version="1.0" encoding="UTF-8"?>
+   <CREATE_EMPLOYEE_Input>
+      <InputParameter>
+         <P_BUSINESS_GROUP_ID>202</P_BUSINESS_GROUP_ID>
+         <P_COUNTRY_OF_BIRTH>US</P_COUNTRY_OF_BIRTH>
+         <P_DATE_OF_BIRTH>1990-02-25T09:00:00</P_DATE_OF_BIRTH>
+         <P_EMAIL_ADDRESS>testoddte@st.com</P_EMAIL_ADDRESS>
+         <P_FIRST_NAME>DFFF</P_FIRST_NAME>
+         <P_HIRE_DATE>2014-06-11T09:00:00</P_HIRE_DATE>
+         <P_KNOWN_AS>Phil</P_KNOWN_AS>
+         <P_LAST_NAME>Jones</P_LAST_NAME>
+         <P_MARITAL_STATUS>S</P_MARITAL_STATUS>
+         <P_MIDDLE_NAMES>Ace</P_MIDDLE_NAMES>
+         <P_NATIONALITY>AM</P_NATIONALITY>
+         <P_NATIONAL_IDENTIFIER>183252523</P_NATIONAL_IDENTIFIER>
+         <P_PER_COMMENTS>Create from REST service</P_PER_COMMENTS>
+         <P_REGION_OF_BIRTH>west</P_REGION_OF_BIRTH>
+         <P_REGISTERED_DISABLED_FLAG>N</P_REGISTERED_DISABLED_FLAG>
+         <P_SEX>M</P_SEX>
+         <P_TOWN_OF_BIRTH>SanFrancisco</P_TOWN_OF_BIRTH>
+      </InputParameter>
+      <RESTHeader>
+         <Language>AMERICAN</Language>
+         <NLSLanguage>AMERICAN</NLSLanguage>
+         <Org_Id>204</Org_Id>
+         <RespApplication>PER</RespApplication>
+         <Responsibility>US_SHRMS_MANAGER</Responsibility>
+         <SecurityGroup>STANDARD</SecurityGroup>
+      </RESTHeader>
+   </CREATE_EMPLOYEE_Input>'
+
+```
+
+## REST\_QUERY
+
+The REST\_QUERY operation allows you to retrieve records in the Oracle EBS and returns zero to many records responses, from a single Query request based on the filters applied. This operation is performed via the Open Interface/Java \(Java Beans Services\) Interface. By configuring the **Batch Size** and **Limit** fields, you can configure the operation to support pagination during retrieval of large volume of records. The number of records to be included per batch is determined based on the **Limit** value specified.
+
+After you select the Query action, use the **Import Wizard** to select the API and response profile. After successful import, the operation component page contains configuration options to add filters and set parameters to limit the results. On the **Filters** tab, you can refine the query by applying the required filter and defining expressions to create required query logic. The filter expression can also be created with AND/OR Logical Sub-Group using the **Filter - Add Logical Sub-Group** option.
+
+**Note:** After import, if the selected API requires additional input parameters to be passed, the additional input parameters are displayed in the **Options** tab. It is expected that the user is aware of the mandatory input parameters applicable for the selected API.
+
+In general, the **Responsibility Key**, **Application Short Name**, **Security Group Key** fields displayed in the **Options** tab are considered as optional input. However, for certain API methods \(e.g. calculateAbsenceDuration\), these fields are mandatory to execute the operation as mentioned in the WADL file.
+
+Filters
+
+-   **Fields Tab**-
+
+    Includes the list of Field names applicable for the selected Oracle EBS API. The Fields are grouped as **ISGServiceFault** and APIs **Output Parameters**.
+
+    -   ISGServiceFault- If any error occurs while attempting to invoke the service, the Response profile will be updated with ISGServiceFault section. The contents include,
+
+        -   Code: ISG service execution error code
+        -   Message: Error message.
+        -   Resolution: Solution to rectify the error.
+        -   ServiceName: Name of the API called.
+        -   OperationName: Name of the operation executed.
+        -   InstanceId: Oracle EBS instance ID.
+
+        :::note
+
+        These fields are part of the response profile and will not available for query filter selection.
+
+        :::
+
+    -   Output Parameter – List down all fields applicable for the selected API. You need to select one/many **Field** names with which you need to filter.
+
+        :::note
+
+        The Fields and grouping label available on the **Fields** tab might vary based on the API selected.
+
+        :::
+
+-   **Filters Tab**
+
+    Only one filter expression can be created. If you need to set multiple filter expressions, you need a separate connection for each. The filter expression can also be created within AND/OR Logical Sub-Group. For example: to add a Logical – AND filter:
+
+    1.  Right-click **Filter** and select **Add Logical Sub-Group**.
+    2.  Right-click **Logical – AND** and select **Add Expression**.
+    3.  Specify the following details.
+        -   **Filter Name** -  Specify the name for the filter expression.
+        -   **Field** -  Select the required “Field” names to be used as filter criteria.
+        -   **Operator** -  Select the appropriate operator. The available options are: Greater Than, Less Than, Greater Than or Equal, Less Than or Equal, In.
+    4.  To add another filter expression, right-click **Logical – AND** and select **Add Expression**.
+    5.  Repeat Step 3 to add the filter expression.
+    After defining the Filter expression, you must specify the value for the selected filter criteria “**Field**” on the **Connector Parameters** tab. This fetches all records matching the given query criteria value.
+
+-   **Sorts Tab** - 
+
+    This is used to sorting \(Ascending\) the filter results based on a selected field.
+
+
+## PLSQL\_EXECUTE
+
+PLSQL\_EXECUTE is an outbound operation calling PL/SQL stored procedures defined via the Oracle Integration Repository in the Oracle EBS to execute specific action on the required database table.
+
+Use the **Import Wizard** to select the required stored procedure. You can search for the required procedure name by specifying the module name \(module/package with applicable stored procedures\) in the **Module** field and a search keyword for the procedure name in the **Name Filter** field. If you want to search for a procedure that is not attached to any of the EBS module or custom procedures created by you, select Any Module in the Module field and provide the filter value for procedure name. If name filter is not used, all the stored procedures attached to the selected Oracle module will be available for selection in the **Object Type** field.
+
+After import, the connector generates the request and response XML profile with the required arguments and parameters \(IN, OUT, INOUT\) based on the selected procedure’s metadata. The mandatory parameters to be passed and its respective value can be defined as Connector Parameters.
+
+## PLSQL\_QUERY
+
+PLSQL\_QUERY is an inbound operation to perform PL/SQL queries against the database schema allowing to look up a single object record based on specific search criteria. This operation requires static or dynamic request parameters \(filters\) to control the object record being selected. After import, use the Fields, Filters, and Sorts tabs to define the properties to build the SQL query.
+
+Use the **Import Wizard** to select the required database table. You can search for the required database table name by specifying the schema name in the **Schema** field and a search keyword for the table name in the **Name filter**. If you want search for database table that is not attached to any of the EBS module/schema, select Any Schema in the **Schema** field and provide the **Name filter**. The database table name filtered based on the Schema and table name filter will be available for selection in the **Object Type** field.
+
+After import, use the Fields, Filters, and Sorts tabs to define the properties to build the SQL query.
+
+-   **Fields** -  Contains all the database columns available in the selected table. Select the required field that are returned from the query.
+-   **Filters** -  Contains the expressions that are used to produce the WHERE clause. The filter may contain one or multiple expressions linked by a logical operator \(AND or OR\) to produce a more complex WHERE condition. Nested expressions are also supported. Based on the selected field type, the operator value will vary. For example, string type will include “Equal, Like” as operator values wherein Integer type will have “Equal To, Greater Than, Greater Than or Equal To, Less Than, Less Than or Equal To”.
+-   **Sorts** -  Contains a list of zero or more fields to define the ORDERBY clause of the SQL query. You can select the required field and provide the required sorting order \(Ascending or Descending\).
+
+## LISTEN
+
+The LISTEN operation receives ECXMSG messages from ECX\_OUTBOUND queue and WF\_EVENT\_T messages from WF\_BPEL\_Q queue. A message listener is an object that implements the MessageListener interface. As soon as messages arrive at the destination, the message consumer delivers them by calling the message listener’s onMessage method. Registering a message listener allows clients to asynchronously receive messages without having to block/poll the message consumer. Once the connector receives the message, it sends the entire message as Output Payload.
+
+Some of the fields from the Output document are passed as Tracked Fields, available for use in the Next steps.
+
+#### XML Gateway Message Type: tracked and reference fields
+
+The following are the tracked fields and referenced fields of subsequent step for this operation for XML Gateway Message Type:
+
+MESSAGE\_TYPE, MESSAGE\_STANDARD, TRANSACTION\_TYPE, TRANSACTION\_SUBTYPE, DOCUMENT\_NUMBER, PARTYID, PARTY\_SITE\_ID, PARTY\_TYPE, PROTOCOL\_TYPE, ATTRIBUTE1, ATTRIBUTE2, ATTRIBUTE3, ATTRIBUTE4, ATTRIBUTE5
+
+#### Business Event Message Type: tracked and reference fields
+
+The following are the tracked fields and referenced fields of subsequent step for this operation for Business Event message type:
+
+PRIORITY, SEND\_DATE, RECEIVE\_DATE, CORRELATION\_ID, EVENT\_NAME, EVENT\_KEY, EVENT\_DATA, PARAMETER\_LIST, TO\_AGENT\_NAME, TO\_AGENT\_SYSTEM, FROM\_AGENT\_NAME, FROM\_AGENT\_SYSTEM, ERROR\_MESSAGE, ERROR\_STACK
+
+:::note
+
+Listener filter changes require a restart of the listener in Atom Management.
+
+:::
+
+**Connector Action** - 
+Refers to the Action type selected in connector configuration. This is auto populated by Boomi Integration.
+
+**Object**   
+Refers to the field that gets auto selected object name after importing the initially created Oracle EBS connection and the Queue Name from which the connector listens for messages.
+
+**Response Profile** - 
+Refers to the Response profile that highlights the format in which the response payload is provided to the next step in the process.
+
+**Transacted** - 
+Refers to the Selection that controls the Acknowledgment after listening to the messages. If **Transacted,** then the acknowledgment is sent to the EBS once the listener receives message successfully. If Transacted is selected, the session is committed in case of any error after receiving message, else it is rolled back.
+
+**Message Selectors** - 
+Refers to the Properties as Key Values pair which can be used for providing filters for message Listen. In Message Selectors, multiple Key Values can be added for filtering the messages. In case of multiple Key Values, the conditional operator between the keys will be AND.
+
+#### XML Gateway Key Example: \(KEY1 = VALUE1 AND KEY2=VALUE2\)
+
+The following are the different keys from the Message:
+
+MESSAGE\_TYPE, MESSAGE\_STANDARD, TRANSACTION\_TYPE, TRANSACTION\_SUBTYPE, DOCUMENT\_NUMBER, PARTYID, SOURCE\_TP\_LOCATION\_CODE, PARTY\_TYPE, PROTOCOL\_TYPE, PROTOCOL\_ADDRESS
+
+#### Business Event Key Example
+
+The following are the different keys from the Message:
+
+PRIORITY, SEND\_DATE, RECEIVE\_DATE, CORRELATION\_ID, PARAMETER\_LIST, EVENT\_NAME, EVENT\_KEY, EVENT\_DATA, FROM\_AGENT, TO\_AGENT, ERROR\_SUBSCRIPTION, ERROR\_MESSAGE, ERROR\_STACK
+
+#### Business Event Filter Example
+
+There are various Data type fields in XML, out of which WF\_AGENT\_T, WF\_PARAMETER\_LIST and rest of the fields are normal data base fields. For normal data base fields, you can provide the filter as the Column Name and Value of that column.
+
+For parameter list and agent:
+
+Parameter List:
+
+```
+getValueForParameter(‘PARAM_NAME') = ' PARAM_VALUE’
+```
+
+Agent:
+
+From Agent:
+
+```
+from_agent.getName() = ‘agent name’
+from_agent.getValue() = ‘agent value’
+```
+
+To Agent:
+
+```
+to_agent.getName() = ‘agent name’
+to_agent.getValue() = ‘agent value’
+```
+
+
+**Message Type** - 
+Refers to the Two Options, XML Gateway and Business Event.
+
+**Event Subscriber** - 
+Refers to the subscriber name field for Business Event queue. The Business Event queue is multi-consumer enabled.
+
+**XML Gateway profile generation**
+
+1.  Click the **Import** button to generate request and response profiles.
+2.  Select the Atom, connection, and then select the required Message Type i.e. **XML Gateway** from the **Import** window depending on the queue you want to listen to.
+    -   **Queue Name** is displayed in the next screen for the **Message Type** and **Operation** is selected, once the profile is selected and the response profile is created based on the selection of the **Object type**.
+
+    :::note
+
+    The response profile is in XSD \(XML schema definition\) format which define the elements and attributes and defines the relationship of the elements and what data may be stored in them.
+
+    :::
+
+3.  Click the **Edit** icon at the end of the request and response profiles to view the same.
+
+The response profile \(XML data\) includes PAYLOAD field which is in CDATA format and that has actual business data. For example: Order details, Payment details or may contain any particular transaction details.
+
+The connector performs Base64 encryption of the business data after being fetched from the queue and before being returned to the sub sequent step in the process.
+
+The Data Process step with Base 64 Decode process type can be used to decrypt the data. The decrypted data represents the actual business payload which you can use for any subsequent step.
+
+#### LISTEN Response Example
+
+```xml
+
+<?xml version="1.0"?>
+<ecxmsg>
+<message_type>xml</message_type>
+<message_standard>utf-8</message_standard>
+<transaction_type>SELL</transaction_type>
+<transaction_subtype>mutualfunds</transaction_subtype>
+<document_number>BBB1234</document_number>
+<partyid>customer</partyid>
+<party_site_id>tcp</party_site_id>
+<party_type>trust</party_type>
+<protocol_type>unbelive</protocol_type>
+<protocol_address>world</protocol_address>
+<username>jdjd</username>
+<password>hsdas</password>
+<attribute1>10</attribute1>
+<attribute2>20</attribute2>
+<attribute3>30</attribute3>
+<attribute4>40</attribute4>
+<attribute5>50</attribute5>
+<payload>PEhyRW1wbG95ZWVBcGlDcmVhdGVFbXBsb3llZVJlcXVlc3Q+CjxQX0JVU0lORVNTX0dST1VQX0lEPjIwMzwvUF9CVVNJTkVTU19HUk9VUF9JRD4KPFBfQ09VTlRSWV9PRl9CSVJUSD5VUzwvUF9DT1VOVFJZX09GX0JJUlRIPgo8UF9EQVRFX09GX0JJUlRIPjE5NzAwNTIzIDA3MTUzMS4wMzc8L1BfREFURV9PRl9CSVJUSD4KPFBfUkVHSVNURVJFRF9ESVNBQkxFRF9GTEFHPk48L1BfUkVHSVNURVJFRF9ESVNBQkxFRF9GTEFHPgo8UF9TRVg+TTwvUF9TRVg+CjxQX1RPV05fT0ZfQklSVEg+U2FuRnJhbmNpc2NvPC9QX1RPV05fT0ZfQklSVEg+CjxIckVtcGxveWVlQXBpQ3JlYXRlRW1wbG95ZWVSZXF1ZXN0Pgo8UF9CVVNJTkVTU19HUk9VUF9JRD4yMDI8L1BfQlVTSU5FU1NfR1JPVVBfSUQ+CjxQX0NPVU5UUllfT0ZfQklSVEg+VVM8L1BfQ09VTlRSWV9PRl9CSVJUSD4KPFBfREFURV9PRl9CSVJUSD4xOTcwMDUyMyAwNzE1MzEuMDM3PC9QX0RBVEVfT0ZfQklSVEg+CjxQX1JFR0lTVEVSRURfRElTQUJMRURfRkxBRz5OPC9QX1JFR0lTVEVSRURfRElTQUJMRURfRkxBRz4KPFBfU0VYPk08L1BfU0VYPgo8UF9UT1dOX09GX0JJUlRIPlNhbkZyYW5jaXNjbzwvUF9UT1dOX09GX0JJUlRIPgo8L0hyRW1wbG95ZWVBcGlDcmVhdGVFbXBsb3llZVJlcXVlc3Q+</payload>
+</ecxmsg>
+
+
+```
+
+**Business Event profile generation**
+
+1.  Click the **Import** button to generate request and response profiles.
+2.  Select the Atom, connection, and then select the required Message Type i.e. **Business Event** from the **Import** window depending on the queue you want to listen to.
+    -   **Queue Name** is displayed in the next screen for the **Message Type** and **Operation** is selected, once the profile is selected and the response profile is created based on the selection of the **Object type**.
+
+    :::note
+
+    The response profile is in XSD \(XML schema definition\) format which define the elements and attributes and defines the relationship of the elements and what data may be stored in them.
+
+    :::
+
+3.  Click the **Edit** icon at the end of the request and response profiles to view the same.
+
+#### LISTEN Response Example
+
+```xml
+
+<?xml version="1.0"?>
+<event>
+<priority>1</priority>
+<send_date>30-12-2020</send_date>
+<receive_date>20-01-2021</receive_date>
+<correlation_id>BPEL</correlation_id>
+<parameter_list>
+<parameter>
+<name>USER_ID</name>
+<value>20421</value>
+</parameter>
+<parameter>
+<name>RESP_ID</name>
+<value>51378</value>
+</parameter>
+<parameter>
+<name>RESP_APPL_ID</name>
+<value>800</value>
+</parameter>
+<parameter>
+<name>SECURITY_GROUP_ID</name>
+<value>0</value>
+</parameter>
+<parameter>
+<name>ORG_ID</name>
+<value>122</value>
+</parameter>
+<parameter>
+<name>PARTY_ID</name>
+<value>3667135</value>
+</parameter>
+<parameter>
+<name>#CURRENT_PHASE</name>
+<value>101</value>
+</parameter>
+<parameter_list>
+<event_name>SHIPMENT</event_name>
+<event_key>SHIPMENT</event_key>
+<event_data>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPEhyRW1wbG95ZWVBcGlDcmVhdGVFbXBsb3llZVJlcXVlc3Q+CjxQX0JVU0lORVNTX0dST1VQX0lEPjIwMzwvUF9CVVNJTkVTU19HUk9VUF9JRD4KPFBfQ09VTlRSWV9PRl9CSVJUSD5VUzwvUF9DT1VOVFJZX09GX0JJUlRIPgo8UF9EQVRFX09GX0JJUlRIPjE5NzAwNTIzIDA3MTUzMS4wMzc8L1BfREFURV9PRl9CSVJUSD4KPFBfUkVHSVNURVJFRF9ESVNBQkxFRF9GTEFHPk48L1BfUkVHSVNURVJFRF9ESVNBQkxFRF9GTEFHPgo8UF9TRVg+TTwvUF9TRVg+CjxQX1RPV05fT0ZfQklSVEg+U2FuRnJhbmNpc2NvPC9QX1RPV05fT0ZfQklSVEg+CjxIckVtcGxveWVlQXBpQ3JlYXRlRW1wbG95ZWVSZXF1ZXN0Pgo8UF9CVVNJTkVTU19HUk9VUF9JRD4yMDI8L1BfQlVTSU5FU1NfR1JPVVBfSUQ+CjxQX0NPVU5UUllfT0ZfQklSVEg+VVM8L1BfQ09VTlRSWV9PRl9CSVJUSD4KPFBfREFURV9PRl9CSVJUSD4xOTcwMDUyMyAwNzE1MzEuMDM3PC9QX0RBVEVfT0ZfQklSVEg+CjxQX1JFR0lTVEVSRURfRElTQUJMRURfRkxBRz5OPC9QX1JFR0lTVEVSRURfRElTQUJMRURfRkxBRz4KPFBfU0VYPk08L1BfU0VYPgo8UF9UT1dOX09GX0JJUlRIPlNhbkZyYW5jaXNjbzwvUF9UT1dOX09GX0JJUlRIPgo8L0hyRW1wbG95ZWVBcGlDcmVhdGVFbXBsb3llZVJlcXVlc3Q+</event_data>
+<from_agent>
+<name>AmezonDistibutor</system>
+<system>AmezonDistibutor.com</system>
+</from_agent>
+<to_agent>
+<name>Flipkart</system>
+<system>Flipkart.com</system>
+</to_agent>
+<error_subscription>y12472174214721hg2sadbsdqwew24sm</error_subscription>
+<error_message>EventException</error_message>
+<error_stack>EventException</error_stack>
+</event>
+
+
+```
+
+## SEND
+
+The SEND operation sends XML Gateway messages to the INBOUND queue. In SEND, the connector uses a Message Producer object, which sends the messages to the respective queue as selected. The connector provides Batch Count implementation, where you can restrict the number of messages that need to be committed in one transaction.
+
+**Connector Action** - 
+Refers to the Action type selected in connector configuration. Boomi Integration automatically provides the value.
+
+**Object** - 
+Refers to the field that gets auto selected object name after importing the initially created Oracle EBS connection and the Queue Name from which the connector sends the messages.
+
+**Request Profile** - 
+Refers to the Request profile that highlights the format in which the message is imported from the selected queue.
+
+**Response Profile** - 
+Refers to the Document Number of the message in ECX Inbound queue.
+
+**Transacted** - 
+Refers to the selection that controls the Acknowledgment after listening to the messages. If **Transacted**, then the acknowledgment is sent to the EBS once the listener receives message successfully. If Transacted is selected, the session is committed in case of any error after receiving message, else it is rolled back.
+
+**Transaction Batch Size** - 
+Refers to the number of messages that need to be considered for one commit while sending messages. **Transaction Batch Size** is considered only when the **Transacted** check box is selected. You can then enter the **Transaction Batch Size**. For example:****
+
+-   If you are processing 100 messages and you provide a transaction batch size of 10, then it is: 10 messages in each transaction commit.
+-   If you are processing 105 messages and you provide a transaction batch size of 11, then the first 10 commits 10 messages each and the 11th commit 5 messages.
+-   In case of an error scenario, if there are 100 messages to be sent and the process fails while sending 55th message, first 50 messages are successfully committed and sent, 51st to 54th messages are rolled back and the remaining is not considered for processing.
+
+**Message Type**   
+Refers to the Two Options, XML Gateway and Business Event.
+
+:::note
+
+Business Event is a future functionality and not implemented for this release.
+
+:::
+
+**Profile generation steps**
+
+1.  Click the **Import** button to generate request and response profiles.
+2.  Select the Atom, connection and then select the required Message Type i.e. **XML Gateway** from the **Import** window depending on the queue you need to send the message.
+    -   The respective **Queue Name** is displayed in the **Next** screen depending on the **Message Type** and **Operation** selected, once the profile is selected.
+    -   Based on the selection of the **Object type**, the response profile is created.
+    -   The request and response profile are in XSD \(XML schema definition\) format which define the elements and attributes and defines the relationship of the elements and what data may be stored in them.
+3.  Click the **Edit** icon at the end of the request and response profiles to view the same.
+
+The request profile \(XML data\) includes **PAYLOAD** field which is through the Data Process step for Base 64 encoding. The connector performs Base64 decoding and converts to CDATA format as required for the value of the field. For example: Order details, Payment details or may contain any particular transaction details.
+
+**SEND Request Example**
+
+```xml
+
+<?xml version="1.0"?>
+<ecxmsg>
+<message_type>xml</message_type>
+<message_standard>utf-8</message_standard>
+<transaction_type>SELL</transaction_type>
+<transaction_subtype>mutualfunds</transaction_subtype>
+<document_number>BBB1234</document_number>
+<partyid>customer</partyid>
+<party_site_id>tcp</party_site_id>
+<party_type>trust</party_type>
+<protocol_type>unbelive</protocol_type>
+<protocol_address>world</protocol_address>
+<username>jdjd</username>
+<password>hsdas</password>
+<attribute1>10</attribute1>
+<attribute2>20</attribute2>
+<attribute3>30</attribute3>
+<attribute4>40</attribute4>
+<attribute5>50</attribute5>
+<payload>PEhyRW1wbG95ZWVBcGlDcmVhdGVFbXBsb3llZVJlcXVlc3Q+CjxQX0JVU0lORVNTX0dST1VQX0lEPjIwMzwvUF9CVVNJTkVTU19HUk9VUF9JRD4KPFBfQ09VTlRSWV9PRl9CSVJUSD5VUzwvUF9DT1VOVFJZX09GX0JJUlRIPgo8UF9EQVRFX09GX0JJUlRIPjE5NzAwNTIzIDA3MTUzMS4wMzc8L1BfREFURV9PRl9CSVJUSD4KPFBfUkVHSVNURVJFRF9ESVNBQkxFRF9GTEFHPk48L1BfUkVHSVNURVJFRF9ESVNBQkxFRF9GTEFHPgo8UF9TRVg+TTwvUF9TRVg+CjxQX1RPV05fT0ZfQklSVEg+U2FuRnJhbmNpc2NvPC9QX1RPV05fT0ZfQklSVEg+CjxIckVtcGxveWVlQXBpQ3JlYXRlRW1wbG95ZWVSZXF1ZXN0Pgo8UF9CVVNJTkVTU19HUk9VUF9JRD4yMDI8L1BfQlVTSU5FU1NfR1JPVVBfSUQ+CjxQX0NPVU5UUllfT0ZfQklSVEg+VVM8L1BfQ09VTlRSWV9PRl9CSVJUSD4KPFBfREFURV9PRl9CSVJUSD4xOTcwMDUyMyAwNzE1MzEuMDM3PC9QX0RBVEVfT0ZfQklSVEg+CjxQX1JFR0lTVEVSRURfRElTQUJMRURfRkxBRz5OPC9QX1JFR0lTVEVSRURfRElTQUJMRURfRkxBRz4KPFBfU0VYPk08L1BfU0VYPgo8UF9UT1dOX09GX0JJUlRIPlNhbkZyYW5jaXNjbzwvUF9UT1dOX09GX0JJUlRIPgo8L0hyRW1wbG95ZWVBcGlDcmVhdGVFbXBsb3llZVJlcXVlc3Q+</payload>
+</ecxmsg>
+
+
+```
+
+#### SEND Response Example
+
+```xml
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><document_number>aaa234</document_number></>
+
+```
+
+:::note
+
+Document number is the unique number of the message that is referenced until the message exists. Document number is a part of message and when EBS receives any specific message, it returns the document number as a response.
+
+:::
+
+<OperationEnd />
+

@@ -1,0 +1,96 @@
+# API Management APIs 
+
+<head>
+  <meta name="guidename" content="API Management"/>
+  <meta name="context" content="GUID-4307dcc3-1662-4e2a-9a82-d03ca043f340"/>
+</head>
+
+
+<head>
+  <meta name="guidename" content="API Management"/>
+</head>
+
+The API Management API provides programmatic access to functionality that is normally accessed through the API Management service.
+
+The API is built around an object/verb hierarchy. This hierarchy parallels the basic object-oriented programming paradigm as well as the web service implementation behind [REST](http://en.wikipedia.org/wiki/Representational_State_Transfer). Within the API Management API objects represent structures and relationships within API Management.
+
+All API Management API calls are authenticated by API Management user name and account ID. You can use the account ID as the general context for any API call. For example, if you make an API call to run a QUERY of the Application object with no query filters applied, all of the account groups owned by the authenticated account are returned.
+
+:::note
+The full Platform API list is available [here](https://developer.boomi.com/api/platformapi)
+
+:::
+
+
+## Implementation
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+  <TabItem value="rest" label="REST" default>
+
+All RESTish API endpoint URLs begin with the following prefix:
+
+`https://api.boomi.com/apim/api/rest/v1/{accountID}`
+
+where `accountID` is your Boomi Enterprise Platform account ID. The full endpoint URL is dependent upon the operation you are trying to perform. Complete URLs are provided in the description of each API object-based operation and action.
+
+RESTish requests are protected by HTTP Basic Authentication, so it requireds your API Management user name and password.
+
+Request and response bodies for RESTish requests are XML by default. The XML schema, which is the same for both the RESTish API and the SOAP API, is located at:
+
+`https://api.boomi.com/apim/api/soap/v1/{accountID}?xsd=1`
+
+You can use JSON-formatted request bodies in RESTish calls by sending the request with the following HTTP header:
+
+`Content-Type: application/json`
+
+To receive JSON-formatted responses, send the request with the following HTTP header:
+
+`Accept: application/json`
+
+You can configure CORS \(Cross-Origin Resource Sharing\) request matching rules for your account to enable cross-server, JavaScript-powered RESTish requests.
+  </TabItem>
+  <TabItem value="soap" label="SOAP">
+
+The SOAP API's WSDL \(Web Services Description Language\) is located at:
+
+`https://api.boomi.com/apim/api/soap/v1/{accountID}?wsdl`
+
+where `accountID` is your API Management account ID.
+
+The WSDL is protected by HTTP Basic Authentication, so it requires your API Management user name and password for access. The XML schema, which is included in the WSDL by reference, is also protected by HTTP Basic Authentication. Each SOAP request is protected by WS-Security using a `UsernameToken` where the password is passed as `PasswordText`.
+  </TabItem>
+
+<TabItem value="graphql" label="GraphQL">
+
+The GraphQL API endpoint URL is:
+
+```shell
+https://api.boomi.com/graphql
+```
+
+HTTP Basic Authentication protects GraphQL requests, requiring either your [AtomSphere API token](../../Platform/int-AtomSphere_API_Tokens_page_6a75a1f6-709c-4b08-b3bd-85fe2ac02e18.md) or user name and password credentials. You can also use JWT tokens to [authenticate](c-api-External_Authentication_32100fb2-46f2-4384-a183-720e5bf1caba.md) for GraphQL.
+
+You can use JSON-formatted request bodies in GraphQL calls by sending the request with the HTTP header `Content-Type: application/json`. To receive JSON-formatted responses, send the request with the HTTP header `Accept: application/json`.
+</TabItem>
+
+</Tabs>
+
+## API usage limits
+
+Both the RESTish and SOAP implementations of the API Management API enforce the following usage limits:
+
+
+**Rate of requests per second**  
+The limit is 10 requests per second.
+
+If API usage exceeds this limit, API users receive an HTTP 503 response indicating that the server is temporarily unable to fulfill the request.
+
+:::note 
+
+None of API Management’s built-in functionality uses the API, so using the API Management service does not affect your API usage limits.
+
+:::
+

@@ -1,0 +1,9 @@
+.search-box-wrapper{
+    display: flex;
+    justify-content: center;
+}
+
+.search-box__input::part(input--container) {
+    height: calc(var(--exo-size-1) * 0.8);
+    border-radius: 999px; /* Intentionally Hardcoded */
+}

@@ -1,0 +1,368 @@
+import OperationEnd from './_operationEnd.md'
+import TrackingDirection from './_TrackingDirection.md'
+import ReturnErrRes from './_ReturnResponse.md'
+
+
+# Snowflake operation 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-2fb240ca-0e05-4035-b529-d070dab0285f"/>
+</head>
+
+
+The Snowflake operation defines how to interact with the connection, including transactions, batching, custom properties, etc.
+
+The Snowflake connector supports the following actions:
+
+-   Inbound: Get, Query, Bulk Unload, Bulk Get, Copy Into Location
+-   Outbound: Create, Update, Delete, Bulk Load, Bulk Put, Copy Into Table
+-   In/Outbound: Execute, SnowSQL
+
+## Options tab
+
+Click **Import Operation**, then use the Import wizard to select the object to integrate. When you configure an action, the following fields appear on the **Options** tab.
+
+
+
+**Connector Action \(All operations\)** - 
+Refers to the name of the action.
+
+**Object \(All operations\)** - 
+Refers to the operation’s returned object.
+
+**Request Profile \(Create, Update, Delete, Execute, SnowSQL, Bulk Load, Bulk Unload, Copy Into Table, Copy Into Location\)** - 
+The JSON profile that contains the base fields for the request.
+
+**Response Profile \(Create, Get, Query\)** - 
+The JSON profile that contains the base fields for the response. This is applicable for Create operation, only if the **Return Results** check box is selected.
+
+<TrackingDirection />
+
+<ReturnErrRes />
+
+**Batch Size \(Create, Update, Get, Query, Delete, Execute, SnowSQL\)** - 
+-   Create: Batch size represents the number of records sent to the database in one execution.
+
+:::info Attention
+
+- Batching is not supported in case of **Input Options for Missing Fields** field configured with the **Snowflake defaults for empty fields** option.
+
+- Without Batching or Batch size set to 1 - Supports the Create action to handle multiple documents with missing fields, in case of **Input Options for Missing Fields** field configured with the **Snowflake defalts for empty fields** option.
+
+:::
+
+-   Update: Batch size represents the number of update requests per database call.
+-   Get: Batch size represents the number of records to be retrieved per database call. If the **Document Batching** option is selected, batching of the output will be performed based on the Batch Size value.
+-   Query: Batch size represents the number of records to be retrieved per database call. If the **Document Batching** option is selected, batching of the output will be performed based on the Batch Size value.
+-   Delete: Batch size represents the number of deleted queries per database call.
+-   Execute: Batch Size represents the number of stored procedure calls per database call.
+-   SnowSQL: Batch Size represents the number of requests per database call.
+
+**Document Batching \(Get, Query\)** - 
+Select this check box to enable document batching. If selected, then the response profile will be generated as an array of JSON objects, and the output will be batched according to the **Batch Size**. Otherwise, the response profile will be generated as JSON object profile and the output will be displayed in single row per output document. This option is available in the profile **Import Wizard**.
+
+**Input Options for Missing Fields \(Create\)** - 
+Select the preference to be applied if there are missing field/column\(s\) value in the input. The available options are:
+
+-   NULL for empty fields — Insert NULL value for missing column \(s\) value.
+-   Snowflake defaults for empty fields — Insert the default value configured for the respective column\(s\) in the Snowflake database table, against the corresponding missing column\(s\) value.
+
+**S3 Bucket Name \(Optional\) \(Bulk Load, Bulk Unload\) ** - 
+Refers to the bucket name of AWS S3. Also, the S3 Bucket Name is an operation property which is available as a dynamic operation property.
+
+:::note
+
+Do not enter/select if you are not using bulk unloading through AWS S3.
+
+:::
+
+**AWS Region \(Optional\) \(Bulk Load, Bulk Unload\)** - 
+Refers to the name of the AWS region in which your account resides. It is also an operation property which is available as a dynamic operation property.
+
+**Internal Stage Name \(Optional\) \(Bulk Load, Bulk Unload\)** - 
+Refers to the name of Snowflake internalStage. It is also an operation property which is available as a dynamic operation property.
+
+:::note
+
+-   Do not enter/select if you are not using internalStage.
+-   Case sensitive if written between double quotation marks.
+
+:::
+
+**Database and Schema override** - **(Get, Query, Create, Update, Delete, Execute, Bulk Get, Bulk Load, Bulk Unload, Bulk Put, Copy Into Table, Copy Into Location operations)** - Users can override the Database and Schema values of the connection component using operation properties which can be further overridden using the dynamic operation properties.
+
+- This can be achieved via selecting the **Override Connection Settings** checkbox during browse/import.
+- When multiple documents are batched together for an operation and these documents have schema and Database name overridden with varying values, through Dynamic Operation Property, then each batch processing will be as per the schema and Database name of the last document of that batch.
+
+:::note
+
+To avoid runtime errors, ensure that the **Database** and **Schema** fields are populated with non-empty/non-blank values during import or when using dynamic operation properties.
+
+:::
+
+**Option - Truncate before loading \(Optional\) \(Create, Bulk Load\)** - When the **Truncate Before Load** checkbox is selected:
+
+- Select if you want to empty the Snowflake table before loading data into it.
+- And, if **Schema** & **Database** name is overridden during import, the below cases will be applicable.  
+
+  - If the same schema and database name is applicable to multiple documents, then truncate will only execute once. 
+  - For the rest of the cases, truncate will be executed for each document.
+
+**Internal Source Files Path \(Optional\) \(Bulk Load\)** - 
+Refers to the path and name of the files you want to upload. Do not enter/select if you are not using internalStage. It is also an operation property which is available as a dynamic operation property.
+
+:::note
+
+-   Use the following format `<path>/<file_name>` (For example: `C:/directory/file`).
+-   Wildcard characters \(\*,?\) are supported to enable uploading multiple files in a directory.
+
+:::
+
+**Parallelism \(Optional\) \(Bulk Load, Bulk Get, Bulk Put\)** - 
+Refers to the number of threads between \(1- 99\) that are used to upload the files. Default value: 4. Do not enter/select if you are not using internalStage in Bulk Load.
+
+**Option - Auto Compress \(Optional\) \(Bulk Load, Bulk Put\)** - 
+Select if you want to compress files during upload. Do not select if you are not using internalStage.
+
+**COPY INTO Compression \(Optional\) \(Bulk Load, Bulk Unload\)** - 
+This compression method is used on already compressed files. Default value: AUTO\_DETECT. Do not enter/select if you are not using internalStage.
+
+**PUT Compression \(Optional\) \(Bulk Load\)** - 
+This compression method is used on already compressed files. Default value: AUTO\_DETECT. Do not enter/select if you are not using internalStage.
+
+**Option – Overwrite \(Optional\) \(Bulk Load, Bulk Put\)** - 
+Select if you want to overwrite an existing file with the same name during upload. Do not enter/select if you are not using internalStage.
+
+**Unique Key\(s\) \(comma separated\) \(Update, Delete\)** - 
+Refers to the list of one or more column name\(s\) used to uniquely identify the affected record\(s\). Column names are case sensitive if enclosed in double quotes.
+
+**SQL Script \(SnowSQL\)** - 
+Refers to the SnowSQL command to be executed.
+
+**Option - Return Results \(Create, SnowSQL\)** - 
+Select this check box, if you want to view the output response document.
+
+**Column Names \(Optional\) \(Bulk Load\)** - 
+An explicit set of columns \(separated by comma\) to load from the data files.
+
+**File Format Name \(Optional\) \(Bulk Load, Bulk Unload, Copy Into Location, Copy Into Table\)** - 
+Refers to Snowflake predefined format names. Do not enter/select if you are not using a predefined file format.
+
+**File Format Type \(Optional\) \(Bulk Load, Bulk Unload, Copy Into Location, Copy Into Table\)** - 
+Refers to the data files format. Default value: CSV.
+
+**Other Format Options \(space separated\) \(Optional\) \(Bulk Load, Bulk Unload, Copy Into Location, Copy Into Table\)** - 
+Enter if the document is implementing other format options. Do not enter, if not applicable. For example: RECORD\_DELIMITER = '\\n’. For more information, see the topic [Format Type Options](https://docs.snowflake.com/en/sql-reference/sql/copy-into-table.html#format-type-options-formattypeoptions) in the Snowflake documentation.
+
+**Copy Options \(Optional\) \(Bulk Load, Bulk Unload, Copy Into Location, Copy Into Table\)** - 
+Enter if you want to implement copy options \(space separated\). Do not enter, if not applicable. For example: SIZE\_LIMIT = 5. For more information, see the topic [Copy Options](https://docs.snowflake.com/en/sql-reference/sql/copy-into-table.html#copy-options-copyoptions) in the Snowflake documentation.
+
+**Chunk Size \(Bulk Load\)** - 
+Refers to the maximum size of each chunk of query results to be downloaded \(in MB\). This is available for CSV and JSON file formats. Default value 250MB. Use -1 to disable chunking.
+
+**Stage Path \(Bulk Load, Bulk Unload\)** - 
+Refers to the staging path. If left empty, the connector uses an internal default path. The following variables are used:
+
+-   $OPERATION – The name of the operation \(bulkUnload/bulkLoad\).
+-   $DATE - Today's date in yyyyMMdd format.
+-   $TIME – the current time in HHmmss.SSS format.
+-   $UUID -The Universally Unique Identifier
+
+:::note
+
+If you don’t specify any path, the connector generates a default path `boomi/$OPERATION/$DATE/$TIME/$UUID/`, where `$UUID` is the Universally Unique Identifier. 36 characters value is displayed as five numeric groups separated by hyphens.
+
+:::
+
+**Option – Include Column Header \(Optional\) \(Bulk Unload, Copy Into Location\)** - 
+Select if the column headers need to be included in the output file.
+
+**Internal Stage \(Bulk Get, Bulk Put\)** - 
+Refers to the location in Snowflake from which the files are downloaded.
+
+**File Name \(Bulk Get, Bulk Put\)** - 
+Refers to the URI for the data file\(s\) downloaded to the client machine.
+
+**Patterns \(Bulk Get\)** - 
+Refers to a regular expression pattern for filtering files to download. This command lists all files in the specified path and applies the regular expression pattern on each of the files found.
+
+**Source Compression \(Bulk Put\)** - 
+Refers to the method of compression used on already compressed files that are being staged.
+
+**Destination \(Copy Into Location\)** - 
+internalStage, externalStage or externalLocation.
+
+**External Location Credentials \(Copy Into Location, Copy Into Table\)** - 
+Amazon S3, Google Cloud Storage or Microsoft Azure.
+
+**Format Compression \(Copy Into Location, Copy Into Table\)** - 
+Refers to the method of compression used on already compressed files that are being staged.
+ 
+**Column Names \(Copy Into Table\)** - 
+An explicit set of fields/columns \(separated by commas\) to load from the staged data files.
+
+**Source \(Copy Into Table\)** - 
+internalStage, externalStage or externalLocation.
+
+**Files \(Copy Into Table\)** - 
+Refers to the list of one or more files names \(separated by commas\) to be loaded. The files must already have been staged in either the Snowflake internal location or external location specified in the command.
+
+**Pattern \(Copy Into Table\)** - 
+A regular expression pattern string, specifying the file names and/or paths to match.
+
+**Number of SnowSQL Statements \(SnowSQL\)** - 
+Refers to the number of SnowSQL statements per database call for multi-statement call/query execution. The default value is 1. The total number of scripts entered in the **SQL Script** field should match the value entered in the **Number of SnowSQL Statements** field. Otherwise, the connector will throw error message and will not run the process.
+
+:::info Attention
+
+When you open the existing process for SnowSQL operation - **Options** tab, the **Number of SnowSQL Statements** field's value will be displayed as "1" and you will be prompted to save this new value. If you prefer to use the process with an earlier version of the connector which supports default value as Zero, then it is recommended to ignore/cancel the save action.
+
+:::
+
+## Get
+
+GET is an inbound action that retrieves one or more rows from a database table or view as JSON files to platform. The GET Operation works with input data via a JSON profile that can be created via the operation’s Import functionality. The created profile’s ID element is set to a JSON object specifying the selection criteria. This operation imports generated table profile elements.
+
+Use the **Document Batching** option during profile import, to generate the response profile as an array of JSON objects and the output will be batched according to the Batch Size specified on the **Options** tab. Otherwise, the response profile is generated as JSON object profile and the output will be single row per output document. The Response data will be displayed according to the data types. The Number and Boolean data types are displayed without double quotes because of data type mapping.
+
+## Create
+
+CREATE is an outbound action that allows to insert data to Snowflake. Each document input to the connector must contain a single record that will be a row inserted into the target table. This operation imports generated table profile elements and supports batching. This operation inserts records to a Snowflake table by converting the input data to insert statements that can batch and execute **Batch size** rows at a time until all data is processed.
+
+You can specify your preference to be applied for missing column\(s\) value in the input using the **Input Options for Missing Fields** field. On successful execution, the Response will be displayed with the number of records inserted into the table, only if the **Return Results** option is selected on the **Options** tab. The output will be displayed as `[{“Update_Count”:”X”}]`, where X is the number of updated rows.
+
+## Update
+
+UPDATE is an outbound action to update the value of data in the database. You use this operation to import generated table profile elements. You can select the columns which you want to use as the primary key and then give them new values. This operation works with dynamic data that can be overridden by static data. Update operation supports batching.
+
+## Query
+
+QUERY is an inbound action that retrieves one or more records from a specific table. By importing a generated profile element, you can see the whole table. This operation supports sorting and filters and also imports generated table profile elements.
+
+Use the **Document Batching** option during the profile import, to generate the response profile as an array of JSON objects and the output is batched according to the Batch Size specified on the **Options** tab. Otherwise, the response profile is generated as JSON object profile and the output will be single row per output document. The Response data will be displayed according to the data types. The Number and Boolean data types are displayed without double quotes because of data type mapping.
+
+## Delete
+
+DELETE is an outbound action that deletes record\(s\) from the database. It uses a message step to convert the JSON deletion object into XML format, extracting their selection criteria \(For example: ID\) from the JSON object. This operation imports generated table profile elements. Delete operation supports batching.
+
+## Execute
+
+The Snowflake connector supports executing Snowflake stored procedures. First you must create the stored procedures with the Snowflake DDL command. After this, you can request the response profile for the stored procedure with the Execute action. When calling, using, and getting values back from stored procedures, you might need to do a conversion from a Snowflake SQL data type to a JavaScript data type \(or vice versa\). The stored procedures use data as JavaScript variable in JSON format. This operation imports generated stored procedure parameters profile elements. Execute operation supports batching.
+
+## SnowSQL
+
+SnowSQL is an In/Outbound action that supports executing SQL commands. You need to enter the desired command either in the **SQL Script** field or in the SQL Script Document Property. For multi-statement support, specify the number of SnowSQL scripts to be executed in the **Number of SnowSQL Statements** field. The value entered must be aligned with the exact number of statements entered in the **SQL script** field.
+
+Commands example: `INSERT INTO LOGTABLE PARSE_JSON($param1); select * from LOGTABLE;` etc.
+
+:::note
+
+-   The SQL script can contain defined parameters using $ sign. The $ parameter includes the values required by the Query but not the Query itself.
+-   SnowSQL returns results of the Query executed only when the Option Return results is enabled and if batch size is equal to 1.
+-   If any CREATE, DELETE or UPDATE statement is entered in the SQL script, the output is: `[ {“UpdateCount”:”X”}]`where X is the number of updated rows.
+
+:::
+
+When importing an object in the SnowSQL operation, the connector provides a generated dummy JSON profile which can be customized based on the parameters written in the SQL script. You can add a new JSON profile by importing a JSON schema from your local drive that matches the parameters written in the SQL script.
+
+## Bulk Load
+
+Bulk Load is an outbound action that inserts new data from files on your local disk or Amazon S3 bucket into Snowflake.
+
+By entering the **S3 Bucket Name** or **Stage Name**, the data is sent to that Amazon S3 bucket or Snowflake internalStage that was defined. Snowflake Table then includes the data using Snowflake “COPY INTO” command.
+
+Finally, the data from the bucket/internalStage is deleted:
+
+-   via Snowflake internalStage: This is enabled by filling in the fields: Stage Name, Files Path, Parallelism, Option - Auto Compress, Compression, Option – Overwrite.
+
+:::note
+
+When using Snowflake internalStage, you need to do some configuration in Snowflake: [create the internalStage](https://docs.snowflake.com/en/sql-reference/sql/create-stage.html#create-stage) with the FILE\_FORMAT parameter added in the create stage statement.
+
+:::
+
+-   via S3 external location: This is enabled by filling in the fields: **S3 Bucket Name**,**Region**. When using Amazon S3 bucket as an external location, you need only the S3 credentials, no staging or any other configurations, except granting permissions on the S3 account.
+
+## Bulk Unload
+
+Bulk Unload is an inbound action that retrieves data from a database table or view as CSV/JSON files to the Boomi Enterprise Platform.
+
+By entering the S3 Bucket Name or Stage Name, the imported database object is sent to that Amazon S3 bucket using Snowflake “COPY INTO” command. Then it retrieves the same into Boomi.
+
+Finally, the deletion from the bucket is decided based on parameters entered in the Copy Options field:
+
+-   via Snowflake internalStage: This is enabled by filling in the fields: Stage Name, Files Path, Parallelism, Option - Auto Compress, Compression, Option – Overwrite.
+
+:::note
+
+When using Snowflake internalStage, you need to do some configuration in Snowflake: [Create the internalStage](https://docs.snowflake.com/en/sql-reference/sql/create-stage.html#create-stage) with the FILE\_FORMAT parameter added in the create stage statement.
+
+:::
+
+-   via S3 external location: This is enabled by filling in the fields: S3 Bucket Name, Region. When using Amazon S3 bucket as an external location, you need only the S3 credentials, no staging or any other configurations, except granting permissions on the S3 account.
+
+:::note
+
+The Snowflake connector uses Amazon S3 default encryption during bulk load and unload operations.
+
+:::
+
+## Bulk Get
+
+Bulk Get is an inbound action that is executed after using the Copy Into Location operation to unload data from a table into a Snowflake stage. Then the file\(s\) are downloaded from snowflake internal stage to a local disk directory using [Get Command](https://docs.snowflake.com/en/sql-reference/sql/get.html).
+
+## Bulk Put
+
+Bulk Put is an outbound action that uploads file\(s\) from local disk to a snowflake internal stage using [PUT Command](https://docs.snowflake.com/en/sql-reference/sql/put.html) provided by snowflake which has the ability to upload files concurrently and the ability to auto compress files while uploading. After uploading files to the internal stage, Copy Into Table operation can be executed to move data from Snowflake internal stage to a Snowflake table.
+
+## Copy Into Location
+
+Copy Into Location is an inbound action that executes [COPY INTO](https://docs.snowflake.com/en/sql-reference/sql/copy-into-location.html) command that moves data from a selected table to any stage/external location using either predefined file format or specified file format.
+
+This operation unloads data from a table into a file to one of the following locations:
+
+-   Named internal stage.
+-   Named external stage that references an external location \(Amazon S3, Google Cloud Storage, or Microsoft Azure\).
+-   External location \(Amazon S3, Google Cloud Storage, or Microsoft Azure\).
+
+This operation allows you to move data from snowflake to GCP and download data from GCP using Google Storage Connector. The same feature is applicable to S3, Azure and Snowflake internal stage.
+
+## Copy Into Table
+
+Copy Into Table is an outbound action that executes [COPY INTO](https://docs.snowflake.com/en/sql-reference/sql/copy-into-table.html) command that moves File\(s\) from any stage/external location to a snowflake table or a \(selected columns of a snowflake table\) using either predefined file format or specified file format.
+
+This operation loads data from staged files to an existing table. The files must be already staged in one of the following locations:
+
+-   Named internal stage \(or table/user stage\).
+-   Named external stage that references an external location \(Amazon S3, Google Cloud Storage, or Microsoft Azure\).
+-   External location \(Amazon S3, Google Cloud Storage, or Microsoft Azure\).
+
+This operation allows you to load the file\(s\) on GCP to a snowflake table with the appropriate parameters. The same feature is applicable to S3 and Azure and Snowflake internal stage.
+
+## Schemas
+
+The connector builds the JSON schema automatically by identifying the data type of each column in the table. The table names are selected in the Object type drop down. The connector maps the data types to the following types in the schema:
+
+**Snowflake Data type** - 
+**Connector Schema Data type**
+
+**VARCHAR, CHAR, CHARACTER, STRING, TEXT, BINARY, VARBINARY and supported unstructured data type like VARIANT** - 
+String
+
+**DATETIME, TIMESAMP, TIMESTAMP\_TZ, TIMESTAMP\_NTZ, TIMESTAMP\_LTZ** - 
+Date/Time \( Default Date Time format\)
+
+**DATE** - 
+Date/Time \( Default Date format\)
+
+**TIME** - 
+Date/Time \( Default Time format\)
+
+**BOOLEAN** - 
+Boolean
+
+**NUMBER, DECIMAL, NUMERIC, INT, INTEGER, BIGINT, SMALLINT, TINYINT, BYTEINT, FLOAT, FLAOT4, FLOAT8, DOUBLE, DOUBLE PRECISION, REAL** - 
+Number
+
+<OperationEnd />

@@ -1,0 +1,40 @@
+import TrackedProperties from './_TrackedProperties.md'
+
+# SAP HANA Database connector
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-677cc0c5-2232-4dc2-bd8a-6f2e030f9898"/>
+</head>
+
+
+SAP HANA Database connector allows you to interact with SAP HANA Database using Java Database Connectivity (JDBC) drivers. The connector uses the SAP HANA JDBC driver version "ngdbc-2.19.16.jar".
+
+You can use this connector in a Integration process to perform the following operations; Insert, Query, Update, Upsert, or Delete data to/from the SAP HANA database. Additionally, you can also execute stored procedures and perform bulk file transfers to/from local and SAP HANA file system. It offers the provision to insert the SQL Statement manually or to dynamically build the SQL Statement based on the input parameters. This connector also supports inserting JSON documents with SAP HANA 2.0 SPS 01, SAP HANA 2.0 SPS 03 and SAP HANA 2.0 SPS 06.
+
+As per SAP, SAP HANA Client versions are cross-version compatible and HANA Client/driver 2.19.16 is compatible with all HANA 2.0 SPS’s.
+
+## Connector configuration
+
+To configure the connector to communicate with the SAP HANA Database, set up the following components:
+
+-   SAP HANA Database connection - The connection represents a specific database instance and its associated user authentication details.
+-   SAP HANA Database operation - The operation represents an action against a specific SAP HANA database table \(Object Type\). You will create one or more operations, one for each type of interaction required by your Integration scenario.
+
+This design provides reusable components containing connection settings (such as username, password) and operation settings. After building the connection and operation, set up your connector within a process. When the process is configured properly, Integration can map to and from virtually any data using the SAP HANA Database connector to communicate with the database instance.
+
+## Prerequisites
+
+The SAP HANA database connector requires the following:
+
+
+-   SAP HANA Database \(On-premise or cloud\).
+-   URL of the database instance.
+-   Username and password for a database account.
+-   An Atom installed locally to the database server or to another machine within your network that can access the database.
+
+## Supported editions
+
+The connector supports the SAP HANA Database SAP HANA 2.0 SPS 01 and SAP HANA 2.0 SPS 03.
+
+<TrackedProperties />

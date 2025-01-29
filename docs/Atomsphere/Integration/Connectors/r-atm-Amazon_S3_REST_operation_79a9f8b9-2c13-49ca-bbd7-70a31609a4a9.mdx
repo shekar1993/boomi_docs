@@ -1,0 +1,287 @@
+import OperationEnd from './_operationEnd.md'
+
+
+
+# Amazon S3 REST operation 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-79a9f8b9-2c13-49ca-bbd7-70a31609a4a9"/>
+</head>
+
+
+The Amazon S3 REST operation defines how to interact with your AWS account and represents a specific action to perform against an Amazon S3 object in a bucket.
+
+An object can be any kind of file such as a text file, a photo, a video, and so on. Create a separate operation component for each action and object combination that your integration requires.
+
+:::note
+
+Amazon charges you for storing objects in buckets, and for transferring objects in and out of buckets. See your AWS documentation for more information about billing for S3 buckets.
+
+:::
+
+The Amazon S3 REST operations use XML format and support the following actions:
+
+-   Get — retrieve an object from Amazon S3.
+-   Upsert — upload and create a new object in Amazon S3 \(a single chunk or several chunks\), or perform an update to an object, if the object already exists.
+-   Select — filter the contents of Amazon S3 objects using a SQL statement and retrieve just the subset of data you need.
+-   Delete — remove and delete an object from Amazon S3.
+-   Query — look up Amazon S3 objects based on specific search criteria.
+
+## Retrying requests 
+
+To help ensure successful operation requests, the connector retries requests based on the response status code from the server:
+
+-   Server error \(5xx\) — Indicates that you made a request, but the server cannot complete the request. Requests retries are in a phased approach \(intervals of 0, 10, 30, 60, 120, and 300 seconds\) with a maximum of six retries.
+-   Server error \(3xx\) — Indicates that you made a request, but it needs further action to process the request. Requests retry only once.
+-   Client error \(4xx\) — Indicates there is an issue with the request, and not with the server. There are no retries of the request.
+-   Server response \(2xx\) — Indicates that a request is successfully received, understood, and accepted. If there are no errors in the XML provided in the request, it is considered successful and does not retry.
+-   Communication error — Indicates that there is an error communicating with the remote server. Request retries are in a phased approach.
+
+:::note
+
+For multipart \(chunked\) uploads in Upsert where the server returns a 2xx response with an `InternalError` or `SlowDown` code in the XML response, the request retries are in a phased approach.
+
+:::
+
+## Operation permissions
+
+Specific permissions to the Amazon S3 objects are necessary to ensure successful connection, browsing, and actions. See the Prerequisites section in the Amazon S3 REST connector topic for more information.
+
+:::note
+
+The Amazon S3 REST connector uses s3:ListBucket permissions to test the connection. As a result, a successfully tested connection does not mean you can successfully run DELETE, GET, UPSERT, QUERY, and SELECT operations. The connector requires properly configured Amazon S3 permissions for the intended operation.
+
+:::
+
+## Browsing and dynamic buckets 
+
+When browsing, the connector lists all of the available buckets to which you have access, regardless of your region, in the **Object Type** drop-down list. Choose the bucket from which you can:
+
+-   Retrieve and store the object
+
+-   Filter and retrieve the contents of objects
+
+-   Delete the object
+
+-   Query the object
+
+
+One additional option, the **Dynamic Bucket**, is available. Select this option to indicate that you want to dynamically provide the bucket name as a document property without having to define a separate action. This option allows you to change the operation configuration at runtime and insert the bucket name. For example, you have 10 files to upload to Amazon S3. To avoid having to set up 10 Upsert actions with each specifying a different bucket name, you choose the **Dynamic Bucket** option and use the **Set Properties** step to define the **Bucket Name** as a document property.
+
+When you run the dynamic Upsert process, the connector dynamically obtains the bucket name and uploads the 10 files to Amazon S3. If the bucket name you specify as a document property does not exist in Amazon S3, you receive an error. For the Query action, use **Dynamic Bucket** to provide the bucket name using query filters.
+
+## Special characters and file names 
+
+You can use any characters, including special characters, when specifying the file name for an operation. However, there are some special characters to avoid \(for example, the pipe character "\|," the tilde character "~," and so on.\). For more information about the safe characters you can use and those to avoid, see the article [Creating Object Key Names](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html) in the Amazon S3 documentation.
+
+For the Select operation, the file name in the input XML profile can only include valid XML characters. Ensure and escape the following characters before using them in the input XML profile: double quotes \("\), apostrophe \('\), less than symbol `(<)`, greater than symbol \(\>\), and ampersand \(&\). As an alternative, you can use the Map step that encodes and escapes the characters correctly.
+
+## Options tab 
+
+Click **Import Operation**, then use the Import wizard to select the object to integrate. The wizard imports the request and response profiles for the selected action. When you configure an action, the following fields appear on the **Options** tab:
+
+
+
+**Object** - 
+Displays the object type that you select in the Import Wizard.
+
+**AWS Region \(All operations\)** - 
+Select the name of the AWS Region in which your bucket resides. The region you select overrides the region provided by the service that the connection automatically retrieves.
+
+ -   Automatically Detect — the connector requests information about the bucket from the service to automatically retrieve the region.
+ -   If you specify a region using the Bucket Region input document property and select **Dynamic Bucket** as the object type when browsing, it uses the document property and ignores this region.
+ -   If you specify a region using the document property and select a specific bucket when browsing, it uses this region and ignores the document property.
+
+**Include Tagging \(Deprecated\)** - 
+\(Get, Upsert\) In Amazon S3, object tagging is used to categorize storage. For example, an object contains sensitive and confidential information, so you add the Classification tag *confidential*.
+
+:::note
+
+This field is deprecated for the Upsert operation only. For Get, the functionality did not change and you manage tags using dynamic document properties.
+
+:::
+
+ -   Upsert — Select to add a set of tags \(up to 10\) to an object as dynamic document properties. The operation receives an error if the object has more than 10 tags. This option creates the object with tags for all properties associated with the input document. You cannot uniquely specify which properties to use or not to use as tags. encourages you to use the **Tags** field to use properties for different purposes simultaneously without generating unwanted tags. This configuration allows a more flexible and controlled way to define the object tags.
+
+ :::note 
+ 
+ If you add properties utilizing both **Include Tagging \(Deprecated\)** and **Tags**, it adds a combination of tags to the object. Any property values defined using the **Tags** field take precedence over values defined as dynamic operation properties. Additionally, if the combined set of tags is more than 10 \(the maximum limit set by Amazon S3\), the operation receives an error.
+
+ :::
+
+ -   Get — Select to retrieve and return all tags associated with an object. The connector retrieves the tags as dynamic document properties. Amazon S3 does not return more than 10 tags.
+
+**Encryption \(Upsert\)** - 
+Select the server-side encryption type to protect, encrypt, and decrypt your data:
+
+-   NONE — The object does not require, and you can store it without server-side encryption.
+-   SSE-S3 — The object is encrypted with a unique key using strong multi-factor encryption. As an additional safeguard, the key is also encrypted with a master key that Amazon S3 regularly rotates. This encryption type uses one of the strongest block ciphers available, 256-bit Advanced Encryption Standard \(AES-256\), to encrypt the object.
+-   SSE-KMS — This encryption type is similar to SSE-S3 encryption, with additional benefits and charges for using this service. For example, it provides separate permissions for using an envelope key \(a key that protects your object's encryption key\) that provides added protection against unauthorized data access. SSE-KMS also provides an audit trail of when your key was used and by whom. You also have the option to create and manage encryption keys yourself or use a default key that is unique to you, the service you are using, and the region you are working.
+-   SSE-C — You manage the encryption keys and Amazon S3 manages the encryption, as it writes to disks, and decryption, when you access your objects.
+
+**Encryption Key \(Get, Upsert, Select\)** - 
+Determines the encryption key used to protect and encrypt the object.
+
+-   Get — If the object to retrieve was previously uploaded to Amazon S3 using server-side encryption with customer-provided encryption keys \(SSE-C\), enter the encryption key. Amazon needs the encryption information \(key\) so it can decrypt the object before sending it to the Amazon S3 REST connector for the Get response. Amazon S3 does not store the encryption key provider for the object in the upload. Leave blank if the object to retrieve was previously uploaded to Amazon S3 with SSE-S3 or SSE-KMS encryption. In this case, you do not have to provide an encryption key. However, to retrieve the object you must be the owner.
+-   Upsert — Enter the encryption key to protect and encrypt the object. If you leave this field blank and the Server-Side Encryption Type is SSE-S3, the connector automatically sets the server-side encryption as AES256. Otherwise, provide the AWS-KMS key ID.
+-   Select — Enter the encryption key if the object to filter and retrieve was previously uploaded to Amazon S3 using server-side encryption with customer-provided encryption keys \(SSE-C\). For the Select response, Amazon needs the encryption information \(key\) to decrypt the object before sending it to the Amazon S3 REST connector. However, Amazon S3 does not store the encryption key provider for the object. If you previously uploaded the object to filter Amazon S3 with SSE-S3 or SSE-KMS encryption, leave it blank. In this case, you do not have to provide an encryption key. However, you must be the owner to filter and retrieve the object.
+
+**Part Size \(Upsert\)** - 
+When uploading a large object in parts \(multiple chunks\), specify the size \(in megabytes\) for each part. The minimum part size is 5 MB, the maximum is 2 GB, and the last part can be less than 5 MB.
+
+**Output Format \(Select\)** - 
+Select the output format \(CSV or JSON\) the connector uses for documents returned by the operation.
+
+**Tags \(Upsert\)** - 
+Specify key-value pairs \(properties\) to add to the S3 objects as tags. Use tagging to categorize storage and provide a flexible and controlled way to define the object tags. For example, if an object contains sensitive and confidential information, add the **Classification** tag of confidential. You can add up to 10 tags for an object, and you can override the values using the Tags dynamic operation property. To learn more about dynamic operation properties, see the topic [Connector step dialog, Dynamic Operation Properties tab](../Process%20building/int-Connector_shape_dialog_dynamic_operation_properties_tab_e473feba-b349-4b3b-8d82-2c3c9f94469b.md).
+
+:::note
+
+If you add properties utilizing both **Include Tagging \(Deprecated\)** and **Tags**, it adds a combination of tags to the object. Any property values defined using the **Tags** field take precedence over values defined as dynamic operation properties. Additionally, if the combined set of tags is more than 10 \(the maximum limit set by Amazon S3\), the operation receives an error.
+
+:::
+
+**User-Defined Object Metadata \(Upsert\)** - 
+Specify key-value pairs \(properties\) to add to the S3 objects as user-defined metadata. Amazon requires you to prefix the metadata with "x-amz-meta-" to distinguish it from other metadata. The connector accepts property keys containing the prefix, and automatically adds it, if not provided. You can override these properties using the User-Defined Object Metadata dynamic operation property. To learn more about dynamic operation properties, see the topic [Connector step dialog, Dynamic Operation Properties tab](../Process%20building/int-Connector_shape_dialog_dynamic_operation_properties_tab_e473feba-b349-4b3b-8d82-2c3c9f94469b.md).
+
+## Get 
+
+Get retrieves an object, such as an image or video file, from an Amazon S3 bucket. Before you begin, verify that you have the correct read permissions to access the objects located in either public or shared buckets. Otherwise, you receive an error.
+
+When using this action, specify the File Key for the object in Amazon S3. Because an Amazon S3 bucket does not have a directory hierarchy that you find in a typical file system, the key in the connector must simulate Amazon's folder structure by concatenating the directory folder.
+
+File Key example
+
+You have the object *photos/2018/August.jpg* in an Amazon S3 bucket named *samplebucket*. In the connector, specify the file key as follows:
+
+```
+photos/2018/August.jpg
+```
+
+:::note
+
+The file key format is `folder/filename`. If you enable versioning for the bucket, you can retrieve a specific version of an object using the Version ID document property.
+
+:::
+
+If the File Key you provide exists in Amazon S3, the connector retrieves the object. If the File Key does not exist or is incorrect, you receive an error.
+
+When successful, the action retrieves the object, and each retrieved object the following tracked properties:
+
+-   Bucket
+-   File Key
+-   Content-type
+-   Version ID \(if you enable versioning for the bucket\)
+
+## Upsert 
+
+Upsert uploads and creates a new object in an Amazon S3 bucket or performs an update to an object, if it already exists. Before you begin, verify that you have the correct write permissions for the bucket. Otherwise, you receive an error.
+
+When creating a new object, provide the object name. You can set the name using the following document properties:
+
+-   File Name — Specify the name of the new object to upload. If you do not specify one, the connector generates a random name automatically.
+-   Folder — Specify the folder in the bucket where you upload the object.
+-   File Key — Takes precedence, and is a combination of the File Name and Folder. If you do not specify a File Key, it uses the File Name and Folder values.
+
+:::note
+
+If you enable versioning for the bucket and upload an object that already exists in Amazon S3, it creates a new version of the object.
+
+:::
+
+To provide additional flexibility, you can use the Content-type document property and specify the format of the content to upload \(for example, text/plain\). If you do not specify the content type, the connector sets it as application/octet-stream.
+
+## Multipart \(Chunked\) uploads 
+
+You can upload a maximum of 2 GB with a single upload that does not include chunks. The maximum upload size for a multipart, or chunked upload, is 5 TB. If the object's size to upload is greater than 16 MB, it is considered a chunked upload. The large file is chunked into a smaller sequence of parts based on the setting of the **Part Size** field and is then uploaded. You can use a maximum of 10,000 chunks for each upload. If any part of the upload fails, the connector attempts to retransmit the failed part, beginning with the failed chunk, a maximum of three times. Retrying to upload the failed chunk does not affect any other successfully uploaded part.
+
+-   When the connector successfully uploads all parts of the object, Amazon S3 assembles the parts and creates the object.
+-   Suppose the connector cannot successfully upload the failed part after retrying the maximum of three times; the entire multipart or chunked upload stops. As a result, all of the parts in the upload roll back, and nothing is stored in Amazon S3, reducing your storage cost.
+
+## Upload limits for objects with multiple parts 
+
+Amazon S3 has specific upload limits that the connector enforces when uploading objects in multiple parts. For example, each part of the object must be at least 5 MB in size, except the last part. There is no size limit on the last part of a multipart upload.
+
+When successful, the action uploads the object and the output is an XML document containing the following information:
+
+-   Bucket
+
+-   File Key
+
+-   Version ID \(if you enable versioning for the bucket\)
+
+
+## Select 
+
+Select filters and retrieves the contents of an Amazon S3 object in a bucket based on a simple structured query language \(SQL\) statement you write \(the maximum length is 256 KB\) and include as part of the input document `(the <Expression> node)` in the Message step. In addition to providing the SQL statement in the input document, you also specify information about:
+
+-   The retrieved source object, such as the data serialization format \(supports JSON, CSV, and Apache Parquet\)
+
+-   Whether the retrieved object is compressed \(supports GZIP and BZIP2 for CSV and JSON objects\)
+
+-   The value you use to separate individual records and fields, and so on.
+
+
+When configuring this action, use the **Output Format** field to specify the format \(CSV or JSON\) the connector uses to format the documents returned by this action. Determination of all additional output formatting for returned documents is based on the article [default values provided by Amazon S3](https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectSELECTContent.html#RESTObjectSELECTContent-requests).
+
+When running the process, this action retrieves the subset of data that you need that can reduce the amount of data that Amazon S3 transfers. As a result, it helps reduce the cost and time it takes to retrieve the data. The maximum length of a record in the results is 1 MB.
+
+## Request format 
+
+The following XML example shows the request format for an Amazon S3 object in CSV format:
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<SelectRequest>
+    <FileKey>Example-Object.csv</FileKey>
+    <Expression>Select * from S3Object</Expression>
+    <CompressionType>GZIP</CompressionType>
+    <ObjectFormat>CSV</ObjectFormat>
+    <CSV>
+    <FieldDelimiter>,</FieldDelimiter>
+    <QuoteFields>ALWAYS</QuoteFields>
+    <FileHeaderInfo>IGNORE</FileHeaderInfo>
+    <Comments>#</Comments>
+    <QuoteCharacter>"</QuoteCharacter>
+    </CSV>
+</SelectRequest>
+```
+
+## Limitations for Parquet objects 
+
+The following limitations apply to Parquet objects with the Select action:
+
+-   Amazon S3 Select supports only columnar compression using GZIP or Snappy. It does not support Whole-object compression.
+-   The maximum uncompressed block size is 256 MB.
+-   Amazon S3 Select does not support Parquet output. You must use the **Output Format** field in the action and select either **CSV** or **JSON**.
+-   The maximum number of columns is 100.
+-   You must use the data types specified in the object's schema.
+-   If you select a repeated field, it returns last value only.
+
+## Delete 
+
+Delete removes and deletes objects \(a single object, and up to 1,000\) from an Amazon S3 bucket. If the object key is not in the response from Amazon S3, the operation retrieves the bucket as a tracked property. Before using this action, verify that you have the correct permissions to delete the objects located in either public or shared buckets. Otherwise, you receive an error.
+
+When using this action, browse to select the bucket containing the objects to delete. The connector creates a batch to delete multiple objects, which improves performance. The batch contains the input documents based on the name of the selected bucket when browsing. You can also provide the bucket name dynamically using the **Dynamic Bucket** option. It requires the name of the object to delete, and is provided as the ID in the Request profile.
+
+When successful, the action deletes the objects from the bucket. This action does not generate and return an output document.
+
+## Query 
+Query looks up objects from an Amazon S3 bucket based on specific search criteria. Query returns zero-to-many object records from a single request based on zero or more filters. After you select the Query action and use the Import Wizard, the operation component page contains configuration options to add filters to limit the results. You can also use the Import Wizard and select the **Dynamic Bucket** option to provide the bucket name using query filters.
+
+:::note
+
+Before you begin, verify that you have the appropriate access rights and permissions to query public and shared buckets.
+
+:::
+
+Refine the query on the **Filters** tab and define expressions to create sophisticated query logic for the following fields:
+
+-   prefix — limit the response to keys that begin with the specified prefix. You can use prefixes to separate a bucket into different groupings of keys.
+-   start-after — return key names after a specific object key in your key space.
+-   bucket — return objects from a specific bucket. This option is only available when you select **Dynamic Bucket** in the Import Wizard.
+
+When successful, the action returns an XML document for the objects in the bucket. The XML document contains the Key, Last Modified date and time, ETag, Size, and Storage Class.
+
+<OperationEnd />

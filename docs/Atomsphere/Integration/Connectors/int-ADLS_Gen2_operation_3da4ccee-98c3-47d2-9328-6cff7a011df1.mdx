@@ -1,0 +1,160 @@
+import TrackingDir from './_TrackObject.md'
+import ReturnErrRes from './_ReturnResponse.md'
+import OperationEnd from './_operationEnd.md'
+
+# Microsoft Azure Data Lake Storage operation 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-3da4ccee-98c3-47d2-9328-6cff7a011df1"/>
+</head>
+
+
+Microsoft Azure Data Lake Storage \(ADLS\) connector enables you to access and interact with your ADLS Gen2 storage using the ADLS Gen2 REST APIs.
+
+The Microsoft ADLS connector's operation defines how to interact with your ADLS Gen2 Storage account. It represents a specific action \(Create, List, Get, Update, and Delete\) to be performed against an ADLS Gen2 storage object \(Filesystem and Path\) within your account.
+
+-   **Filesystem** - The parent location that holds the files and folders.
+-   **Path** - The forward slash delimited \(/\) representation of the directory structure containing the files.
+
+Create a separate operation component for each action/object combination that your integration requires.
+
+The Microsoft ADLS connector operations support the following actions:
+
+-   **Create** -
+    -   Create one or more new filesystems in a given ADLS Gen2 storage account.
+    -   Create one or more new files in a given filesystem or a specific directory within the filesystem.
+-   **List** -
+    -   Retrieve a list of filesystems within a given ADLS Gen2 storage account.
+    -   Retrieve a list of paths \(directory structure containing the files\) within a filesystem.
+-   **Get** - Read the content of a file in a filesystem.
+-   **Update** - Update the content of a file in a filesystem.
+-   **Delete** -
+    -   Delete one or more filesystems in a given storage account.
+    -   Delete the paths \(directories/files\) from a filesystem.
+
+:::note Attention 
+
+Please note that the files created or modified using Azure Blob Storage API cannot be modified using the ADLS Gen2 connector.
+
+:::
+
+## Options tab 
+
+Click **Import Operation**, then use the Import wizard to select the object to integrate. Based on the selected action, the following action specific fields will appear in the Import wizard.
+
+
+
+**Create Type \(Create\)** - 
+Select the ADLS Gen2 storage object to be created. The available options are **FileSystem** and **Path**.
+
+**List Type \(List\)** - 
+Select the ADLS Gen2 object type \(Filesystem/Path\) to be listed.
+
+**Delete Type \(Delete\)** - 
+Select the ADLS Gen2 object type \(Filesystem/Path\) to be deleted.
+
+
+:::note
+
+During the import for Path, the **Object Type** drop-down field will be displaying the filesystems for selection. The drop-down list displays up to 500 filesystems and can fetch a maximum of 5000 filesystems only. To fetch a specific filesystem within 5000 limit, use the **Filter** text field.
+
+:::
+
+After the import action, when you configure an action, the following fields appear on the **Options** tab.
+
+
+
+**Connector Action** -    
+Displays the action selected in the connector configuration.
+
+<TrackingDir />
+
+**Request Profile \(Create, List, Get, Delete\)** -   
+Select or add a JSON profile component that represents the structure that is being sent by the connector.
+
+**Response Profile \(Create, List, Update, Delete\)** -   
+Select or add a JSON profile component that represents the structure that is being received by the connector.
+
+<ReturnErrRes />
+
+**Target Directory \(Create, Update\)** -     
+Provide the name of directory within a filesystem, in which the new file has to be created. Applicable for Path only.
+
+**Action If File Exists \(Create\)** -   
+Select the action to be performed, if the given file exists already. Applicable for Path only. The available options are:
+
+ -   Overwrite — Select this option to overwrite the existing file content.
+ -   Generate Error — Select this option to halt the operation with an error message.
+  -   Force Unique Name — Select this option to create the file with a unique name.
+
+**Max Results \(List\)** -    
+Specify the maximum number of records \(filesystem/path\) to be returned per execution. By default, the response will include 5000 records per page. To retrieve filesystems exceeding the 5000 limit, specify the exact value of number of records required. Example: 6700.
+
+ 
+:::note
+
+The max results exceeding 5000 limit is not supported for paths.
+
+:::
+
+**Recursive \(List, Delete\)** -   
+Select this check box to list/delete all the paths within the parent and its child directories. Applicable for Path \(directory\) only.
+
+ -   **List operation** - If the **Recursive** check box is not selected, only paths at the root level of the filesystem will be listed.
+ -   **Delete operation** - If the recursive is selected, all paths beneath the directory will be deleted. When recursive is not selected and directory is empty, that specific directory will be removed. In case of non-empty directory, the connector throws an error.
+
+Operation Properties \(Delete\) - 
+Use the **Add Property** button to add additional criteria and its value to filter the filesystem/path to be deleted. This is an optional field. Example,
+
+ -   **Filesystem** - "If-Modified-Since" criteria added with specific date and time value. All the filesystems that are modified since the specified time will be deleted. See [here](https://docs.microsoft.com/en-us/rest/api/storageservices/datalakestoragegen2/filesystem/delete#request-headers) for the supported list of filesystem delete criteria.
+-   **Path** - "If-Match" criteria added with the unique ETag value. The ETag must be specified in quotes. File matching the given ETag value will be deleted. See [here](https://docs.microsoft.com/en-us/rest/api/storageservices/datalakestoragegen2/path/delete#request-headers) for the supported list of path delete criteria.
+
+## Create   
+
+Create is an outbound action that allows you to create required resource \(filesystem/directory/file\) in your ADLS Gen2 storage account. During the import action, specify the resource \(Filesystem/Path\) to be created in the **Create Type** field. It allows creating multiple filesystems and paths using the Message \(or\) Disk step.
+
+-   **Filesystem** - Requires filesystem name as a mandatory input. It can be defined on Connector's **Parameter** tab. The given filesystem name must be unique.
+-   **Path** - You can create a path \(directory and file\) within a filesystem. During the import action, the required filesystem is selected in the **Object Type** field. To create a file within an existing directory, the directory name must be specified in the **Target Directory** field on the **Options** tab. The content of the file to be created can be sent using the Message/Disk step. The file name and target directory can be defined using the Set Properties step. If the directory specified does not exists, both the directory and the file will be created. If the directory is specified in both Operation settings and Set Properties step, the value provided in the Set Properties step will take precedence over the operation settings. When passing multiple input using the Disk step to create multiple paths, make sure to use the **Force Unique Name** option on the **Options** tab.
+
+## List 
+
+List is an inbound action used for listing the filesystem\(s\) and path\(s\) from the given storage account. During the import action, specify the resource \(Filesystem/Path\) to be listed in the **List Type** field.
+
+-   **Filesystem** - The filesystem listing can be filtered using the **Prefix** value. The prefix value should be defined on the connector's **Parameters** tab. The filesystem starting with the given prefix value will be listed. Optionally, you can also define the number of records to be returned per page in the **Max Results** on the **Options** tab. If no max results value specified, the result will include maximum of 5000 records. To list out records exceeding 5000 limit, make sure to specify the required value in the Max Results field.
+-   **Path** - Use this to list out all the paths inside a specific filesystem or a directory of a specific filesystem. To retrieve the paths within a specific directory, the directory value must be defined on the connector's **Parameters** tab. The Max results value can be used to define the results return limit. The **Recursive** option allows to list out all the paths \(files\) inside the given directory along with its child paths. If the Recursive option is not selected, only paths at the root level of the filesystem will be listed.
+
+    :::note Restriction
+    
+    The List Path operation can fetch up to 5000 records only.
+
+    :::
+
+If the filesystem and/or directory specified does not exist, no results will be returned.
+
+## Get 
+
+Get is an inbound action to read the data within the files in the selected filesystem. Applicable for path only. The file could be in any format or any extension. For a successful Get operation, the target file directory and the file name must be provided as input to the connector \(via Parameters tab or Message step\).
+
+## Update 
+
+Update is an outbound action used to append the data to a file. The target directory containing the file must be specified on the **Options** tab and the file name can be passed as input using the Set Properties step. File content to be appended can be provided using the Message or Disk step.
+
+:::note
+
+ The given input content will be appended to the last line in the file. To start from a new line, provide a blank line in the beginning of the input.
+
+:::
+
+## Delete 
+
+Delete is an outbound action used to delete the file system\(s\)/directory\(s\)/files in your storage account. During the import action, specify the resource \(Filesystem/Path\) to be listed in the **Delete Type** field.
+
+-   **Filesystem** - Requires the name of the filesystem defined as connector **Parameters** tab.
+-   **Path** - Use to delete directories/files in your storage account. The Recursive option is supported only when the resource to be deleted is a directory. If selected, all paths beneath the directory will be deleted. If the recursive is not selected and given directory is,
+    -   **Empty** - The directory will be deleted.
+    -  ** Non-empty** - The process will be terminated with the error message. If the **Return Application Error Responses** check box is selected on the **Options** tab, the error response will be returned post the process completion.
+
+If required, you can define additional criteria to filter the objects for deletion using the **Add Property** in the **Operation Properties** section.
+
+<OperationEnd />

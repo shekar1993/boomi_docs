@@ -1,0 +1,226 @@
+import RequestProfile from './_RequestProfile.md'
+import ResponseProfile from './_ResponseProfile.md'
+import OperationEnd from './_operationEnd.md'
+import TrackingDirection from './_TrackingDirection.md'
+import ReturnErrRes from './_ReturnResponse.md'
+import ReqRes from './_ReqRes.md'
+import TrackingDir from './_TrackObject.md'
+
+# Workday Prism Analytics V2 operation
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-1a61b100-c1b4-46bc-84af-352259a68843"/>
+</head>
+
+
+The Workday Prism Analytics V2 operation defines how to interact with your Workday account and represents a specific action to be performed \(Get, Create \(Dataset/Table and Bucket\), Upload, Complete Bucket, and Import.
+
+Create a separate operation component for each action/object combination that your integration requires. The Workday Prism Analytics V2 operations support the following actions:
+
+-   Inbound: Get
+-   Outbound: Create \(Table and Bucket\), Upload, Complete Bucket, and Import.
+
+## Options tab
+
+Click **Import Operation**, then use the Import wizard to select the object with which you want to integrate. When you configure an action, the following fields appear on the Options tab.
+
+**Connector Action** - 
+Determines the type of operation the connector is performing related to Inbound or Outbound, specify the proper connector action. Depending on how you create the operation component, the action type is either configurable or non-configurable from the drop-down list.
+
+**Object** - 
+Defines the object with which you want to integrate and which is selected in the **Import Wizard**.
+
+ -   The Object type for Create Table is “Dataset”.
+ -   The Object types for Create Bucket are:
+        -   “List of Datasets” available if “Use existing schema” is selected during Import.
+        -   “Dynamic Dataset” if “Use existing schema” is cleared during Import.
+
+
+<RequestProfile />
+
+<ResponseProfile />
+
+<TrackingDirection />
+
+<ReturnErrRes />
+
+**Automatically generate bucket name \(Create\)** - 
+\(Optional, and Bucket only\) Select to automatically generate the bucket name. The bucket name must be unique across all datasets in the catalog.
+
+**Header lines to ignore \(Upload\)** - 
+\(Optional\) Enter the number of header rows to ignore from the file being uploaded.
+
+**Maximum chunk size \(Upload\)** - 
+Enter the maximum size \(in megabytes, without compression\) for each chunk to upload. The maximum upload limit for a single compressed file that the Prism Data API supports is 256 MB.
+
+**Wait for Process to Complete \(Complete Bucket\)** - 
+ \(Optional\) Select to have the process wait for the service to finish processing the bucket to return the final state. When successful, the bucket is assigned to the table.
+
+**Wait Timeout \(seconds\) \(Complete Bucket\)**    
+ \(Optional\) Enter the maximum number of seconds to wait for the service to finish processing the bucket. This timeout is used when the **Wait for Process to Complete** check box is selected.
+
+**Wait for Process to Complete \(Import\)** - 
+ Select to have the process wait for the service to finish processing the bucket to return the final state. When successful, the bucket is assigned to the table.
+
+**Wait Timeout \(seconds\) \(Import\)** - 
+ Enter the maximum number of seconds to wait for the service to finish processing the bucket. This timeout is used when the **Wait for Process to Complete** check box is selected.
+
+**Header lines to ignore \(Import\)** - 
+ Enter the number of header rows to ignore the data from the file being uploaded. The default value is 1.
+
+**Maximum chunk size \(Import\)** - 
+ Enter the maximum size \(in megabytes, without compression\) for each chunk to upload. The maximum upload limit for a single compressed file that the Prism Data API supports is 256 MB.
+
+**Automatically generate bucket name \(Import\)** - 
+ \(Required\) Select to automatically generate the bucket name. The bucket name cannot be blank and must be unique across all tables in the catalog. You can override the generated bucket name with a profile field. If you do not select this option, the connector throws an error.
+
+## Get
+
+The Get operation is used to obtain information about a bucket. For example, the Bucket name, the associated dataset, and the status of the bucket by specifying the Bucket ID as an input parameter in the configuration of the Connector step.
+
+## Create
+
+The Create operation is used to do the following:
+
+-   Create a table.
+-   Create a bucket.
+
+**Creating a table**
+
+When you need to load data into Workday Prism Analytics, the first step is to use the Create action to create a new empty table. Before you begin, verify that you have the appropriate access rights and permissions to create datasets and tables using the Workday user interface and documentation at doc.workday.com. The JSON input document for the table only requires the name, but you can optionally provide a label and description. After creating the table, you can reuse it for the buckets containing the CSV files that you want to upload to the table.
+
+**JSON format to create table**
+
+```java
+
+{
+    "name": "name of the table",
+    "displayName": "display name of the table",
+    "fields": [
+       {
+            "ordinal": 1,
+            "name": "Column Name",
+            "description": "Description of the column",
+            "precision": 255,
+            "scale": 0,
+            "type":{
+                "id": "fdd7dd26156610006a12d4fd1ea300ce",
+                "descriptor": "Text"
+            	  }
+          },
+       {
+            "ordinal": 2,
+            "name": "Column Name",
+            "description": "Description of the column",
+            "precision": 255,
+            "scale": 0,
+            "type":{
+                "id": "fdd7dd26156610006a12d4fd1ea300ce",
+                "descriptor": "Text"
+            	  }
+          },
+   ]
+}
+```
+
+:::note
+
+The table name and column names of the table should be unique.
+
+:::
+
+**Creating a bucket**
+
+After creating the dataset, your next step is to use the Create action to create the bucket, which is a temporary folder for the CSV files that you want to upload to the dataset. When creating the bucket, you select either a specific dataset or a Dynamic Dataset \(you provide the dataset using a document property\) when browsing. Specify options for how the bucket name is generated, how fields in the file to upload are enclosed and delimited, and the number of lines to ignore in the file to upload. The JSON input document for the bucket requires the name, some fields to define the schema of the files to upload, and the dataset.
+
+When browsing to create a bucket, you can select the **Use existing schema** option to retrieve the schema fields from the dataset that has already been uploaded and use the schema in the new bucket you are creating. If the dataset does not have an uploaded schema, or you do not select this option. You must define the schema in an input document as shown below.
+
+**JSON format to create Bucket**
+
+```java
+
+'{
+"name": "BucketForDYNAMIC_DATASET_'{1}'",
+"targetDataset": {      
+"id": "b818f1f5fbf0017544cf2700c0393b15"
+},
+"operation": {
+"id": "Operation_Type=Replace"
+},
+"schema": {
+"parseOptions": {
+"fieldsDelimitedBy": ",",
+"fieldsEnclosedBy": "\"",
+"headerLinesToIgnore": 1,
+"charset": {
+"id": "Encoding=UTF-8"        
+},
+"type": {
+    "id": "Schema_File_Type=Delimited"
+     }
+     },
+     "fields": [
+			{
+              "ordinal": 1,
+              "name": "Employee",
+              "description": "Employee",
+              "precision": 255,
+              "scale": 0,
+              "type": {
+                  "id": "fdd7dd26156610006a12d4fd1ea300ce",
+                  "descriptor": "Text"
+					}
+			},
+			{
+            "ordinal": 8,
+            "name": "Annual_Salary",
+            "description": "Annual Salary",
+            "precision": 18,
+            "scale": 2,
+            "type": {	
+                "id": "32e3fa0dd9ea1000072bac410415127a",
+                "descriptor": "Numeric"
+                }
+			},
+                ],
+                "schemaVersion": {
+                    "id": "Schema_Version=1.0"   }
+         }
+}'
+```
+
+:::note 
+
+Buckets expire after 24 hours, and after that period they can no longer be used to upload files. If you do not complete the entire data loading process \(create the dataset/table, create the bucket, upload files into the dataset/table, complete the bucket\) in the 24-hour period, you must start over by creating a new bucket.
+
+:::
+
+## Upload
+
+The Upload operation is used to upload the CSV files into the bucket after it is created. Use the Set Properties step and provide two required document properties:
+
+-   Filename — the name of the CSV file that you want to upload into the bucket.
+-   Bucket ID — the destination bucket where the file is uploaded.
+
+You can also provide an optional document property for the number of header lines to ignore. If set, the document property overrides the operation setting.
+
+## Complete Bucket
+
+The Complete Bucket operation is used to initiate the data transfer from bucket to dataset once the CSV files are uploaded successfully into the bucket. The input JSON for Complete Bucket provides the Bucket ID, and the output is a JSON document containing the Bucket ID and the state of the bucket \(either Success or Failed\). The Bucket ID should be added as an input parameter in the Connector step. When successful, a "Success" status is received stating that the bucket was completed. The Object Type is Bucket.
+
+## Import
+
+The Import operation is used to create a bucket and upload the files in the dataset for a pre-existing Table. Upon execution, this operation will execute the following:
+
+-   Creates a bucket for an existing table.
+-   Uploads the file to the bucket.
+-   Completes the bucket.
+
+:::note
+
+During Import, you must select **Use Existing Schema** to select the pre-existing tables. If not selected, the connector throws an error.
+
+:::
+
+<OperationEnd />

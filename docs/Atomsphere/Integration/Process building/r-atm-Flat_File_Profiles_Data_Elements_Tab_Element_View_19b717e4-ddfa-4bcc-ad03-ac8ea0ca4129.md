@@ -1,0 +1,25 @@
+# Flat file profile's Data Elements tab, Element View
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-19b717e4-ddfa-4bcc-ad03-ac8ea0ca4129"/>
+</head>
+
+
+The Element View contains configuration options for the individual data elements.
+
+| Category             | Name                      | Description                                                                                                                                                                                                                                                      |
+|----------------------|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| General Options      | **Data Name**             | Name of selected record in table view.                                                                                                                                                                                                                           |
+|                      | **Position**              | The element’s position in the record. You can change an element’s position by dragging it up or down in the list.                                                                                                                                                 |
+|                      | **Mandatory**             | Determines if a value should be mandatory or not. For delimited files, you cannot have a mandatory element after a non-mandatory element.                                                                                                                         |
+|                      | **Enforce Unique**        | Used to affect a specific field mapping behavior when this profile is referenced as the destination profile in a map (it has no effect when referenced as the source profile). If checked, the map will produce only a single row for each unique value mapped to this field. |
+| Field Size Options   | **Field Length Validation** | Determines whether data validation should occur on this element (mandatory, length, etc.).                                                                                                                                                                      |
+|                      | **Start Column**          | (Data Positioned files only) Defines the column in which to start reading the element. For example, if the element includes a prefix that you want to exclude, specify the column where you want reading to start. **Note:** The first column in a data-positioned profile is column 0. Be sure to start counting from 0 when you specify a Start Column value. |
+|                      | **Length**                | (Data Positioned files only) Defines the length of the element to be read. Any characters beyond this length are ignored.                                                                                                                                         |
+|                      | **Justification**         | (Data Positioned files only) Defines the alignment of data, to the left or right.                                                                                                                                                                                |
+|                      | **Min Length**            | (Delimited files only) Defines the minimum length of the field.                                                                                                                                                                                                 |
+|                      | **Max Length**            | (Delimited files only) Defines the maximum length of the field.                                                                                                                                                                                                 |
+| Data Format Options  | **Data Type**             | Choose the element data type and specify a format for the value, if required. For more information about formatting Number and Date elements, see [Number Data Type](r-atm-Number_data_type_25bd3c61-4613-42cb-9282-b16756fa47fa.md) and [Date/Time data type](r-atm-DateTime_data_type_05826c0b-8b49-4d8f-94a5-9ce7c15d64d0.md) topics.|
+| Identity Options     | **Use To Identify Format** | In the Record View, if you choose to detect the file format by "Specified unique values," you must indicate which element will contain the unique value, along with that value. Marks this element as a row identifier.                                            |
+|                      | **Identity Value**        | The value used to identify the given record format.                                                                                                                                                                                                             |

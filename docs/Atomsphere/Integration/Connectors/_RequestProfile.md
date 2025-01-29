@@ -1,0 +1,1 @@
+**Request Profile** - Select or add an XML profile component that represents the structure sent by the connector.

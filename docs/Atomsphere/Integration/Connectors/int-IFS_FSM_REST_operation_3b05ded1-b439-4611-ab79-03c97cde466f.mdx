@@ -1,0 +1,107 @@
+import TrackingDir from './_TrackObject.md'
+
+import ReturnErrRes from './_ReturnResponse.md'
+
+import OperationEnd from './_operationEnd.md'
+
+# IFS FSM REST operation
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-3b05ded1-b439-4611-ab79-03c97cde466f"/>
+</head>
+
+
+The IFS FSM REST operation defines how to interact with your IFS FSM account and represents a specific action to perform against a specific IFS FSM object.
+
+Create a separate operation component for each action/object combination that your integration requires.
+
+The IFS FSM REST operations use JSON format and support the following actions:
+
+-   **Action** — provides the ability to invoke a selected FSM Perform Message.
+-   **Create** — creates a new record in IFS FSM.
+-   **Delete** — deletes an existing records in IFS FSM.
+-   **Get** — retrieves a specific record from IFS FSM based on its primary key.
+-   **Query** — retrieves one or more records from IFS FSM, optionally based on a filter.
+-   **Update** — updates an existing record in IFS FSM.
+
+## Options tab
+
+Click **Import Operation**, then use the Import wizard to browse the API schema for IFS FSM. If you select an object, the operation loads the relevant Request and/or Response profiles for the API. Clicking on the **Edit** icon for either allows you to view the schema for the profile.
+
+**Option**   
+Select Prefer: return=minimal if you do not want the result of the operation returned. Only its status is returned.
+
+
+<TrackingDir />
+
+
+
+**Request/Response Profile**   
+The JSON profile definition that represents the structure sent or received by the connector.
+
+<ReturnErrRes />
+
+**Option**   
+Select Prefer: return=minimal if you do not want the result of the operation returned. Only its status is returned.
+
+## Action
+
+You can invoke FSM perform messages \(also called MPMs\) using the outbound Action action. The perform name is the object selected in the **Import Wizard**. Any parameters related to the selected perform must be configured and passed using the Parameters tab of the Connector step.
+
+## Create
+
+The outbound Create action creates new records in the IFS FSM system. This action is supported for most object types, including custom types.
+
+
+:::note
+
+The Create action does not support batching.
+
+:::
+
+## Delete
+
+The outbound Delete action deletes an existing record in the IFS FSM system. The output profile for a delete operation is ignored. Delete does not support batching.
+
+
+:::note
+
+The service does not support bulk or paged deletions.
+
+:::
+
+## Get
+
+The inbound Get action requires the Record \(type\) and Primary Key for an entity type and unique identifier. The Get action does not support paging or batching.
+
+
+:::note
+
+Attributes having a null value are not returned, and you should assume that non-returned attributes are null in the system. If you set the attribute to a value, it is returned in all subsequent Get operations to match the profile.
+
+:::
+
+## Query
+
+The inbound Query action retrieves one or more records from IFS. Any attributes having a null value are not returned in a query, and you should assume that non-returned attributes are null in the system. If you set the attribute to a value, it is returned in all subsequent queries to match the profile.
+
+Entities can have attributes or references to other entities. The IFS FSM REST connector enables you to specify an arbitrary logic tree for top-level attributes and reference attributes.
+
+-   You can query by attribute only top-level attributes.
+-   You can query by reference for entity references.
+
+
+:::note
+
+The Query action does not support batching or relationship entities.
+
+:::
+
+## Update
+
+The outbound Update action updates an existing record in IFS FSM. You must include the primary KeyID of the record being updated in the request.
+
+The service does not support batched or paged Update requests.
+
+<OperationEnd />

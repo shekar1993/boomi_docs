@@ -1,0 +1,120 @@
+import TestConnection from './_TestCon.md'
+
+# Oracle Database connection
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-4895479a-703c-4d75-95ae-5413ac158032"/>
+</head>
+
+
+The Oracle Database connection represents a specific oracle database instance and its associated user authentication details. If you have multiple systems, you can create a separate connection for each \(or\) use connection extensions.
+
+## Connection tab
+
+**Connection URL**: Refers to your oracle database URL. Format — `jdbc:oracle:thin:@hostname:port Number:databaseName`
+
+For example,
+
+```
+jdbc:oracle:thin:@localhost:1521:xe
+```
+
+**Class Name**: Refers to the class naming of the database driver which needs to be communicated to respective database.
+
+**User Name**: Refers to the database user on whose behalf the connection is made.
+
+**Password**: Refers to the user’s password.
+
+**Schema Name**: Enter the database schema name to fetch the table names for selection. You can also provide the schema name at time of operation - import. If the schema value does not exist in both the Connection and Operation settings, the schema name will be taken from the user name.
+
+    
+:::note
+
+If any of the existing integration process has a different schema name used in the Connection and Import, make sure to reimport the profile.
+
+:::
+
+**Connection Timeout \(ms\)**: Enter the maximum time \(in milliseconds\) that the connector can wait to complete the connection handshake with the database.
+
+**Read Timeout**: Enter the maximum time \(in milliseconds\) that the connector can spend in attempting to read data from the database. If the value is left as blank, the default value of 600s will be used. The Read timeout value entered in the Connection UI can be overridden by passing the new value via the Message step.
+
+**Connection Properties**: Refers to the additional connection properties required to establish connection to the database.
+
+-   **Public Cloud Atom Support**: There are chances of getting access denied error \("java.lang.RuntimePermission" "getenv.TNS\_ADMIN"\) while performing the Test Connection/ Import/ Process execution on the Boomi public cloud. To run the connector successfully on the public cloud, the **oracle.net.tns\_admin** property must be defined as Key with the Value set to the directory path of the tnsnames.ora file containing the DB connection details.
+
+                
+:::note
+
+Every time, you want to execute the process on the public cloud, make sure the directory and the ORA file exist and you have required access permission on it. It is recommended to place the ORA file in the Work folder within the connector account of the public cloud atom. The file path specified must be allowed by the Java Security Manager and High Policy Security.
+
+:::
+
+Sample tnsnames.ora file content:
+
+```   
+XE= 
+    (DESCRIPTION —
+    (ADDRESS_LIST = 
+    (ADDRESS — (PROTOCOL — TCP) (HOST — 13.126.74.41) (PORT — 1521))
+    )
+    (CONNECT_DATA —
+    (SERVICE_NAME = XE)
+    )
+)
+```
+
+For more details, refer to the [Oracle Documentation on TNSNames Alias Syntax](https://docs.oracle.com/en/database/oracle/oracle-database/18/jjdbc/data-sources-and-URLs.html#GUID-DEF609D8-7AF9-4D21-93A7-163DA9593F3A).
+
+
+## Oracle Wallet
+
+This connector supports Oracle Wallet feature of the Oracle Database. This allows using the username and password in the encrypted format. As you create an Oracle Wallet in the Oracle DB, tns\_names and wallet\_location folders are automatically generated. You need to copy these to the machine where your local Atom resides and then mention the proper path in the **Connection URL** and **Connection Properties** as given below.
+
+-   Connection URL - `jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCPS)(PORT=1530)(HOST=10.0.0.12))(CONNECT_DATA=(SERVICE_NAME=TEST)))`
+-   Connection Properties -
+    -   oracle.net.tns\_admin = C:/Users/Documents/TNS\_ENTRY
+    -   oracle.net.wallet\_location = \(SOURCE=\(METHOD=file\) \(METHOD\_DATA=\(DIRECTORY=C:/Users/Desktop/Oracle\_wallet/wallet\_location)))
+    -   oracle.net.ssl\_server\_dn\_match = false
+
+
+:::note
+
+To know about the steps required for Oracle Wallet/TCPS authentication, refer to [https://community.boomi.com/s/article/TCPS-Authentication-in-Oracle-Database](https://community.boomi.com/s/article/TCPS-Authentication-in-Oracle-Database)
+
+:::
+
+## Connection Pooling Settings
+
+**Enable Connection Pooling \(Optional\)** - 
+Select the check box to use the connection pooling feature. If selected, then the connection pooling settings fields \(listed below\) will be displayed. If the check box is not selected, then the values defined in the below fields will not be considered for connection pooling.
+
+**Maximum Connections \(Optional\)** - 
+Enter the maximum number of connections allowed in the pool. The default is -1, which indicates an unlimited number of connections. You will receive an error, if you attempt to exceed the maximum.
+
+**Minimum Connections \(Optional\)** -   
+Enter the minimum number of connections allowed in the pool. The default is 0.
+
+**Maximum Idle Time \(Optional\)** -   
+Enter the maximum amount of time \(in seconds\) that a connection can remain open in an idle state. The default is 0.
+
+**When Exhausted Action \(Optional\)** - 
+Indicate whether to wait for a connection or immediately fail, when a connection pool is exhausted.
+
+**Maximum Wait Time \(Optional\)** -  
+Enter the maximum amount of time \(in seconds\) to wait for a connection from the pool. The default is 0.
+
+**Test Connection When Borrowing From Pool \(Optional\)** - 
+Select this option to verify if a connection is still valid while taking it from the pool.
+
+**Test Connection When Returning to Pool \(Optional\)** - 
+Select this option to test if a connection is still valid, when returning it back to the pool.
+
+**Test Idle Connections \(Optional\)** - 
+Select this option to test if the idle connections are still valid.
+
+**Validation Query \(Optional\)** - 
+Enter a simple query statement to return a single row of data, to be used to validate if the connection is valid. If no query specified, the default query will be executed to check the connection.
+
+
+<TestConnection />

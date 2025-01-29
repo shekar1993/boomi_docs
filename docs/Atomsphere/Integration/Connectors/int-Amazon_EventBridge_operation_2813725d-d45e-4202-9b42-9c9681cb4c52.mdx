@@ -1,0 +1,47 @@
+import RequestProfile from './_RequestProfile.md'
+import ResponseProfile from './_ResponseProfile.md'
+import OperationEnd from './_operationEnd.md'
+import TrackingDirection from './_TrackingDirection.md'
+import ReturnErrRes from './_ReturnResponse.md'
+
+# Amazon EventBridge operation
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-2813725d-d45e-4202-9b42-9c9681cb4c52"/>
+</head>
+
+
+The Amazon EventBridge operations define how to interact with your AWS account and represent a specific action to be performed against a specific file in JSON format.
+
+The Amazon EventBridge operations support the following action:
+
+-   Create — The outbound operation which creates events in the Amazon object defined in the operation \([PutEvents](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_PutEvents.html)\).
+
+    The input profile must be in the format specified in the [Amazon EventBridge Documentation](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_PutEvents.html). This can be sent either through a Message step or using a Disk step \(as a file\).
+
+    
+:::note
+
+The maximum size for an input file is 1MB. The connector produces an error if the file size exceeds 1MB. It is recommended to use the Try/Catch step to catch the failed input files and list them.
+
+:::
+
+
+## Options tab
+
+The following describes the default field definitions for each action type:
+
+**Object** - 
+Defines the object with which you want to integrate and which is selected in the **Import Wizard**.
+
+**Tracking Direction**   
+This read-only setting displays the tracking direction, either Input Documents or Output Documents, for the current operation. The default value for the Create operation is Input Documents. This setting is determined by the operation configuration in the connector descriptor, affecting which document appears in Process Reporting.
+
+<RequestProfile />
+
+<ResponseProfile />
+
+<ReturnErrRes />
+
+<OperationEnd />

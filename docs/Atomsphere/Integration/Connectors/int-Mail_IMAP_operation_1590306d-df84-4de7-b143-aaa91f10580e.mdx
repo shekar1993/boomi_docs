@@ -1,0 +1,166 @@
+
+import OperationEnd from './_operationEnd.md'
+import ReturnErrRes from './_ReturnResponse.md'
+
+# Mail \(IMAP\) operation 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-1590306d-df84-4de7-b143-aaa91f10580e"/>
+</head>
+
+The Mail \(IMAP\) operation defines how to interact with email messages, such as receiving email messages from a specific folder in the mailbox, sending a single or multiple attachments in an email message, and moving email messages from one folder to another.
+
+The Mail \(IMAP\) operation supports three types of actions:
+
+-   Receive — Used to retrieve email messages from a specific sender's address and folder from an IMAP mail server. When retrieving email messages, the IMAP protocol applies constraints to the operation based only on date \(a full day\) without considering time. Email received on that day are included when "Greater Than" is selected in your filter.
+
+    -   The operation can retrieve one or several email messages with or without a subject, a body, and attachments.
+    -   The operation returns the email message body as a raw Boomi document.
+    -   When an email message has an attachment, the operation stores the file in a Document Cache and returns a key to retrieve the files.
+    -   Attachments can have the following formats: text/plain, text/HTML, text/XML, application/binary, application/EDIFACT, application/EDI-X12 and application/XML.
+    -   The operation returns the Received Date as a tracked property after the operation is executed and emails are found. The format of the Received Date is: dd MMM yyyy HH:mm:ss Z For example, April 11 2018 is formatted as: 11 APR 2018 08:22:44 -0500.
+    -   The format of the Received Date in filters is dd MMM yyyy because the IMAP protocol does not support searches by DateTime \(only Date\). For example, if you filter by "Greater Than" and select 9 FEB 2018, the IMAP server returns emails received during that day because it considers the date as 2/9/2018 00:00:00.
+        
+:::note
+
+The Receive operation works as a query with binary output resulting from the operation. You can filter by Subject, the From Address, whether to retrieve email that has been read, the From Folder, and the Received Date. By default, no filter is applied to the operation and all unread email is retrieved from the inbox.
+
+:::
+
+-   Send — Used to send email messages and attachments to an SMTP mail server.
+
+    -   The operation can send an email message with or without a subject, a "To" address, a body, and attachments to one or more SMTP email servers.
+    -   The operation does not return an output document.
+    -   The operation supports multiple attachments to each email message using the Document Cache.
+
+        
+        :::note
+
+        You can set the File Name and Content-Type properties for each attachment, and they are stored in the Document Cache.
+
+        :::
+
+    -   The email message body can have the following formats: text/plain, text/HTML, text/XML.
+-   Move — Used to move email messages from one folder to another in the mailbox. This operation does not return an output document.
+
+
+## Options tab, Receive action 
+
+This operation retrieves email messages from a specific sender's address and folder from an IMAP mail server. When you configure a RECEIVE action, the following fields appear on the Options tab:
+
+**Object** - 
+An object defines what you want to integrate or the action to run, which you select in the **Import Operation** wizard.
+
+**Tracking Direction** - Select the document tracking direction for the operation, either **Input Documents** or **Output Documents**. This setting enables you to choose which document appears in **Process Reporting**. Start steps always track output documents regardless of your selection.
+
+:::note
+
+If the tracking direction is read only, the connector operation cannot be toggled.
+
+:::
+
+<ReturnErrRes />
+
+**Delete From Server** - 
+Turn on to delete the email message from the mail server after it has been read.
+
+**Attachment Cache** - 
+Identifies the Document Cache that is used to add attachments to email messages.
+
+**Index Name** - 
+Identifies the Document Cache index that is used to add attachments to email messages. The key must be the Message ID document property.
+
+**Alias Name** - 
+Identifies the Alias of the Document Property Key in the Document Cache to extract and send multiple attachments. The key must be the Message ID document property.
+
+## Options tab, Send action 
+
+This operation sends email messages and attachments to an SMTP mail server. When you configure a Send action, the following fields appear on the Options tab. You can specify the following document properties to override the operation property values: From, To, CC Address, BCC Address, and Subject. This operation does not return an output document.
+
+
+:::note
+
+There is no limit to the number of email addresses that you can add in the **To**, **CC**, and **BCC** fields. However, as a best practice, create an email group outside of Integration for the large number of users and email addresses. Then, enter the address of the email group in the appropriate field \(**To**, **CC**, or **BCC**\). When you use an email group, you can update the list of recipients when appropriate without having to update and redeploy the processes.
+
+:::
+
+**Object** - 
+An object defines what you want to integrate or the action to run, which you select in the **Import Operation** wizard.
+
+**Tracking Direction** - Select the document tracking direction for the operation, either **Input Documents** or **Output Documents**. This setting enables you to choose which document appears in **Process Reporting**. Start steps always track output documents regardless of your selection.
+
+:::note
+
+If the tracking direction is read only, the connector operation cannot be toggled.
+
+:::
+
+<ReturnErrRes />
+
+**From** - 
+The email address from which the connector sends the email message. The **Outbound User Name** from the connection determines the primary address from which emails are sent. Setting **From** to a different email address and attempting to override the connection value may not work as expected and needs to be enabled by the mail server that is used to send email \(the **Outbound Host** in the connection\).
+
+**To** - 
+\(Optional\) The email address\(es\) to which the connector sends email messages. Separate multiple addresses with a semicolon. You can send an email message without a To address as long as a CC or BCC address is provided.
+
+**CC** - 
+The email address\(es\) to send a carbon copy of the email message. Separate multiple addresses with a semicolon.
+
+**BCC** - 
+The email address\(es\) to send a blind carbon copy of the email message. Separate multiple addresses with a semicolon.
+
+**Subject** - 
+The value in the Subject field of the email message to be sent.
+
+**Attachment Cache** - 
+Identifies the Document Cache to extract and send multiple attachments. Attachments can have any format, including the following:
+
+-   text/plain
+
+-   text/HTML
+
+-   text/XML
+
+-   application/binary
+
+-   application/EDIFACT
+
+-   application/EDI-X12
+
+-   application/XML
+
+
+**Index Name** - 
+Identifies the Document Cache Index to extract and send multiple attachments.
+
+**Alias Name** - 
+Identifies the Alias of the Document Property Key in the Document Cache to extract and send multiple attachments.
+
+## Options tab, Move action 
+
+This operation moves email messages from one folder to another in the mailbox. When you configure a Move action, the following fields appear on the Options tab. You can specify the following document properties to override the operation property values: From Folder, To Folder. This operation does not return an output document.
+
+**Object** - 
+An object defines what you want to integrate or the action to run, which you select in the **Import Operation** wizard.
+
+**Tracking Direction** - Select the document tracking direction for the operation, either **Input Documents** or **Output Documents**. This setting enables you to choose which document appears in **Process Reporting**. Start steps always track output documents regardless of your selection.
+
+:::note
+
+If the tracking direction is read only, the connector operation cannot be toggled.
+
+:::
+
+<ReturnErrRes />
+
+**From Folder** - 
+The source folder from which the connector retrieves email messages to be moved.
+
+**To Folder** - 
+The destination folder where the connector moves the email message.
+
+**Folder Size Limits** - 
+Specifies a limit for the number of email messages that can be stored in your IMAP folder. If the number of email messages to be moved is greater than the limit you specify, the connector creates a batch, includes the messages in the batch, and moves them successfully.
+
+<OperationEnd />

@@ -1,0 +1,70 @@
+import TrackedProperties from './_TrackedProperties.md'
+import PartnerSupport from './_PartnerSupport.md'
+
+# OpenLegacy Hub - Partner connector 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-39974818-86c9-46b9-a76d-9481b436d674"/>
+</head>
+
+<PartnerSupport />
+
+The OpenLegacy Hub - Partner connector integrates the to any legacy systems via the OpenLegacy Hub, an all-in-one platform for managing and integrating legacy assets into third-party technology platforms.
+
+![](../Images/img-int-openlegacy_icon_84dca442-96e6-4f3d-a32c-f29d08e31ee6.png)
+
+## Connector configuration 
+
+The integration between the and legacy assets using the OpenLegacy Hub is a two-step process:
+
+1.  Automatic generation of legacy assets into the OpenLegacy Hub repository.
+2.  Using the Boomi connector as a plugin to the OpenLegacy Hub for seamless integration of the assets housed in the OpenLegacy Hub repository.
+
+To configure the OpenLegacy connector to communicate with the OpenLegacy Hub tenant, set up the following components:
+
+-   OpenLegacy Hub - Partner connection - Using the Boomi UI, you can define connection properties such as the OpenLegacy Hub URL, the API Key for the OpenLegacy Hub, and the Deployed Application Base URL \(the URL of the developed API after deployment\). An application can be no-code, low-code, or full-code.
+-   OpenLegacy Hub - Partner operation - The connector step operation is back-end specific. The Import Wizard will guide you through the process of importing a specific Project and Object Type from the OpenLegacy Hub repository specific to your desired operation.
+
+After building and validating your connection and operation, set up your connector within a Boomi Integration process. When you have properly configured your connector within your Boomi Integration process, Boomi Integration can map to and from virtually any system using the OpenLegacy connector to query, create, update and/or delete data as supported by the back-end operation.
+
+## Prerequisites
+
+Before building and configuring a Boomi Integration process to connect to your legacy system using the OpenLegacy - Partner connector, you must first address the following:
+
+-   Register an OpenLegacy Hub Account and Generate a Hub API Key
+
+    Before extending the to core systems via the OpenLegacy Hub, first Register an OpenLegacy Hub Account [here](https://app.ol-hub.com/auth/sign-up) and generate a unique API Key. Save the generated API Key in a safe place. The API key is required to configure your Boomi OpenLegacy Hub- Partner connector to your private OpenLegacy Hub instance.
+
+-   Generate a project with the help of OpenLegacy Hub to expose APIs
+
+    This action can be invoked by a Boomi process. Deploy this project to OpenLegacy cloud or any other cloud. APIs from the project must be publicly available.
+
+
+## Troubleshooting
+
+If you experience difficulties, try the following:
+
+1.  Validate connectivity to the OpenLegacy Hub \(OpenLegacy Hub URL, API Key\)
+    -   If the OpenLegacy Hub URL is not defined correctly, you will get the following error:
+
+        ``` 
+        "Original hostname: ';api.yyyyyy.ol-hub.com' failed to resolve."
+        ```
+
+    -   An incorrect set of API keys will result in an “Unauthorized” error.
+2.  Validate connectivity to the OpenLegacy Hub Project and the listing of available Object Types as part of the import wizard drop-down.
+    -   An incorrect project name \(usually due to typos\) will return the following error:
+
+        ``` 
+        "Could not pull the requested project because the project was not found."
+        ```
+
+3.  If the OpenLegacy Hub Project Module requires parameters, check the flow to ensure proper parameters are provided.
+
+4.  Test the OpenLegacy assets via the OpenLegacy CLI.
+
+
+Contact OpenLegacy Support at [support@openlegacy.com](mailto:support@openlegacy.com) if an error persists.
+
+<TrackedProperties />

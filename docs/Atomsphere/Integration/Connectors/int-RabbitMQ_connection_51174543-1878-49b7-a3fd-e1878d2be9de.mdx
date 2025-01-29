@@ -1,0 +1,43 @@
+import TestConnection from './_TestCon.md'
+
+# RabbitMQ connection
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-51174543-1878-49b7-a3fd-e1878d2be9de"/>
+</head>
+
+
+The RabbitMQ connection represents a single RabbitMQ account, including sign-in credentials.
+
+If you have multiple accounts, use a separate connection for each account and configure the connector accordingly. Pair a single connection with a different RabbitMQ operation to perform unique actions on a RabbitMQ server.
+
+## **Connection** tab 
+
+The RabbitMQ connector uses the AMQP 0-9-1 protocol for authentication and authorization and provides basic authentication \(user name and password\).
+
+:::note
+
+All RabbitMQ connection fields are required.
+
+:::
+
+**User Name** - 
+The associated user name with the RabbitMQ account. The user name specified in the connection also identifies the publisher of a message.
+
+**Password** - 
+The password of the RabbitMQ account is associated with the user name.
+
+**Host** - 
+Enter the IP address or domain name of the server that hosts the instance of RabbitMQ.
+
+**Port** - 
+Enter the port number that hosts the instance of the RabbitMQ service.
+
+**Virtual Host** - 
+The name of the RabbitMQ virtual host. To view a list of available Virtual Hosts on the RabbitMQ server, enable the RabbitMQ Management plug-in and navigate to the **Admin** menu.
+
+**Use TLS** - 
+Select if you are using the TLS \(Transport Layer Security\) protocol. It encrypts all data exchanged between and the server with a digital security certificate, which makes it difficult to steal your user name and password. You must import this certificate into . For more information, see the linked Certificate components topic.
+
+<TestConnection />

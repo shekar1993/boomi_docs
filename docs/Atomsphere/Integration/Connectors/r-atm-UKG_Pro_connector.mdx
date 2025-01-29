@@ -1,0 +1,42 @@
+import TrackedProperties from './_TrackedProperties.md'
+
+
+# UKG Pro connector 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-a7064d00-fcd6-456d-985a-f758239362d7"/>
+</head>
+
+
+Use the UKG Pro connector to easily browse, query, and get data out of UKG Pro and integrate that data with other back-office systems.
+
+The UKG Pro connector connects directly to the UKG Pro application and browses the interfaces in real time. Integrating with UKG Pro consists of web service calls utilizing XML request/response set up over an HTTPS connection. The technical details of this connection, such as request headers, error handling, and HTTPS connection, are abstracted to simplify your implementation.
+
+## Connector configuration 
+
+To configure a connector to communicate with UKG Pro, set up two components:
+
+-   UKG Pro connection
+
+-   UKG Pro operation
+
+
+This connector provides reusable components, which contain connection settings \(such as URL, User, and Password\) and operation settings \(such as Object, Action, and data definitions\). After building your connection and operation, set up your connector within a process. When the UKG Pro connector is configured properly within your process, Integration can map to and from virtually any system using the UKG Pro connector to retrieve data from or send data to the UKG Pro application.
+
+## Prerequisites 
+
+To implement a connection to your UKG Pro account from Integration:
+
+-   Have both your login and password to access the UKG Pro web service.
+
+-   Confirm that your UKG Pro account has privileges to connect to the UKG Pro API. Your UKG Pro representative can confirm your privileges by providing you with a Sender ID and password specific to the integration API.
+
+-   Replace your current password in UKG Pro connector's connection settings with a combination of your password and a security token. This replacement is needed due to a UKG Pro security change.
+
+
+## Supported editions 
+
+The UKG Pro connector supports all available versions of the UKG Pro services. The version of the service you connect to determines the Object Types you can use for the selected action \(Get or Query\).
+
+<TrackedProperties />

@@ -1,0 +1,1 @@
+**Request/Response Profile** - The XML profile definition that represents the structure sent or received by the connector.

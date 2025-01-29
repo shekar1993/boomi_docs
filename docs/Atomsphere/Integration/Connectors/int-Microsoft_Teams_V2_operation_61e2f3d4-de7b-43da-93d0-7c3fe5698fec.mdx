@@ -1,0 +1,619 @@
+import OperationEnd from './_operationEnd.md'
+import TrackingDir from './_TrackObject.md'
+import ReturnErrRes from './_ReturnResponse.md'
+
+# Microsoft Teams operation 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-61e2f3d4-de7b-43da-93d0-7c3fe5698fec"/>
+</head>
+
+
+Microsoft Teams connector allows you to connect to your Microsoft Teams server and perform required data transfer from/to, using Microsoft Graph REST APIs.
+
+The Microsoft Teams operation defines how to interact with your Microsoft Teams server and represent a specific action \(Create, Get, Execute, Manage, List, Delete\) to be performed against one/many Microsoft Teams resources. Create a separate operation component for each action combination that your integration requires.
+
+The Microsoft Teams connector supports the following actions:
+
+-   Inbound: Get, List
+-   Outbound: Create, Execute, Manage, Delete
+
+## Options tab
+
+Click **Import Operation**, then use the Import wizard to select the object to integrate. In the **Import Wizard**, provide the specific Microsoft Team resources \(E.g. Channel, Team, Team Member, Chat Message\). When you configure an action, the following fields appear on the connector **Options** tab.
+
+**Connector Action \(All Operations\)**: Determines the type of operation the connector is performing related to Inbound or Outbound. Depending on how you create the operation component, the action type is either configurable or non-configurable from the drop-down list.
+
+**Object \(All Operations\)**: Defines a specific Microsoft Teams resource \(Channel, Group, Team\) you want to integrate, which you selected in the **Import Wizard**.
+
+**Request Profile \(Create\)**: The JSON profile representing the structure to process a specific request on the selected Microsoft Teams resource. Import the Request Profile by choosing the Microsoft Teams resource from the Object Type drop down.
+
+<TrackingDir />
+
+<ReturnErrRes />
+
+**Enable Bulk Provisioning \(Create\)**: Select the check box to perform bulk creation of channel/group/team members/team on the Microsoft Teams server. The accepted input file format is CSV Format.
+
+**Team ID \(Create\)**: Specify the Team ID in which the channel must be created. Mandatory for new channel creation.
+
+    
+:::note
+
+To get the Team ID from your Microsoft Teams application, navigate to your Team title, click on the icon next to your Team title. Click on **Get link to team**. The groupId in the URL represents the Team ID.
+
+:::
+
+Team ID example: `https://teams.microsoft.com/l/team/19%3a2b41847106b946e4adf6975f34d63ebd%40thread.skype/conversations?groupId=9b885541-08f9-4f10-b8df-282323d25a40&tenantId=e0793d39-0939-496d-b129-198edd916feb`
+
+**Group ID \(Create\)**   
+Specify the group ID to which new team member must be attached to. Mandatory for team creation.
+
+**Message ID \(Execute\)**   
+Specify ID of the message to which the user intends to reply. Mandatory only for Execute operation – Replying to a Message in a Channel.
+
+    
+:::note
+
+Always leave this field as empty during Execute operation other than replying to a message. Else, API response will throw BAD REQUEST. To get the Message ID from your Microsoft Teams application, navigate to your Team title. Click on the icon next to your Team title, then click on **Get link to team**. The parentMessageId in the URL represents the Message ID.
+
+:::
+
+Message ID example: `https://teams.microsoft.com/l/message/19:0e4270b8a1224820adbe383dbe76692c@thread.tacv2/1591488878610?tenantId=ac7b98d5-19cc-47bc-97fd-a56cb8690903&groupId=953aa6bd-5d6d-4182-a591-2a6b14ee74ca&parentMessageId=1591488878610&teamName=Test%20Team%20Sprint%201&channelName=General&createdTime=1591488878610`
+
+## Create
+
+Create is an outbound action that you can use to create a new Microsoft resource like Channel, Team Members, Group, Team in your Microsoft Teams server. This operation can be performed either as a single or bulk processing. Use the **Import Wizard** to select the required Teams object, request and response profile. The JSON request profile contains the properties for a single object.
+
+-   Single - You can use the Message step to provide the input request.
+-   Bulk creation – You must select the Enable Bulk Provisioning check box on the CREATE operation – Options tab and pass the input in CSV format. You can use the Disk step connector for loading the input CSV file and then Map step for associating the CSV fields with the request JSON profile.
+
+If the operation is successful, the connector returns a response in JSON format with the created Microsoft Teams object details. The connector supports the following Create actions explained below.
+
+
+:::note
+
+For all operations, make sure the process input file size does not exceed more than 1MB.
+
+:::
+
+#### Create Channel
+
+Use this operation to create new channels in a Microsoft Teams server based on user’s input request. For a channel creation, you must specify the following details:
+
+-   In the **Import Wizard**, the Object Type must be selected as **“Create Channel”**.
+-   On the Create operation – **Options** tab, provide a valid ID of the team in which channel needs to be created.
+
+    
+    :::note
+
+    The TEAM ID can also be defined as a document property using the Set Properties step. In such case, the value defined in the Set Properties step will override the value defined on the Operation - **Options** tab.
+
+    :::
+
+    Make sure the registered client app has below API permissions configured in the Microsoft Azure Portal.
+
+    -   API Name: Group.ReadWrite.All
+    -   Permission Type: Application
+
+Post the successful import, the Object, Request Profile and Response Profile get updated on the **Options** tab. Sample Input JSON:
+
+```json
+{ "displayName": "Architecture Discussion", "description": "To discuss on all future architecture plans" }
+```
+
+The connector provides JSON response with success code and channel object.
+
+#### Bulk Creation of Channels
+
+To perform bulk creation of channels, you must:
+
+-   Select the **Enable Bulk Provisioning** check box on the Create operation – **Options** tab.
+-   Provide the process input in a CSV format. CSV structure includes:
+    1.  Header section – First row of the CSV. Individual cells in the header denote the request JSON fields required in a single create operation. The columns can be placed in any position, but the names must match with the request JSON fields as per the Create Channel API.
+    2.  Request section – Actual input data records. Can include as many rows as required. During the Import, select the **Object Type** as **“Bulk Provisioning Of Channels”**. Rest of the connector operation properties remain same as the single channel creation.
+
+Sample Input Request \(CSV\):
+
+```
+"id", "method", "url", "description", "displayName", "Content-Type" "1", "POST", "/teams/9845ec1b-f50b-44ad-967b-1e5a988c38f9/channels", "BulkChannelAug_01", "BulkChannelAug01", "application/json" "2", "POST", "/teams/9845ec1b-f50b-44ad-967b-1e5a988c38f9/channels", "BulkChannelAug_02", "BulkChannelAug02", "application/json" 
+```
+
+#### Create Team Members
+
+Use this operation to create new team members. The users are created in the Microsoft Azure Active Directory. New team member/user\(s\) can be created based on the input details or from a master list of the user’s company. In the **Import Wizard**, select the **Object Type** as “Create Member”. To associate a team member to a specific group, provide the Group ID value in the Create operation – **Options** tab. The Group ID can also be defined as a document property using the Set Properties step. In such case, the value defined in the Set Properties step will override the value defined on the Options tab. Make sure the registered client app has below API permissions.
+
+-   API Name: User.ReadWrite.All, Directory.ReadWrite.All
+-   Permission Type: Application
+
+To add the members/users to a group, make sure the Usage Location and Exchange Online Plan license assignment are configured to the user in the Azure Active Directory Services - Microsoft Azure Portal. Sample Input JSON:
+
+```
+{ "accountEnabled": true, "displayName": "displayName-value", "mailNickname": "mailNickname-value", "userPrincipalName": "upn-value@tenant-value.onmicrosoft.com", "passwordProfile": { "forceChangePasswordNextSignIn": true, "password": "password-value" } }
+```
+
+#### Bulk Creation of Team Members
+
+To perform bulk creation of team members, you must:
+
+-   Select the Enable Bulk Provisioning check box on the CREATE operation – **Options** tab.
+-   Provide the process input in a CSV format. The CSV structure remains the same as explained in the Create Channel section.
+
+During the Import, select the Object Type as “Bulk Provisioning Of Members”. Sample Input Request \(CSV\):
+
+```
+"id", "method", "url", "accountEnabled", "displayName", "mailNickname", "userPrincipalName", "forceChangePasswordNextSignIn", "password", "Content-Type" "1", "POST", "/users", "true","BulkUserAug0801","bulkMnickAug0801","BulkUserAug0801@acpcloud2218outlook.onmicrosoft.com","false","Teams@123", "application/json" "2", "POST", "/users", "true", "BulkUserAug0801","bulkMnickAug0801","BulkUserAug0801@acpcloud2218outlook.onmicrosoft.com","false","Teams@123", "application/json"
+```
+
+#### Create Group
+
+Use this operation to create new group without any members. It represents an Azure Active Directory \(Azure AD\) group i.e. a Microsoft Office 365 group. In the Import Wizard, select the Object Type as “Create Group”. The response includes only the default properties of the group.
+
+-   Make sure the registered client app has below API permissions.
+    -   API Name: Group.Create, Group.ReadWrite.All
+    -   Permission Type: Application
+-   In the Input JSON, the groupTypes property must be set as "Unified" for Office 365 user creation.
+-   Although Microsoft Teams is built on Office 365 groups, you can't currently create a team via this API. Refer to the Create Team operation. Sample Input JSON:
+
+```
+{ "description": "Self help community for library", "displayName": "Library Assist", "groupTypes": [ "Unified" ], "mailEnabled": true, "mailNickname": "library", "securityEnabled": false }
+```
+
+#### Bulk Creation of Group
+
+The procedure and CSV structure remain the same as explained in the Create Channel section. During the Import, select the Object Type as “Bulk Provisioning Of Groups”.
+
+
+:::note
+
+The column groupTypes is an array of strings in the final request payload. The delimiter used to split the string in this case is “;”. You can use the Data Process step and Map step to convert the delimited strings into array of strings.
+
+:::
+
+Sample Input Request \(CSV\):
+
+```
+"id", "method", "url", "description", "displayName", "groupTypes", "mailEnabled", "mailNickname", "securityEnabled", "Content-Type" "1", "POST", "/groups", "GroupJul31_b005", "GroupJul31b005", "Unified;", "false", "mailnick31b005", "true", "application/json" "2", "POST", "/groups", "GroupJul31_b006", "GroupJul31b006", "Unified;", "false", "mailnick31b006", "true", "application/json" 
+```
+
+#### Create Group with Owners and Members
+
+Use this operation to create an Office 365 group with an owner and members. In the Import Wizard, select the **Object Type** as “Create Group with Owners”, attach request and response profile. The members/users of the group must be created already. The user must have Usage Location \(Users section\) setting and Exchange Online \(Plan1\) \(License section\) configured in the Microsoft Azure Active Directory. For more information, refer to Add or change profile information for active directory users. The Member/User ID must be passed as part of the input request. The Member ID can also be defined as a document property using the Set Properties step. In such case, the value defined in the Set Properties step will override the value defined on the **Options** tab.
+
+-   Make sure the registered client app has below API permissions.
+    -   API Name: Group.Create, Group.ReadWrite.All, Directory.ReadWrite.All
+    -   Permission Type: Application
+-   A maximum of 20 relationships, such as owners and members, can be added as part of group creation.
+
+Sample Input JSON:
+
+```
+{ "description": "Group with designated owner and members", "displayName": "Operations group", "groupTypes": [ "Unified" ], "mailEnabled": true, "mailNickname": "operations2019", "securityEnabled": false, "owners@odata.bind": [ "https://graph.microsoft.com/v1.0/users/26be1845-4119-4801-a799-aea79d09f1a2" ], "members@odata.bind": [ "https://graph.microsoft.com/v1.0/users/ff7cb387-6688-423c-8188-3da9532a73cc", "https://graph.microsoft.com/v1.0/users/69456242-0067-49d3-ba96-9de6f2728e14" ] }
+```
+
+#### Bulk Creation of Groups with Owners and Members
+
+The procedure and CSV structure remain the same as explained in the Create Channel section During the Import, select the Object Type as “Bulk Provisioning Of Groups With Owners and Members”.
+
+
+:::note
+
+The column “groupTypes”, “owners@odata.bind” and "members@odata.bind" will be an array of string type in the final request payload. The delimiter used to split the string in this case is “;”. Using Data Process step and Map step, the delimited strings will be converted into array of strings.
+
+:::
+
+Sample Input Request \(CSV\):
+
+```
+"id", "method", "url", "description", "displayName", "groupTypes", "mailEnabled", "mailNickname", "securityEnabled", "owners@odata.bind", "members@odata.bind", "Content-Type" "1", "POST", "/groups", "GroupOwnerJul31_01", "GroupOwnerJul3101", "Unified;", "false", "mailnickowner073101", "true","https://graph.microsoft.com/v1.0/users/2ef9c720-99bd-4f3e-9fde-925c71cd4cfa;", "https://graph.microsoft.com/v1.0/users/2ef9c720-99bd-4f3e-9fde-925c71cd4cfa;https://graph.microsoft.com/v1.0/users/26be1845-4119-4801-a79", "application/json" "2", "POST", "/groups", "GroupOwnerJul31_02", "GroupOwnerJul3102", "Unified;", "false", "mailnickowner073102", "true","https://graph.microsoft.com/v1.0/users/2ef9c720-99bd-4f3e-9fde-925c71cd4cfa;", "https://graph.microsoft.com/v1.0/users/2ef9c720-99bd-4f3e-9fde-925c71cd4cfa;https://graph.microsoft.com/v1.0/users/26be1845-4119-4801-a79", "application/json"
+```
+
+#### Create Team
+
+Use this operation to create new team\(s\) under a group, based on the user input. In the Import Wizard, select the Object Type as “Create Team”, attach request and response profile. On the CREATE operation – Options tab, provide a valid ID of the Group in which Team needs to be created. The Group ID can also be defined as a document property using the Set Properties step. In such case, the value defined in the Set Properties step will override the value defined on the Options tab.
+
+-   Make sure the registered client app has below API permissions.
+    -   API Name: Group.Create, Group.ReadWrite.All, Directory.ReadWrite.All
+    -   Permission Type: Application
+-   In order to create a team, the group must have a least one owner and all the members should have Outlook license configured.
+-   If the group has been created less than 15 minutes ago, the “Create team” API call might fail with a ‘404 Error’ code due to replication delays. In such case, it is recommended to retry the Create Team call after 15 minutes.
+
+Post the successful operation, the response will include success response code and a team object. Sample Input JSON:
+
+```
+{ "memberSettings": { "allowCreateUpdateChannels": true }, "messagingSettings": { "allowUserEditMessages": true, "allowUserDeleteMessages": true }, "funSettings": { "allowGiphy": true, "giphyContentRating": "strict" } }
+```
+
+#### Bulk Creation of Teams
+
+The procedure and CSV structure remain the same as explained in the Create Channel section. During the Import, select the Object Type as “Bulk Provisioning Of Teams”. Sample Input Request \(CSV\)
+
+```
+"id", "method", "url", "allowCreatePrivateChannels", "allowCreateUpdateChannels","allowUserEditMessages", "allowUserDeleteMessages", "allowGiphy", "giphyContentRating", "Content-Type" "1", "PUT", "/groups/a1785cf6-3235-4830-8382-0d69d9c5ffed/team", "true" , "true", "true", "true", "true", "strict", "application/json" "2", "PUT", "/groups/31f98532-3c7f-4d9e-8285-79e80b7669fe/team", "true" , "true", "true", "true", "true", "strict", "application/json" "3", "PUT", "/groups/d223b550-9933-4e6b-aab5-9ad52535b7d4/team", "true" , "true", "true", "true", "true", "strict", "application/json"
+```
+
+## Get
+
+Get is an inbound action for which you provide a required Team ID to retrieve required object \(e.g. channels, SharePoint drives, SharePoint drive items\) from the server. Using the Import Wizard, select the object type and attach the response profile. When using the GET operation, the value for input parameter must be defined on the connector’s Parameters tab. This fetches the records based on the parameter value defined. The GET operation supports the following actions explained below:
+
+#### Get List of Channels
+
+Use this operation to retrieve the list of channels available within a given team ID. The team ID value should be defined as connector’s input parameter. Use the Import Wizard to select the Object Type as “List Of Channels” and attach the response profile. Make sure the registered client app has below API permissions.
+
+-   API Name: Group.Read.All, Group.ReadWrite.All
+-   Permission Type: Application
+
+In the response payload, the @odata.count value represents the total number of channels available in the team ID configured as Connector’s input parameter.
+
+#### Get List of SharePoint Drives
+
+Use this operation to retrieve the list of SharePoint drives representing logical container of files, like a document library or a user's OneDrive. This is used for fetching the folders and files used by the team. During profile import using the Import Wizard, select the Object Type as “List Of SharePoint Drives” and attach the response profile. The Team ID must be passed as connector’s parameter. To get the list of drive in the SharePoint site, the following MS Teams Document Properties must be configured using the Set Properties step:
+
+-   SharePoint Site Hostname
+-   SharePoint Site Relative Path
+
+Make sure the registered client app has below API permissions.
+
+Application - 
+Files.Read.All, Files.ReadWrite.All, Sites.Read.All, Sites.ReadWrite.All
+
+Delegated - 
+Files.Read, Files.ReadWrite, Files.Read.All, Files.ReadWrite.All, Sites.Read.All, Sites.ReadWrite.All
+
+#### Get List of SharePoint Files
+
+Use this operation to fetch the list of drive items representing a file, folder, or other items stored in a SharePoint drive. Using the Import Wizard, select the Object Type as “List Of SharePoint Files” and attach the response profile. The Team ID must be passed as connector’s parameter. To get the list of SharePoint drive items, the following MS Teams Document Properties must be configured using the Set Properties step:
+
+-   SharePoint Site Hostname
+-   SharePoint Site Relative Path
+-   SharePoint Drive ID
+
+Make sure the registered client app has below API permissions.
+
+-   API Name: Files.Read, Files.ReadWrite, Files.Read.All, Files.ReadWrite.All, Sites.Read.All, Sites.ReadWrite.All
+-   Permission Type: Delegated
+
+#### Get List of SharePoint Items Inside a Folder
+
+Use this operation to fetch the lists of items within the drive item \(Folder\) in a SharePoint drive. Use the Import Wizard to select the Object Type as “List of SharePoint Items Inside A Folder” and attach the response profile. To get the list of child items within a folder, the following MS Teams Document Properties must be configured using the Set Properties step:
+
+-   SharePoint Site Hostname
+-   SharePoint Site Relative Path
+-   SharePoint Drive ID
+-   SharePoint Item ID
+
+Make sure the registered client app has below API permissions.
+
+-   API Name: Files.Read, Files.ReadWrite, Files.Read.All, Files.ReadWrite.All, Sites.Read.All, Sites.ReadWrite.All
+-   Permission Type: Delegated
+
+#### Get List of SharePoint Files from Personal Drive
+
+Use this operation to fetch the list of drive items representing a file, folder, or other items stored in a user’s personal SharePoint drive. Use the Import Wizard to select the Object Type as “List of SharePoint Files From Personal Drive” and attach the response profile. You can get the required drive item by passing the drive Item unique identifier `(drive/items/{item-id})` value as connector parameter.
+
+-   Make sure the registered client app has below API permissions.
+    -   API Name: Files.Read, Files.ReadWrite, Files.Read.All, Files.ReadWrite.All, Sites.Read.All, Sites.ReadWrite.All
+    -   Permission Type: Delegated
+-   In the Connection setup, select the Delegated Access option and provide the Username and Password. Required for identifying user’s personal drive.
+
+#### Get List of SharePoint List
+
+Use this operation to retrieve the list of SharePoint sites within a drive associated with a Team. Use the Import Wizard to select the Object Type as “List of SharePoint Lists” and attach the response profile. To get the list of drive in the SharePoint site, the following MS Teams Document Properties must be configured using the Set Properties step:
+
+-   SharePoint Site Hostname
+-   SharePoint Site Relative Path
+-   SharePoint Drive ID
+
+Make sure the registered client app has below API permissions.
+
+-   API Name: Sites.Read.All, Sites.ReadWrite.All
+-   Permission Type: Application
+
+## Execute
+
+Execute is an outbound action that allows a user to post/reply to messages in a team’s channel. This operation requires,
+
+-   Delegated Connection setup - To do this, select the Delegated Access option and provide the Username and Password in the Connection settings. You must have required permission to EXECUTE.
+-   Team ID and Channel ID - As part of the Import action, you must provide the Team ID and select the required channel from list of applicable channels.
+-   Client app must have below API permissions.
+    -   API Name: ChannelMessage.Send, Group.ReadWrite.All
+    -   Permission Type: Delegated
+
+Use the Import Wizard to select the required object type \(EXECUTE action\) and generate the request and response JSON profile. The EXECUTE operation supports the following actions.
+
+#### Post Text Message in a Channel
+
+Use this Execute action to post a new message conversation in the selected channel. In the Import Wizard, select the required Object Type as “Post Message” and provide the Team ID. All channels available in the given team will be listed for selection. In the Filter field, you can provide the starting letters of the channel name and get the required channel. Sample Input JSON:
+
+```
+{
+  "body": {
+    "content": "Hello World"
+  }
+}
+```
+
+#### Post Text Message with User Mentions
+
+Use this Execute action to post a message addressing a user\(s\) \(@ mentions\) in the specified channel. In the Import Wizard, select the Object Type as “Post Message With Mentions“ and provide the TEAM and Channel ID.
+
+
+:::note
+
+The user\(s\) mentioned must have outlook access and must be part of the team. In the input JSON if the “content” field is left blank, the Microsoft API might throw an error.
+
+:::
+
+Sample Input JSON:
+
+```
+{
+  "body": {
+"contentType": "html",
+"content":"Hello World <at id=\"0\">Jane Smith</at>"
+},
+"mentions": [
+{
+ "id": 0,
+"mentionText": "Jane Smith",
+"mentioned": {
+    "user": {
+            "displayName": "Jane Smith",
+          "id": "ef1c916a-3135-4417-ba27-8eb7bd084193",
+          "userIdentityType": "aadUser"
+        }
+      }
+    }
+  ]
+}
+```
+
+To mention multiple users,
+
+1.  In the input JSON body, `"content":"Hello World <at id="0">Jane Smith</at>"`, provide the total number of users to be mentioned in place of "0".
+2.  In the input JSON within mentions array, increment the id value and update user details. Repeat this mentions array for each user to be mentioned.
+
+#### Post Message with a Card
+
+Use this Execute action to post a message with a card attachment, in the specified channel. In the Import Wizard, select the Object Type as “Post Message With Cards” and provide the TEAM and Channel ID.
+
+
+:::note
+
+The attached card ID must be unique and can be a new randomly generated GUID. Ensure, the attachment's ID entered in the input JSON and attachment element remain the same.
+
+:::
+
+Sample Input JSON:
+
+``` {#codeblock_jft_vqk_2rb}
+{
+    "subject": null, 
+    "body": {
+        "contentType": "html",\
+        "content": "<attachment id=\"74d20c7f34aa4a7fb74e2b30004247c5\"></attachment>
+    },
+    "attachments": [
+        {
+            "id": "74d20c7f34aa4a7fb74e2b30004247c5",
+            "contentType": "application/vnd.microsoft.card.thumbnail",
+            "contentUrl": null,
+            "content": "{\r\n  \"title\": \"This is an example of posting a card\",\r\n \"subtitle\":\"<h3> This is the Subtitle</h3>\", \r\n \"text\": \"Here is some body text.<br />\\r\\nAnd a <a href=\\\"http://microsoft.com/\\\">hyperlink</a>. <br />\\r\\nAnd below that is some buttons:\",\r\n \"buttons\": [\r\n    {\r\n \"type\": \"messageBack\",\r\n \"title\": \"Login to FakeBot\",\r\n \"text\": \"login\",\r\n \"displayText\": "name": null, "thumbnailUrl": null
+        }
+    ]
+}
+
+```
+
+
+:::note
+
+The “content” field value must be a nested JSON passed as a string as shown in above JSON. You can use an online tool for String type conversion. Below is the original “content” nested JSON:
+
+:::
+
+``` {#codeblock_kft_vqk_2rb}
+{
+  "title": "This is an example of posting a card",
+    "subtitle": "<h3>This is the subtitle</h3>",
+"text": "Here is some body text. <br />\r\nAnd a <a href=\"http://microsoft.com/\">hyperlink</a>. <br />\r\nAnd below that is some buttons:",
+"buttons": [ 
+ {
+      "type": "messageBack",
+        "title": "Login to FakeBot",
+        "text": "login",
+        "displayText": "login",
+        "value": "login"
+        }
+  ]
+}
+```
+
+#### Post Message with an Attachment
+
+Use this Execute action to post a message with an attachment, in the specified channel. In the Import Wizard, select the Object Type as “Post Message With Attachments” and provide the TEAM and Channel ID.
+
+
+:::note
+
+The file to be attached in the chat must be available in SharePoint. Use the functionalities of SharePoint APIs available in GET operation to get the attachment ID.
+
+:::
+
+Sample Input JSON:
+
+``` {#codeblock_lft_vqk_2rb}
+{
+    "body": {
+         "contentType": "html",
+        "content":"Here's the latest budget. <attachment id=\"153fa47d-18c9-4179-be08-9879815a9f90\"></attachment>"
+},
+    "attachments": [
+        {
+            "id": "153fa47d-18c9-4179-be08-9879815a9f90",
+            "contentType": "reference",
+            "contentUrl": "https://m365x987948.sharepoint.com/sites/test/Shared%20Documents/General/test%20doc.docx",
+            "name":"Budget.docx"
+        }
+    ]
+}
+```
+
+#### Reply to Message in a Channel
+
+Use this Execute action to reply to a message in the specified channel. In the Import Wizard, select the Object Type as “Reply to A Message in A Channel” and provide the TEAM and Channel ID. In the Execute operation – Options tab, provide the ID of the Message to be responded. The Message ID can also be defined as a document property using the Set Properties step. In such case, the value defined in the Set Properties step will override the value defined on the Options tab.
+
+
+:::note
+
+In case of replying to a message the Suffix “Message in:” will be changed to “Reply to:”.
+
+:::
+
+Sample Input JSON:
+
+``` {#codeblock_mft_vqk_2rb}
+{
+  "body": {
+"contentType": "html",
+"content": "Hello World"
+  }
+} 
+```
+
+## Manage
+
+Manage is an outbound action that allows to administer the existing Microsoft Teams resource like Channel, Group, Team. During profile import using the Import Wizard, select the required Object Type, and attach the request and response profile. The connector supports the following MANAGE actions explained below:
+
+#### Add a Member to a Group
+
+Use this operation to add a member to an existing Microsoft 365 group. Use the Import Wizard to select the Object Type as “Add Single Member to Group”, provide the Group ID, and attach the request and response profile. Make sure the registered client app has below API permissions.
+
+-   API Name: GroupMember.ReadWrite.All, Group.ReadWrite.All and Directory.ReadWrite.All
+-   Permission Type: Application
+
+Sample Input JSON:
+
+```
+
+{
+  "@odata.id": "https://graph.microsoft.com/v1.0/directoryObjects/{id}"
+}
+
+```
+
+#### Add Multiple Members to a Group
+
+Use this operation to add multiple members \(not more than 20 members\) to an existing Microsoft 365 group. Use the Import Wizard to select the Object Type as “Add Multiple Members to Group”, provide the Group ID, and attach the request and response profile. API permission remains same as explained in the Add a Member to a Group section. Sample Input JSON:
+
+```
+
+{
+  "members@odata.bind":[ "https://graph.microsoft.com/v1.0/directoryObjects/{id}",
+"https://graph.microsoft.com/v1.0/directoryObjects/{id}"        ]
+}
+```
+
+#### Add an Owner to a group
+
+This operation allows you to add an owner user to an existing Microsoft 365 group. The owners are a set of non-admin users who can modify the group object. Use the Import Wizard to select the Object Type as “Add Owner to Group”, provide the Group ID, and attach the request and response profile. Make sure the registered client app has below API permissions.
+
+-   API Name: Group.ReadWrite.All and User.ReadWrite.All
+-   Permission Type: Application
+
+Sample Input JSON:
+
+```
+{"@odata.id": "https://graph.microsoft.com/v1.0/users/{id}"} 
+```
+
+#### Archive a Team
+
+This operation allows you to archive a specified team. To archive a team, the team and group must have an owner. When a team is archived, users can no longer send or like messages on any channel in the team or make any modification to the team. Membership changes to the team continue to be allowed. Archiving is an async operation. A team gets archived after the successful completion of async operation which may occur after a success response. Use the Import Wizard to select the required Object Type as ”Archive A Team”, provide the TEAM ID and attach the request and response profile. This operation requires the client app configured with following API permissions: Application – “TeamSettings.ReadWrite.All, Group.ReadWrite.All, Directory.ReadWrite.All”. Sample Input JSON:
+
+```
+{
+    "shouldSetSpoSiteReadOnlyForMembers": false
+}
+
+```
+
+#### Add a Tab to an Existing Channel
+
+This operation allows you to add \(pins\) a tab to the specified channel within a team. Make sure the required app to be pinned on the channel is already installed in the team. Using the Import Wizard, select the required Object Type as “Add Tab to A Channel”, and attach the request and response profile. Make sure the registered client app has below API permissions.
+
+-   API Name: TeamsTab.Create, TeamsTab.ReadWrite.All, Group.ReadWrite.All, Directory.ReadWrite.All
+-   Permission Type: Application
+
+Sample Input JSON:
+
+```
+{
+  "displayName": "Test Word Tab",
+    "teamsApp@odata.bind" : "https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/com.microsoft.teamspace.tab.file.staticviewer.word",
+"configuration": {
+"entityId": "205FA10A-E5F6-4694-85DA-FA08233146F1",
+"contentUrl": "https://acpcloud2218outlook.sharepoint.com/sites/TestSite/Shared%20Documents/Document.docx",
+"websiteUrl": "",
+"removeUrl": ""
+}
+}
+```
+
+
+:::note
+
+The following are mandatory fields to be updated in the request.
+
+:::
+
+-   entityId - The sourceDoc ID of the file. You can find this by opening the file in SharePoint > Copy `sourcedoc=%7B{sourceDocId}%7D` clause from the URL in the address bar.
+-   contentUrl - The URL format is `{folder-webUrl}/{item-name}.{folder-webUrl}`. This is the webUrl of the SharePoint folder containing the file, which can be found from the URL of the root folder of the document library. You can find this URL by opening the SharePoint folder in your browser, copying the URL and deleting the content from "/Forms/AllItems.aspx” until the end of the URL.
+
+The following table lists the TeamsAppId for each app.
+
+|App|TeamsAppId|Type \(Extension\)|
+|---|----------|------------------|
+|Word|com.microsoft.teamspace.tab.file.staticviewer.word|docx|
+|Excel|com.microsoft.teamspace.tab.file.staticviewer.excel|xlsx|
+|PowerPoint|com.microsoft.teamspace.tab.file.staticviewer.powerpoint|pptx|
+|PDF|com.microsoft.teamspace.tab.file.staticviewer.pdf|pptx|
+
+## List
+
+List is an inbound action that looks up for the list of teams available in the Microsoft Teams of your organization. The list of teams associated with a group by providing the group IDs in the JSON input. Make sure the size of the JSON input is less than 1MB. To perform LIST operation, make sure the registered client app has below API permissions.
+
+-   API Name: Group.Read.All, Group.ReadWrite.All
+-   Permission Type: Application
+
+The LIST operation is performed as batch request i.e. multiple group IDs are provided in a request payload and the output is rendered as an individual document for each team. Use the Import Wizard to select the Object Type \(Retrieve List of Teams\) and generate the request and response profile. Sample JSON Input:
+
+```
+{
+  "requests": [
+ {
+      "id": "1",
+     "method": "GET",
+    "url": "/teams/9845ec1b-f50b-44ad-967b-1e5a988c38f9"
+},
+    {
+"id": "2",
+ "method": "GET",
+"url": "/teams/953aa6bd-5d6d-4182-a591-2a6b14ee74ca"
+        }
+  ]
+}    
+
+```
+
+## Delete
+
+DELETE is an outbound action that allows to delete an existing Office 365 user. To perform DELETE operation, make sure the registered client app has below API permissions.
+
+-   API Name: User.ReadWrite.All
+-   Permission Type: Application
+
+In the connector’s Parameters tab, define the unique ID of member/user to be deleted. Use the Import Wizard to select the Object Type \(User\) and generate the request profile. Post the completion of DELETE operation, the user will be moved to a temporary container and can be restored within 30 days. After 30 days, the user will be permanently deleted. The deleted user will not have access to any of the Microsoft Office applications like Outlook, Teams & so on.
+
+
+<OperationEnd />

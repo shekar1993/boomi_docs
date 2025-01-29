@@ -1,0 +1,8 @@
+{
+    "label": "Mutations",
+    "position": 2,
+    "link": {
+      "type": "generated-index",
+      "description": "GraphQL mutations allow you to change or write new data on your database. Spaces Service GraphQL mutations include the mutation operations for Spaces like create, update, and delete, install, and uninstall Spaces; and the mutation operations for Integration like install, uninstall, execute Integrations, etc."
+    }
+}

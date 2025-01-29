@@ -1,0 +1,130 @@
+import ResponseProfile from './_ResponseProfile.md'
+import OperationEnd from './_operationEnd.md'
+import TrackingDirection from './_TrackingDirection.md'
+import ReturnErrRes from './_ReturnResponse.md'
+
+
+
+# RabbitMQ operation 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-c976c9c2-99b4-453d-b94d-3da432291cd1"/>
+</head>
+
+
+The RabbitMQ operation defines how to interact with the RabbitMQ host.
+
+The operation represents a specific action, such as Consume, to consume messages from a queue, Publish to send messages to an exchange, and Listen to subscribe and listen for messages in a queue in exchanges. Create a separate operation component for each action that your integration requires. The RabbitMQ connector operations support the following actions:
+
+-   Consume
+
+-   Publish
+
+-   Listen
+
+
+## Publish 
+
+The Publish operation publishes a message to a specific RabbitMQ exchange. It routes the message through a specific exchange, or through the default RabbitMQ exchange, and sent to one or more queues. The connector waits for confirmation from the server for a defined amount of time, or indefinitely, before publishing the message. It then distributes the message to any active consumers when the transaction, if any, is committed. You can set dynamic document properties to send message headers. The message payload for the RabbitMQ publish operation is unstructured and is not restricted to any particular format.
+
+Additionally, you can use document properties to override the **Routing key** and **Exchange** specified in the operation. If it cannot route a message, it might be dropped depending the server configuration.
+
+## Consume 
+
+The Consume operation retrieves messages from the RabbitMQ queue specified in the operation. The connector waits a specific amount of time, or indefinitely, to retrieve messages. It retrieves a maximum number of messages, or indefinitely, until either the queue is empty or it reaches the time-out. Consume returns an unstructured output binary document containing the message from the specified queue, and returns headers as dynamic properties. The Consume operation retrieves and acknowledges messages in the same instance.
+
+Because the RabbitMQ API does not support the ability to retrieve more than one message at a time, the connector has a **Maximum Message Count** field that can be set to indicate the maximum number of messages to retrieve from the queue.
+
+## Listen 
+
+After being started by its Listen Manager, the RabbitMQ Listen operation subscribes to a specific RabbitMQ queue specified in the **Queue** field and listens for new messages routed for consumption in the queue. After a successful process run, it acknowledges the message. To determine the allowed number of in-flight and unacknowledged messages for each consumer, use the **Quality of Service** field.
+
+### Prerequisites
+
+Before creating a RabbitMQ listener and using it in a process, verify the following prerequisites:
+
+-   You created a connection to your RabbitMQ account.
+-   You know the name of the queue that routes messages for consumption, and how you want to set the quality of service.
+
+### Preset configuration
+
+Listen provides preset configuration for the following:
+
+-   Message delivery policy — Listen provides **At least once** delivery to guarantee message delivery between the producer and consumer. It acknowledges messages after they are successfully processed. With this policy, messages are never lost, but can be redelivered.
+-   Failed messages — Listen rejects failed messages.
+-   Nodes — Listen starts on all nodes as competing consumers.
+
+    :::info Attention
+
+    If the order in which messages are sent is important, set **Quality of Service** to 1. Additionally, ensure the listener only starts on one node. To learn more, see the topic [Implementing the Listen operation](https://developer.boomi.com/docs/Connectors/DevelopConnectors/ImplementingOperation/Listen_operation).
+
+    :::
+
+-   Exclusive consumer — Listen does not lock the queue, allowing competing consumers.
+-   Horizontal scaling — Listen utilizes RabbitMQ's competing consumers pattern and creates multiple competing consumers on a single queue. When deploying Listen to different runtime environments, the queue distributes messages among consumers in a round robin fashion and consumers can process multiple messages concurrently.
+
+#### Listen output documents
+
+Listen returns an unstructured output binary document containing the message from the specified queue.
+
+:::note
+
+Due to a known limitation, the Listen operation does not retain user-defined dynamic document properties set for headers, and the output does not include custom headers.
+
+:::
+
+## **Options** tab 
+
+To successfully perform an operation, specify the following properties on the **Options** tab:
+
+<TrackingDirection />
+
+**Request Profile** - 
+ Indicates that the incoming data is a raw and unstructured document, and is not limited to a predefined format.
+
+**Note:** When creating a header for the message's request profile that the RabbitMQ connector sends to the exchange, use the RabbitMQ document property `Content Type` rather than a dynamic document property named `Header`.
+
+<ResponseProfile />
+
+<ReturnErrRes />
+
+**Queue \(Consume, Listen\)** - 
+  \(**Required**\) Enter the name of the RabbitMQ queue in which it routes messages for consumption. It can consume messages from only one queue at a time.
+
+**Maximum Message Count \(Consume\)** - 
+  Enter the maximum number of messages to retrieve from the queue. The connector can retrieve fewer messages than you specify if the queue is exhausted or it reaches the **Maximum Wait Timeout**. When set to 0 or a negative number, it retrieves messages indefinitely until either the queue is exhausted or it reaches the time-out.
+
+**Maximum Wait Timeout \(Consume and Publish\)** - 
+Enter the maximum time \(in seconds\) that the connector attempts to retrieve messages. When set to 0 or a negative number, the connector retrieves message indefinitely until it reaches either the **Maximum Message Count**or exhausts the queue.
+
+**Exchange \(Publish\)** - 
+ \(Optional\) Specify the exchange name.
+
+ -   If specified, it routes messages through the specific exchange before arriving at queues.
+-   If not specified, messages are routed through the default exchange of RabbitMQ.
+
+You can specify the exchange as a document property. If set, the document property overrides this exchange. Ensure that an exchange exists in the RabbitMQ application before publishing or sending messages to it through the RabbitMQ Tech Preview\) connector.
+
+**Routing Key \(Publish\)** - 
+ \(**Required**\) Specify the routing key of a queue where message are routed. To route a message to single or multiple queues at the same time using the exchange, associate the queue names with the routing key. Ensure that your routing key is correct, otherwise it does not deliver the message to any queue and it discards the message.
+
+You can specify the **Routing Key** as a document property. If set, the document property overrides the **Routing Key** specified in the operation.
+
+**Send Dynamic Properties as Custom Headers \(Publish\)** - 
+ If selected, it sends dynamic properties as headers in the request profile.
+
+**Wait for Confirmation \(Publish\)** - 
+If selected, the connector waits for confirmation from the server that it retrieved the message successfully. Select this option to receive an error if the exchange you configured in the operation, or overrode using a document property, does not exist.
+
+**Quality of Service \(Listen\)** - 
+Enter the maximum number of unacknowledged messages the RabbitMQ server sends, for each Atom node. This setting controls the number of concurrent process runs the connector processes. If you do not enter a number, the operation uses the RabbitMQ server's default. When the server sends the maximum number specified, it does not send new messages until it acknowledges the previous ones.
+
+:::tip
+
+If the order in which it sends messages is important, set **Quality of Service** to 1. Additionally, ensure the listener only starts on one node. To learn more, see the topic [Implementing the Listen operation](https://developer.boomi.com/docs/Connectors/DevelopConnectors/ImplementingOperation/Listen_operation).
+
+:::
+
+**Custom Message Headers \(Listen\)** - 
+When the RabbitMQ connector listens to a queue and the message contains custom header properties, these properties can be extracted and utilized in the process. By selecting the *Tracked Group* for Custom Message Headers in the properties panel and specifying the key of the custom header to extract its value. When the header value is **NULL** then the header value is replaced with an empty string.

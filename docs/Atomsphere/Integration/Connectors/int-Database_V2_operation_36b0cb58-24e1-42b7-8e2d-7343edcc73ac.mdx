@@ -1,0 +1,363 @@
+import OperationEnd from './_operationEnd.md'
+import TrackingDirection from './_TrackingDirection.md'
+import ReturnErrRes from './_ReturnResponse.md'
+
+# Database V2 operation 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-36b0cb58-24e1-42b7-8e2d-7343edcc73ac"/>
+</head>
+
+The Database V2 connector operations define how to interact with your database and represent a specific action \(INSERT, GET, UPDATE, UPSERT, DELETE, and STOREDPROCEDURE\) to be performed against one/many database objects.
+
+Create a separate operation component for each action/object combination that your integration requires. Apart from the Upsert, Storedprocedure and transaction-related operations, all the other operations can be classified as:
+
+-   Standard Operation - Uses prepared SQL statement entered by the user.
+-   Dynamic Operation - Uses statement class to build dynamic SQL queries during the runtime based on the user’s input.
+
+The Database V2 connector supports the following actions:
+
+-   Inbound — Get
+-   Outbound — Insert, Update, Upsert, Delete
+-   Execution of Stored procedure \(IN, OUT, and INOUT Parameters\)
+- Additionally, START TRANSACTION, COMMIT TRANSACTION, and ROLLBACK TRANSACTION operations are supported to enable transaction processing. See the topic [**Designing a Transaction**](../../Integration/Connectors/int-Database_V2_transaction_process.md) for more information on using these actions.
+
+## Options tab
+
+Click **Import Operation**, then use the Import wizard to select the object \(specific database table name\) to integrate. During the import action for Insert, Get, Update, Delete operation, user can opt to provide the SQL query as part of the input request using the **Enable SQL Query** check box. When you configure an action, the following fields appear on the **Options** tab.
+
+**Connector Action \(All Operations\)** -  Determines the type of operation the connector is performing related to Inbound or Outbound. Depending on how you create the operation component, the action type is either configurable or non-configurable from the drop-down list.
+
+**Object \(All Operations\)** -  Defines a specific database table name that you want to integrate, which you selected in the **Import Wizard**.
+
+**Request Profile \(All Operations\)** -  The profile represents the structure of properties required to process a specific request on the selected object type \(database table\). Import the Request Profile by choosing the table name from the Object Type drop-down list. The request profile is built based on the database column names and data types metadata. The **Import Wizard** \(for Insert, Get, Update and Delete operations\) provides an option to pass the SQL Query as part of the input request along the parameter values. This can be done by selecting the **Enable SQL Query** check box, provided if the Operation Type is Standard and the **Commit Option** is **Commit By Profile**. This allows user to prepare and execute SQL queries dynamically. The SQL Query passed in the input request overrides the query entered in the Operation – Options settings.
+
+**Response Profile \(All Operations\)** -  The response profile highlights the format in which the response is to be processed. The response for Insert, Update, Upsert, and Delete operation with **Commit Option** as **Commit By Profile** includes the following details:
+
+-   Query - SQL query used.
+-   Rows Effected - Number of rows effected.
+-   Status – Status of the operation.
+
+:::note
+
+While importing operation, the maximum length of characters for the generated request and response profile names should be less than 255 characters, and include connector name, object name, operation, etc.
+
+:::
+
+<TrackingDirection />
+
+<ReturnErrRes />
+
+
+**Insertion Type \(Insert\)** -  Select the required SQL query mode for performing Insert operation. The available options are:
+
+-   Standard Insert - User must enter the prepared SQL statement for data insertion in the SQL Query field. Make sure the sequence of the input parameters and the respective values passed are in the same order.
+-   Dynamic Insert - The SQL statement is generated dynamically based on the input parameters in the Request Profile.
+
+**Get Operation Type \(Get\)** -  Select the required SQL query mode for performing Get operation. The available options are Standard Get and Dynamic Get.
+
+**Update Operation Type \(Update\)** -  Select the required Update operation type. The available options are Standard Update and Dynamic Update.
+
+**Delete Operation Type \(Delete\)** -  Select the required Delete Operation Type. The available options are Standard Delete and Dynamic Delete.
+
+**SQL Query \(Insert, Get, Update, Delete\)** -  Type or paste an SQL query statement valid for the selected operation \(Insert/Get/Update/Delete\). Mandatory for Standard Operation type. If Dynamic Operation is selected and an SQL statement is provided, then the SQL statement is not considered for execution. During Response Profile import, if the **Enable SQL Query** check box is selected, the SQL Query entered in the Operation – Options settings are disregarded.
+
+**Join Transaction (Delete, Insert, Update, Upsert, Storedprocedure)** - Select to join an existing transaction. When the Join Transaction property is selected then the Commit by Profile/Rows and Batch Count properties are hidden.
+
+:::note
+
+Only DML SQL Statements(Insert, Update, and Delete) are supported in the StoredProcedure with Transaction. StoredProcedures that contain the SQL statements which start or end a transaction implicitly or explicitly are not supported and may lead to unexpected behavior during execution.
+
+:::
+
+**Commit Option \(Insert, Update, Upsert, Delete\)** -  \(Mandatory\) Select the required commit type to be applied when the connector writes to the database. The available options are:
+
+-   Commit By Profile - Performs a single commit after all SQL statements in the profile have been executed. This option avoids orphaned rows when the database profile contains multiple statements, for example tables that have a parent-child relationship.
+
+:::note
+
+The SQL query applied is displayed in the response, post the successful execution.
+
+:::
+
+-   Commit By Number of Rows - Commit action is performed based on the row count specified in the Batch Count field using JDBC batching. A final commit is performed at the end of each document to commit the outstanding rows. Final commits do not span documents.
+
+**Batch Count \(Insert, Get, Update, Upsert, Delete, Storedprocedure\)** -  Sets the number of statements to be batched \(Applicable for Commit By Rows\).
+
+-   During the batch processing, if any of the records within a batch fails the details of failed records and the corresponding batch details can be found in the Process Log page \(**Process** \> **View Log**\).
+-   For Get operation - Batching, use the Document Batching option in the Import page. If selected, the response profile is generated as an array of JSON objects, and the output is batched according to the Batch Count specified. Otherwise, the response profile is generated as JSON object profile and the output is a single row per output document
+-   For Upsert operation, the batch processing is applicable only for MySQL and PostgreSQL databases.
+-   For Storedprocedure operation, the batch processing is applicable for procedures with input parameters \(IN\) only.
+
+        
+:::note
+
+If you opt for batching during the Dynamic Insert/Update/Upsert/Delete operation, the names of the table column provided in the first request must remain the same for all subsequent requests within your batch input for inserting/updating/upserting/deleting the rows.
+
+:::
+
+
+**Include IN Clause \(Get\)** -  Select this feature to include IN clause query in SQL query.
+
+    
+:::note
+
+Include IN Clause can take multiple values. Therefore, you can specify one parameter in the SQL query and can pass multiple values for that parameter in the input request.
+
+:::
+
+Example Query:
+
+```java
+SELECT * FROM CUSTOMER WHERE CUSTOMER_NAME IN($CUSTOMER_NAME) AND CUSTOMER_DOB=$CUSTOMER_DOB AND CUSTOMER_COUTRY=(SELECT CUSTOMER_COUTRY FROM CUSTOMER WHERE CUSTOMER_NAME IN($CUSTOMER_NAME) AND CUSTOMER_DOB=$CUSTOMER_DOB AND CUSTOMER_ID IN($CUSTOMER_ID)) AND CUSTOMER_ID IN($CUSTOMER_ID)
+```
+
+Example Input:
+
+```java
+{
+"CUSTOMER_NAME":["JHON1","BOB"],
+"CUSTOMER_DOB":"10-MAR-20",
+"CUSTOMER_ID":[148,149]
+}
+```
+
+**Table Names \(Get\)** -  Type or paste the names of tables in the SQL query using comma separated values. This option is available in the Get - Import Wizard.
+
+    
+:::note
+
+IN clause has been enhanced to support multiple tables.
+
+:::
+
+Example Query:
+
+```java
+select * from (select id,name,time,paymentDate,marks from diffdatatype where marks in ($diffdatatype.marks))a
+left join customerdata c on c.customerId != a.id and a.paymentDate not in ($diffdatatype.paymentDate) and 
+c.customer_dob in ($customerdata.customer_dob) limit 2
+```
+
+Example Input:
+
+```java
+{
+"diffdatatype.marks":[50,55,56,55,90],
+"diffdatatype.paymentDate": ["1190-02-02"],
+"customerdata.customer_dob":["1995-07-20","1985-07-20"]
+}
+```
+
+**Enable SQL Query \(Insert, Get\)** -  Select this check box to include SQL Query parameter within the Request Profile. This overrides the **SQL Query** text box in the Operation UI \(Applies only for Standard Get/Commit by Profile\).
+
+    
+:::note
+
+SQL Query parameter allows you to prepare and execute dynamic SQL queries at runtime.
+
+:::
+
+**Document Batching \(Get\)** -  Select this check box to enable document batching. If selected, then the response profile is generated as an array of JSON objects, and the output is batched according to the Batch Size. Otherwise, the response profile is generated as JSON object profile and the output is displayed in single row per output document.
+
+**Link Element \(Get\)** -  \(Optional\) Identifies the field, usually the primary key in the database, to split or group results into documents. Specify a required field/column name \(usually primary key in the database table\) to split or group the GET operation results fetched from the database. This is applicable for the Dynamic Get operation only.
+
+**Max Rows \(Get\)** -  \(Optional\) Set the maximum number of rows to be returned from the database in a single Get request.
+
+{/* Reverted content of Max rows since Oct release of this was removed. The following is Maui's text for CONC-2143 when it gets put back in:  The max rows property limits the number of records returned from a database GET operation. It is configurable either at operation level or using Dynamic Process Property / Dynamic Document Property. To return all rows, enter 0. */}
+
+**Max Field Size \(Get, Storedprocedure - OUT and INOUT parameters\)** -  \(Optional\) Sets the limit for the maximum number of bytes \(INTEGER\) that can be returned for Character and binary column values in a Result Set produced by this Statement object.
+
+**Schema Name \(Insert, Get, Update, Delete,Upsert, Storedprocedure\)** -  Specify the required schema name used in the database to lists down names of all the tables based on the schema name.
+
+**Fetch Size \(Get\)** -  Set the number of rows to be fetched when there are more than a one row results on select statements. Please note that the Fetch Size property is not applicable for Storedprocedure.
+
+## Common Profile Generation \(All operations\)
+
+1.  Click the **Import** button in the Operation tab.
+2.  Select the Atom, enter Connection and Operation Type \(For: INSERT, GET, UPDATE, DELETE, UPSERT\) and then click on **Enable SQL Query** if you want this field to be added in Request Profile.
+
+    :::note
+
+    -   You can reduce the number of returned objects in your query by using filters with wildcard characters \(\* or ?\).
+    -   You only need to select Atom and Connection for STOREDPROCEDURE.
+
+    :::
+
+3.  While importing stored procedures, the user can reduce the load time by specifying a combination of a wildcard character (*) and a string in the **Procedure Name Pattern** field.
+
+    :::note
+
+    -   Using only the wildcard character (*) can result in long load times when there are a large number of storedprocedures.
+
+    :::
+
+4.  Specify the required database schema name. For Get operation, you can select the **Document Batching** check box. If selected, the response profile is generated as an array of JSON object, and the output is batched according to the Batch Count specified in the Operations UI. Otherwise, the response profile is generated as JSON object profile and the output is displayed in single row per output document. The schema name needs to be present in order to retrieve a system table.
+5.  The connector also supports importable SQL query fields \(applicable for Insert, Get, Update and Delete operation only\). Here, the connector builds relevant SQL query statement based on the operation selected. This is done post the generation of request and response profiles based on the column names mentioned in the Operation UI. For Dynamic Operation, SQL query is not applicable/functional.
+6.  Click **Next** and select the **Object Type** from the drop-down.
+
+    
+    :::note
+
+    MS SQL database \(Applicable for Insert, Get, Update and Delete operation\) - If the selected schema is a non-default schema, the importable query generated will contain the table name prefixed with the schema name. For example: `Insert into boomischema.products (id,name) values (?,?)`. Here, `boomischema` is the selected non-default schema name and products is the table name.
+
+    :::
+
+7.  Click **Next**.
+
+    The request and response profiles are generated.
+
+8.  Click **Finish** to view the request and response profile.
+
+## Insert
+
+Insert is an outbound action to insert new records to the database table. INSERT supports JDBC Statement batching where the connector batches the SQL statements formed by taking input requests. On Successful insertion of records to the database, the id of the records is returned in the response. The following are the types of Insert operations:
+
+-   Dynamic Insert: Where the user provides the input request, and the query is built by the connector in the runtime based on the user inputs.
+-   Standard Insert: Where the user provides the SQL statement and input parameters, and the connector executes the query by providing the input parameters.
+
+## Get
+
+Get is an inbound action to retrieve the records from the database based on the parameter defined on the connector’s **Parameters** tab. Get takes the input parameters from the user, and fetches the records from the database. Additionally, you can opt for batching the output using the **Document Batching** option provided in the Get - Import wizard.
+
+The following are the types of Get operations:
+
+-   Dynamic Get: Where the Get query is built dynamically in the runtime, based on the input parameters mapped to the WHERE Clause of the Select statement.
+-   Standard Get: Where the user enters the SQL statements manually in the **SQL Query** field, and the parameters for the select query, and the parameters are taken from the input JSON.
+
+
+:::note
+
+In the SQL query, the parameter has been changed from “?” to “Named parameter” that starts with $. Additionally, in case of multiple tables, the named parameter should be prefixed by the table name. For example: $table\_name.column\_name
+
+:::
+
+**Attention:** When Database V2 connector configured with Get operation is used as the start step, a Parameter must be set for the Get operation to return results.
+
+The Get operation also supports retrieving data based on the selected database view. The list of supported database views will be available in the **Object Type** field drop-down list for selection during the profile import. The naming format for views will be `<Viewname>(VIEW)` and for tables `<table name>(TABLE)`. This is applicable for both Standard and Dynamic Get operation.
+
+The WHERE and ORDER BY clause can be dynamically added in the SELECT query using the Set Properties step to set connector Document Property — `param_where` and `param_orderBy`. When the where and/or orderBy param is set via the document property,
+
+-   In the Dynamic Get operation, the $WHERE and/or $ORDERBY property value will be appended to the generated dynamic Get query.
+
+    
+    :::note
+
+    If there is any mismatch between the fields in input data and the fields in param\_where/ param\_orderBy document property, then the following error message will be displayed: “Please check the Input Request. Mismatch in Where statement parameter and the Input parameter.!!!”
+
+    :::
+
+-   In the Standard Get operation, WHERE and/or ORDERBY parameter given in the SQL statement will be replaced by the $WHERE and/or $ORDERBY property value.
+
+Example:
+
+|Dynamic Get|Standard Get|
+|-----------|------------|
+|• Document property: param\_where set as “SUP\_ID IN \($SUP\_ID\)”<br />•   Query formed: Select \* from SUPPLIER where SUP\_IN IN \($SUP\_ID\)<br />Where, $SUP\_ID should be sent as input to the Database V2 connector Get Operation.|•  Document property: param\_where set as “SUP\_ID IN \($SUP\_ID\)” and param\_orderBy set as "SUP\_ID DESC"<br />• Query entered by user: Select \* from SUPPLIER $param\_where $param\_orderBy<br />• Query updated as: Select \* from SUPPLIER where SUP\_IN IN \($SUP\_ID\) ORDER BY SUP\_ID DESC
+
+Where $SUP\_ID should be sent as input to the Database V2 connector Get Operation.|
+
+## Update
+
+Update is an outbound action to update the records in a database table. The connector operates with SINGLE-mode-like behavior. The Update operation takes JSON documents as input, with the output as a JSON response document with the results of the operation. This connector supports both Standard and Dynamic Update operation.
+
+## Storedprocedure
+
+Storedprocedure executes the procedure in the database. The connector uses callable statements to call the procedure in the database. The request and response profile supports both the input, output, INOUT parameters of the procedure. If the procedure returns the result set, the result set is displayed in the response on successful execution of the procedure. This operation supports JDBC batching if the procedure has only input parameters.
+
+The behavior of StoredProcedures is as below when both Output Parameters and Resultsets are returned:
+
+- When output parameters are defined in the storedprocedure:
+    - The response profile created will only include the fields corresponding to the output parameters.
+    - During the operation execution, the response will contain only the values of these output parameters.
+    - Any resultset returned from the storedprocedure will be ignored.
+- When no output parameters are defined in the storedprocedure:
+    - The response profile created will be unstructured.
+    - During the operation execution, the response will include the resultset.
+
+For Oracle Database, you can call the packaged storedprocedure used in the Oracle Databases. During the import action, the required packaged storedprocedure can be selected as **Object Type**. The naming format will be `<package_name>.<storedprocedure_name>`. Example: SUPPLIER.SUPPLIER\_DETAILS. Where,
+
+-   SUPPLIER — Package name
+-   SUPPLIER\_DETAILS — Stored procedure to display the supplier details.
+
+The connector is enhanced to support execution of stored procedure with commit statement also in the PostgreSQL database.
+
+## Upsert
+
+Upsert is an outbound action that allows inputs to automatically either insert a new row, or update an existing row. The operation determines the conflicting keys first, and then inserts or updates inputs automatically in the database.
+
+It also supports using composite keys to perform insert/update of the records into the database \(MySQL, PostgreSQL, MS SQL\).
+
+When successful, the query with the affected row count is displayed in the response in case of Commit by Profile. In the case of batching, on successful execution, the batch number with the number of records is displayed in the response. The connector supports only the dynamic generation of SQL statements based on the input parameters.
+
+## Delete
+
+Delete is an outbound action to delete records from the database based on the inputs and the SQL statements provided by the user. The connector operates with MULTI-Model like behavior. It takes JSON documents as input, and the deleted record appears as a JSON response. This connector supports both Standard and Dynamic Delete operations.
+
+## Start Transaction 
+
+Start Transaction is an action to indicate the start of a transaction. This operation produces a single empty document. 
+
+## Commit Transaction 
+
+Commit Transaction is an action to be used when the transaction should be committed. This operation produces a single empty document. 
+
+## Rollback Transaction 
+Rollback Transaction is an action to undo all the actions that were part of the transaction. This operation produces a single empty document.
+
+## Schemas
+
+The connector builds the JSON schema automatically by identifying the datatypes of each column in the table. The table names are selected in the Object type drop down. The connector maps the data types to the following types in the schema:
+
+**Database Data type**
+:   **Connector Schema Data type**
+
+VARCHAR
+:   String
+
+DATE
+:   String
+
+TIME
+:   String
+
+BOOLEAN
+:   Boolean
+
+INTEGER/NUMBER
+:   Number
+
+JSON
+:   String
+
+The JSON data type provides the following advantage over storing JSON-format strings in a string column: Automatic validation of JSON documents stored in JSON columns.
+
+```xml
+{
+"event_name": "events",
+"visitor": 1,
+"properties": {
+"name": "sweta"
+},
+"browser": {
+"count": 1
+}
+}
+```
+
+## Supported Operations and Data Types
+
+The connector builds the JSON schema automatically by identifying the data types of each column in the table. The table names are selected in the Object type drop down. The table below provides the list of operations and data types supported in the Boomi Database specific connectors.
+
+|**Connector**|**Supported Operations**|**Supported Data Types**|
+|-------------|------------------------|------------------------|
+|**Database V2 Connector \(MySQL\)**|• INSERT<br />•   GET<br />•   UPDATE<br />•   UPSERT<br />•   DELETE<br />•   STORED PROCEDURE|INT, BIGINT, SMALLINT, TINYINT, CHAR, VARCHAR, NVARCHAR, NCHAR, LONGNVARCHAR \(text\), LONGVARCHAR \(text\), DATETIME, TIMESTAMP, BOOLEAN, DECIMAL, DOUBLE, FLOAT, JSON.|
+|**Database V2 Connector \(PostgreSQL\)**|Same as Database V2 Connector \(MySQL\).|INT, SMALLINT, BIGINT, CHAR, NCHAR, VARCHAR, VARCHAR \(n\), LONGNVARCHAR \(text\), LONGVARCHAR \(text\), DATETIME, TIMESTAMP, DECIMAL \(Numeric\), DOUBLE \(Double Precision\), BOOLEAN, JSON, FLOAT, BYTEA \(variable-length binary string\).|
+|**Database V2 Connector \(MS SQL\)**|Same as Database V2 Connector \(MySQL\).|INT, BIGINT, SMALLINT, TINYINT, CHAR, VARCHAR, NVARCHAR, NCHAR, LONGNVARCHAR \(NTEXT\), LONGVARCHAR \(TEXT\), DATETIME, BOOLEAN, DECIMAL, DOUBLE PRECISION, FLOAT, JSON.|
+|**Database V2 Connector \(Oracle\)**|Same as Database V2 Connector \(MySQL\)|INT, SMALLINT, DECIMAL, FLOAT, DOUBLE PRECISION/NUMBER, CHAR, NCHAR, VARCHAR, NVARCHAR2, LONGNVARCHAR \(LONG\), LONGVARCHAR \(LONG\), DATETIME, TIMESTAMP, JSON.|
+|**Oracle Database Connector**|•   INSERT<br />•   GET<br />•  UPDATE<br />•  UPSERT<br />•  DELETE<br />•  STORED PROCEDURE|INT, VARCHAR, DATE, TIME, TIMESTAMP, VARRAY, BOOLEAN, JSON, CHAR, LONGVARCHAR, NVARCHAR, DECIMAL, NUMERIC, BIT, DOUBLE, FLOAT, REAL, BINARY, VARBINARY - Applicable for all operations. <br />XMLType - Applicable for Storedprocedure only.<br />NESTED TABLE and VARRAY - Applicable for storedprocedure only.<br /> - NESTED TABLE, OBJECT \(supported data types: NUMBER, VARCHAR, DATE, TIMESTAMP, CHAR, NCHAR, DOUBLE, FLOAT, DECIMAL, NUMERIC, REAL, INTEGER, SMALLINT\). These datatypes are also applicable for object type attribute used in the nested table.<br /> -   VARRAY (supported data types): NUMBER, VARCHAR, DATE, FLOAT, NCHAR, NVARCHAR, TIMESTAMP, LONGVARCHAR, INTEGER, TINYINT, SMALLINT, DOUBLE, DECIMAL, NUMERIC.<br /> -   VARRAY (supported user defined data types): INTEGER, TINYINT, SMALLINT, DECIMAL, NUMERIC, BOOLEAN, NVARCHAR, BIGINT, DOUBLE, FLOAT, VARCHAR, CHAR, LONGVARCHAR, NCHAR, LONGNVARCHAR, REAL, BINARY, LONGVARBINARY, VARBINARY, DATE, and TIMESTAMP.<br />In Oracle Database, usage of BOOLEAN data type within VARRAY and TABLE TYPE is not supported.<br />Supported TIMESTAMP Format: yyyy-mm-dd hh:mm:ss and yyyy-mm-dd hh:mm:ss.ff.<br />Supported Date Format: dd-MMM-yyyy and dd/MMM/yyyy.<br/ >The following formats are applicable for both TIMESTAMP and DATE data type \(all operations\).<br /> - yyyy-MM-dd'T'HH:mm:ss.SSSXXX<br /> - dd/MMMM/yyyy hh:mm:ss a<br /> - dd-MMM-yy hh.mm.ss.SSSS a<br />-   yyyy-MM-dd HH:mm:ss<br />NESTED TABLE and VARRAY - Applicable for INSERT, GET, UPDATE, and DELETE operations. Please note, supports only for nested table of object type and single record.
+|**SAP HANA Database Connector**|- INSERT<br />-   QUERY<br />-   UPDATE<br />-   UPSERT<br />-   DELETE<br />-   STORED PROCEDURE<br />-   BULK LOAD<br />-   BULK UNLOAD|INT, VARCHAR, NVARCHAR, NCHAR, DATE, TIME, TIMESTAMP, BOOLEAN.|
+
+
+<OperationEnd />

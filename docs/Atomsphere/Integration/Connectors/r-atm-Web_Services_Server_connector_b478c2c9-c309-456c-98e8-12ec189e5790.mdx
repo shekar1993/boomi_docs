@@ -1,0 +1,88 @@
+# Web Services Server connector 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-b478c2c9-c309-456c-98e8-12ec189e5790"/>
+</head>
+
+
+Use the Web Services Server connector to listen for and accept REST, SOAP, and simple HTTP requests in real time and initiate Boomi Integration processes.
+
+When a process containing this connector is deployed to an Atom, the Atom’s internal web server listens for documents based on configurations made in the Web Services Server operation or, if applicable, the API Service component. You can view the status of deployed web service listener processes and API Service components in the Listeners panel in **Manage** \> **Atom Management**. In that panel you can also pause, resume, and restart listeners.
+
+
+:::note
+
+The Web Services Server connector is available in the Professional Plus, Enterprise, and Enterprise Plus Editions. Contact your Boomi Sales Representative for more information.
+
+:::
+
+When possible, the technical details of this connector, such as SOAP headers, error handling, HTTPS authentication and XML syntax, are abstracted to simplify your implementation. The XML or JSON profile houses all raw data elements and stands as the main document type for the start and end of an API process.
+
+For more information about the different options and use cases that apply when using this connector, see the Services Enablement topic.
+
+
+:::note
+
+Deploying a Web Services Server connector does not affect your license count. You can deploy this connector an unlimited number of times across different Atoms and environments.
+
+:::
+
+
+:::note
+
+To build Send requests to other APIs or applications, use one of these client connectors:
+
+-   Web Services SOAP Client connector
+-   HTTP Client connector
+
+:::
+
+## Connector configuration 
+
+Configuring a connector to listen for client applications requires the setup of two components:
+
+-   Listen connection
+
+-   Web Services Server operation
+
+
+The listen connection is managed at the Atom level. The connection is *not* configurable within an individual process. You can review configuration requirements for the Atom's shared web server.
+
+This connector design provides reusable components across Atoms and the ability to launch unique operations and URLs for different process actions. When an API is published for request handling, you can develop a process to interact with virtually any system using other connectors in our library.
+
+
+:::note
+
+You cannot test a process in Test mode when developing a process with the Web Services Server connector. You must deploy a process to an Atom to start the API.
+
+:::
+
+## Process options 
+The Allow Simultaneous Executions process option is respected for real-time processes using the Web Services Server connector. If a process is deployed with Allow Simultaneous Executions turned off, the client receives an HTTP 500 error when attempting to invoke the process while it is running.
+
+## Supported editions 
+Generally, APIs that you publish can accept:
+
+-   SOAP document-literal
+
+-   Multipart SOAP attachments
+
+-   Arbitrary XML definitions
+
+
+The accepted structure is dependent upon the input and output types defined in the Configuration of web service listen connectors topic.
+
+import TrackedProperties from './_TrackedProperties.md'
+
+<TrackedProperties />
+
+## Additional resources 
+
+[WS-I Basic Profile 1.1 Specification](http://www.ws-i.org/Profiles/BasicProfile-1.1.html)
+
+[W3Schools Web Services Tutorial](https://www.w3schools.com/xml/xml_services.asp)
+
+[Apache Axis](http://ws.apache.org/axis/)
+
+[.NET](http://msdn2.microsoft.com/en-us/webservices/default.aspx)

@@ -1,0 +1,129 @@
+import TestConnection from './_TestCon.md'
+
+# Kafka connection 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-a663a4ec-4892-489e-9ab2-436d950ef826"/>
+</head>
+
+
+The Kafka connection represents a single Bootstrap server \(host: port\) configuration to connect to the Kafka server.
+
+## Connection tab 
+
+If you have multiple accounts, use a separate connection for each and configure credentials accordingly. The Kafka connector uses Java API methods to publish and consume messages to and from the Kafka server. You need a single connection configuration \(Bootstrap server\) to connect to the Kafka server.
+
+
+:::note
+
+If the connection to the service is lost when performing the Listen operation, the connector attempts to reestablish the connection in intervals of 10 seconds, 30 seconds, 1 minute, 2 minutes, and 5 minutes. These retries do not block or interfere with other polling within the same Listen Manager. All other operations do not attempt to reestablish the connection if lost.
+
+:::
+
+**User Name/Client Principal** - 
+The user name to sign into the Kafka account. When using a non-SASL protocol, leave this field empty. When using Kerberos \(GSSAPI\) to authenticate, the Client Principal is a unique identity for a user who can access the Kerberos account and is typically divided into three parts \(the primary, the instance, and realm\) in this format: primary/instance@REALM. For example, `kafka-client/myHost@KAFKA\_REALM`
+
+**Password** - 
+The password used to sign into the Kafka account.
+
+:::caution
+
+The user name and password credentials are required when using the SASL PLAINTEXT and SASL SSL protocols but are invalid for PLAINTEXT and SSL protocols. Additionally, when using Kerberos \(GSSAPI\) to authenticate, you can either enter a password or use a keytab. See the following Kerberos \(GSSAPI\) authentication section for information about the keytab.
+
+:::
+
+**Brokers List** - 
+A list of host and port pairs used to establish the initial connection to the Kafka server. Use the `<host:port>` format to populate the Broker List settings. To list more than one server, use commas to separate each entry.
+
+The following example represents a single server entered in the Broker List settings: `kafka-example.com:9094`. The following example represents multiple servers entered as a list, delineated by commas: `kafka-example1.com:9094,kafka-example2.com:9094,kafka-example3.com:9094`.
+
+**Service Name/Principal** - 
+A unique identifier for the service instance accessing the Kerberos account. The instance is typically divided into three components \(the service, a fully-qualified host name, and a realm\) in this format: service part/hostname@REALM. For example, `kafka/myHost@KAFKA\_REALM`. You can specify the complete service principal, or enter only the service name. In this case, the connector determines the remaining components and builds the service principal name \(SPN\) for each configured broker using the host's fully qualified domain name \(FQDN\) and realm specified in the **Client Principal**. In this way, you can configure a list of brokers with each having a different SPN. Leave this field empty when using a SASL mechanism other than Kerberos.
+
+**Security Protocol** - 
+Select the appropriate security protocol used to connect to the Kafka account:
+
+ -   Plain text - establishes an anonymous connection with a non-encrypted channel.
+ -   SSL - uses a private certificate to create an SSL transport and client authentication.
+-   SASL PLAINTEXT - creates SASL authentication over a non-encrypted channel.
+
+    
+	:::note
+
+	When authenticating using Kerberos \(GSSAPI\), select SASL PLAINTEXT or SASL SSL as the security protocol.
+
+	:::
+
+ -   SASL SSL - creates SASL authentication over an SSL channel.
+
+**SASL Mechanism** - 
+After specifying the Security Protocol, select one of the following SASL Mechanisms:
+
+  -   **None** - Select this option when Plain text or SSL is selected in the Security Protocol settings.
+  -   **Plain** - For more information, see [Authentication using SASL/Plain](https://kafka.apache.org/documentation/#security_sasl_plain).
+ -   **SCRAM-SHA-256** - For more information, see [Authentication using SASL/SCRAM](https://kafka.apache.org/documentation/#security_sasl_scram).
+ -   **SCRAM-SHA-512** - For more information, see [Authentication using SASL/SCRAM](https://kafka.apache.org/documentation/#security_sasl_scram).
+ -   **Kerberos \(GSSAPI\)** - For more information, see [Authentication using SASL/Kerberos](https://kafka.apache.org/documentation/#security_sasl_kerberos).
+
+     
+:::note
+
+When using this SASL mechanism, a krb5.conf resource must be available to the connector. If not, an exception results and the process run fails. See the following Kerberos \(GSSAPI\) authentication section for information about the krb5.conf resource.
+
+:::
+
+
+**Certificate** - 
+Specify a private certificate component to authenticate the SSL client. SLL Certificates are only accepted when using SSL or SASL SSL security protocols.
+
+Although optional, use this field to specify a certificate if your Kafka broker configuration requires certificates to authenticate the client.
+
+**Polling Interval** - 
+Specify how often \(in milliseconds\) the connector's Listen operation polls the message broker to retrieve batches of messages from the Kafka server.
+
+**Polling Delay** - 
+Specify how often \(in milliseconds\) the connector's Listen operation waits before starting to poll the message broker and retrieve batches of messages from the Kafka server. In this period, the operations can connect to the service without affecting each other with partition rebalancing. See the [Kafka documentation](https://kafka.apache.org/documentation/) for information about rebalancing.
+
+## Kerberos \(GSSAPI\) authentication 
+
+Kerberos \(GSSAPI\) authentication \(supported on a Local Atom and multi-tenant Cloud Molecules\) is designed to provide strong authentication using secret key cryptography and helps with network security issues. With Kerberos \(GSSAPI\), a client can prove its identity to a server \(or vice-versa\) across an insecure network connection. After a client and server use Kerberos \(GSSAPI\) to prove their identity, you can encrypt all communications to assure privacy and data integrity.
+
+Kerberos \(GSSAPI\) authentication requires four different elements:
+
+-   A *Client Principal* identifies a user accessing the Kerberos account.
+-   A *Service Principal* identifies the service instance accessing the Kerberos account.
+-   A *keytab* \(short for “key table”\) is an optional file containing pairs of principals \(one or more\) and the encrypted keys needed to authenticate them. Kerberos can authenticate users with either the password provided in the connection, or with a keytab. If you set a password in the connection, it takes precedence over any keytab for the Client Principal. If you do not set a password, verify that a realm.keytab resource \(JAR file\) is available to the connector by uploading the JAR file as a Custom Library. The name must be `realm.keytab` where `realm` is the Kerberos Realm specified in the **Client Principal**. See the [keytab article](https://web.mit.edu/kerberos/krb5-1.12/doc/basic/keytab_def.html) in the MIT Kerberos documentation for more information.
+-   The krb5.conf file is required and contains Kerberos configuration information, including the default realm and the location of KDCs and administration servers for the Kerberos realms. The name must be `krb5.conf`. See the [krb5.conf article](https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html) in the MIT Kerberos documentation for more information.
+
+
+:::note
+
+You can deploy the keytab and krb5.conf files together within the same JAR file and made available to the connector by uploading them as a Custom Library. 
+
+:::
+
+#### Sample krb5.conf
+
+A sample krb5.conf file may be similar to the following:
+
+```
+[libdefaults]
+	default_realm = KAFKA_REALM
+	kdc_timesync = 1
+	ccache_type = 4
+	forwardable = true
+	proxiable = true
+	fcc-mit-ticketflags = true
+
+[realms]
+	KAFKA_REALM = {
+		kdc = myHost:9988
+		admin_server = myHost:9750
+	}
+
+[domain_realm]
+	myHost = KAFKA_REALM
+```
+
+<TestConnection />

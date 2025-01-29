@@ -1,0 +1,91 @@
+import TrackedProperties from './_TrackedProperties.md'
+
+# Oracle Database connector
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-2e42bb82-873a-4ec8-8d2d-3db821c0d9ec"/>
+</head>
+
+
+The Oracle Database connector allows you to select, insert, update, delete, upsert records and also allows you to call stored procedures in an Oracle database.
+
+The Oracle Database connector uses OJDBC to communicate to the database and to manipulate the records. The connector provides the option to insert the SQL statement manually, or dynamically build the SQL Statement based on the input parameters. An OJDBC driver establishes a connection to the database through the connection. You can interact with the database, for example, and create a statement to execute SQL queries against tables. The connector also supports leveraging the Oracle Wallet feature for enhanced security.
+
+The connector is supported in both local and cloud \(Public and Private\) atom.
+
+## Connector configuration
+
+To configure the connector to communicate with the Oracle database, set up the following components:
+
+-   Oracle Database connection
+-   Oracle Database operation
+
+This design provides reusable components which contain connection settings and operation settings. After building your connection and operation, set up your connector within a process. When the process is defined properly, Integration can map to and from virtually any system using the Oracle Database connector to work with the Oracle database.
+
+:::note
+
+This is an open source connector and you can access the code in the [Oracle Database](https://bitbucket.org/officialboomi/oracle-database) connector repository.
+
+:::
+
+## Supported database and editions
+
+The connector has been tested with Oracle Database 18c and Oracle JDBC driver "ojdbc8.jar".
+
+## Limitations
+
+-   The Oracle Database connector does not work for databases hosted on the OCI cloud.
+     -   The **SQL Query** field does not auto-populate the SQL query statement, if there are more than one table to be used in the SQL query.
+-   Named parameter \($param\) is applicable only for Get operation.
+-   Dynamic Upsert operation does not support composite keys \(multiple primary keys\) as this operation uses DUAL table for building the SQL Query dynamically in the connector. As Dual table accommodates only one column, composite keys are not supported in Dynamic Upsert Operation.
+
+    
+    :::note
+
+    If a table has composite keys, you must select **Operation type** as Standard Upsert Operation and enter INSERT query in **SQL Query** text box. The connector then decides whether to Insert or Update the record based on the keys or availability of record in the table.
+
+    :::
+
+-   StoredProcedure -
+    -   Procedure overloading is not supported.
+    -   Stored Procedures with a Ref Cursor data type as an IN parameter will import the profile successfully instead of throwing an exception, but input cannot be passed and the parameter will not appear in the request profile.
+    -   Oracle Function with OUT parameters is not supported.
+
+## Prerequisites
+
+The oracle database connector requires the following:
+
+-   Installed and configured Oracle database.
+-   OJDBC database driver. You can download the database from the following location.
+    -   [https://www.oracle.com/uk/database/technologies/appdev/jdbc-downloads.html](https://www.oracle.com/uk/database/technologies/appdev/jdbc-downloads.html)
+    -   [https://mvnrepository.com/artifact/com.oracle.jdbc/ojdbc8/18.3.0.0](https://mvnrepository.com/artifact/com.oracle.jdbc/ojdbc8/18.3.0.0)
+-   URL of the database instance.
+-   User name and password for a database account.
+-   An Atom installed locally to the database server or to another machine within your network that can access the database.
+-   OJDBC driver JAR must be configured in the Boomi Custom Library. To do this,
+    -   In Boomi Integration, upload the driver JAR file to an account by using the Manage Account Libraries page \(Settings — Account Libraries\). For more details, see the topic [Account library management](../../Platform/r-atm-Account_Library_Management_edc37905-b4fe-4cae-8001-b62221adb872.md).
+    -   Create a Custom Library Component with the Custom Library Type as “Connector” and the Connector Type as Oracle Database, and then add the uploaded driver JAR file.
+    -   Deploy the custom library component to the Atom. For more information, see the topic [Working with custom libraries](../Process%20building/c-atm-Working_with_custom_libraries_96f10864-334e-4eba-ac3f-f52b4e65fdb2.md).
+-   To use XMLType data type, you will require the following jars to be deployed in the Custom Library.
+    -   ons
+    -   oraclepki
+    -   osdt\_cert
+    -   osdt\_core
+    -   simplefan
+    -   ucp
+    -   xdb6
+    -   xmlparserv2
+-   To use Oracle Wallet/TCPS, you require the following jars in the Custom Library:
+    -   oraclepki
+    -   osdt\_cert
+    -   osdt\_core
+
+
+:::note
+
+You can directly download these jars from: [https://www.oracle.com/database/technologies/jdbc-ucp-122-downloads.html](https://www.oracle.com/database/technologies/jdbc-ucp-122-downloads.html)
+
+:::
+
+<TrackedProperties />

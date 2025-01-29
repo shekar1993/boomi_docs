@@ -1,0 +1,57 @@
+import TrackedProperties from './_TrackedProperties.md'
+
+# SAP S4/HANA OData connector
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-195bca0c-0684-45f4-a262-ec0bb9732b33"/>
+</head>
+
+
+SAP S4/HANA OData connector enables you to connect to SAP S4/HANA Cloud or SAP S4/HANA system via OData V2 \(Open Data Protocol\) services.
+
+It allows to query and/or execute certain action defined as OData V2 APIs in SAP S4/HANA Cloud or SAP S4/HANA . Through this connector, you can use a Integration process to Create, Get, Query, Update/Patch/Merge, and Delete the business objects by making required OData API calls. The connector supports the Basic authentication method and the following communication protocols:
+
+-   HTTP — if enabled
+-   HTTPS
+
+You can also browse through the list of available SAP S4/HANA OData service catalog during the import action or type the API if not available in the service catalog based on the available APIs in the SAP API Business Hub.
+
+:::note
+
+This is an open source connector and you can access the code in the [SAP S4/HANA OData](https://bitbucket.org/officialboomi/sap-s4-odata/src/master) connector repository.
+
+:::
+
+## Connector configuration
+
+To configure the connector to communicate with SAP S4/HANA via OData API , set up the following components:
+
+-   SAP S4/HANA OData connection
+-   SAP S4/HANA OData operation
+
+This design provides reusable components which contain connection and operation settings. After building your connection and operation, set up your connector within a process. When the process is defined properly, Integration can map to and from virtually any system using the SAP S4/HANA OData \(Tech Preview\) connector to access the SAP S4/HANA business objects via OData APIs.
+
+## Prerequisites
+
+The SAP S4/HANA OData connector requires the following:
+
+-   User login credentials for SAP S4/HANA Cloud or SAP S4/HANA.
+-   All OData services configured and active in the SAP S4/HANA Cloud or SAP S4/HANA.
+-   User must have necessary access permissions on the required OData APIs.
+-   SAP S4/HANA client number, when not using SAP S4/HANA Cloud.
+
+## Supported editions
+
+The connector supports OData V2 APIs in the following SAP solutions:
+
+-   SAP S4/HANA Cloud
+-   SAP S4/HANA
+
+:::note
+
+OData V4 APIs are not supported via this connector.
+
+:::
+
+<TrackedProperties />

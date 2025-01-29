@@ -1,0 +1,248 @@
+import OperationEnd from './_operationEnd.md'
+
+# Disk v2 operation 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-55827b73-20fd-466d-9b6c-611122167481"/>
+</head>
+
+
+The Disk v2 operation defines how to read files from or write files to a given directory.
+
+The Disk v2 operation supports the following actions:
+
+-   Create — insert or update existing files. This action creates new files if they do not already exist and returns the new ID of the inserted object, or overwrites and appends existing files.
+-   Delete — remove the file from the directory. The ID specifies the record to delete.
+-   Get — retrieve objects that match the input filename ID.
+-   List — retrieve a list of files within a directory.
+-   Listen — listen for and retrieve files from a given directory on the disk in the underlying file system.
+-   Query — read a set of files within a directory based on search criteria.
+-   Upsert — insert or update existing files. This action creates new files if they do not already exist, or overwrites and appends existing files.
+
+
+:::note
+
+As of the November 2019 release, the Create operation now supports actions previously performed with an Upsert operation. You can create new Upsert operations, and existing processes with Upsert operations will continue to function. The recommended best practice for new operations is to use Create instead of Upsert.
+
+:::
+
+## Options tab 
+
+The following table describes the default field definitions for each action type:
+
+**Tracking Direction** - 
+Select the document tracking direction for the operation, either Input Documents or Output Documents. This setting enables you to choose which document appears in Process Reporting. Start steps always track output documents regardless of your selection.
+
+
+:::note
+
+If the tracking direction is read-only, the feature to change the direction is either unavailable or the developer set the configuration to read-only. The default value you see shows you which document appears in **Process Reporting**.
+
+:::
+
+**Return Application Error Responses** - 
+This setting controls whether an application error prevents an operation from completing:
+
+- If you clear the setting, the process stops and reports the error on the Process Reporting page.
+
+- If you select the setting, processing continues and passes the error response to the next component processed as the connection output.
+
+**Create directory if it doesn't exist \(Create, Upsert\)** - 
+If selected, Boomi creates a directory according to what is specified in the connection or document properties, if it does not already exist on the server. If cleared, the operation fails when writing to a directory that doesn't exist. Use a document property to overwrite the directory specified in the connection.
+
+
+:::note
+
+The file name specified in the File Name document property must already exist, otherwise the operation will fail.
+
+:::
+
+**Include all metadata \(Create, Upsert\)** - 
+If selected, Create and Upsert responses include all metadata with JSON objects, including File Name, Directory, Created Date, Modified Date, and File Size information. The connector also returns information stating if the file is a directory. If cleared, only File Name and Directory properties are returned.
+
+**Unique name \(Create\)** - 
+If selected, and the file name already exists, the connector appends a number to the file name to make it unique.
+
+
+:::note
+
+This option is retired as of the November 2019 release. Processes created prior to the November 2019 release will still have this option available and will continue to function.
+
+:::
+
+**Action if File Exists \(Create\)** - 
+Specify how the operation behaves if the file name already exists in the directory. The default action is **Generate error**.
+
+-   Select **Create unique name** to append an incremental number to the file name until finding a name that does not exist. For example, if you create a file named output.txt and that file name already exists in the directory, the connector renames your file output1.txt.
+-   Select **Overwrite** to replace the existing file with a new one.
+-   Select **Append** to append new data to the end of the file.
+-   Select **Generate error** to generate an error and not upload the file.
+
+**Delete after reading \(Get\)** - 
+If selected, files are deleted from the disk after being read. If the file cannot be deleted due to insufficient access rights, a warning message is logged.
+
+Boomi recommends selecting this check box when executing in production mode to prevent data from being processed twice and clearing this check box when testing.
+
+**Fail if unable to delete \(Get\)** - 
+If selected, if an attempt to delete files after reading them into the process is unsuccessful due to insufficient access rights, the process fails with an error.
+
+**File Name Filter \(Listen\)** - 
+A textbox allowing users to filter file names based on an entered input. This field is empty by default meaning no filter will be applied.
+
+**File Matching Type \(Listen\)** - 
+A dropdown that allowing the user to select their desired filter style.
+
+-   Select **Exact Match** to filter file names for only complete, case-sensitive matches to the input in **File Name Filter**.
+-   Select **Wildcards** when using the special characters **?** and/or **\*** in the input to **File Name Filter**. The **?** and **\*** characters represent single and multiple characters, respectively.
+-   Select **Regular Expressions** to filter file names when using Java Regular Expression syntax in the input to **File Name Filter**.
+
+**Maximum Results \(List, Query\)** - 
+Set the maximum number of files to return in a list or query.
+
+**Append \(Upsert\)** - 
+If selected, append new data to existing data.
+
+**Sub Directory \(Listen\)** - 
+Specify the sub directory where the Listen operation listens for files from the file system. Listen builds the sub directory by combining the **Directory** from the connection with this **Sub Directory**. This field is optional and if not provided, you must specify a **Directory** in the connection. Otherwise, an error occurs upon process execution.
+
+**Include create events \(Listen\)** - 
+If selected, Listen retrieves any new file created in the listen directory \(the **Sub Directory** in the connection\).
+
+**Include delete events \(Listen\)** - 
+If selected, Listen submits an event for any deletion occurring in the listen directory \(the **Sub Directory** in the connection\). An event for delete does not include the content of the deleted file.
+
+**Include modify events \(Listen\)** - 
+If selected, Listen retrieves any modified file in the listen directory \(the **Sub Directory** in the connection\).
+
+**Include initial events \(Listen\)** - 
+If selected, Listen retrieves any pre-existing files in the listen directory \(the **Sub Directory** in the connection\).
+
+**Singleton Listener \(Listen\)** - 
+If selected, the Listen operation will start in a single node for multi-node runtimes, with only one instance of the singleton operation per container. When unchecked, the listener will be started in all available nodes by default.
+
+## Get 
+
+Get is an inbound action which uses a specified File Name to retrieve an object from the disk on which the Atom resides. This operation returns the File Name, Directory, File Size, Created Date and Modified Date as document properties.
+
+## Query 
+
+Query is an inbound action to look up files based on specific search criteria. This operation returns a separate document containing all the contents within that file. If the file or metadata cannot be read, the operation returns a single document with all resulting errors. The other results are not affected.
+
+This operation does not have a request profile nor does it produce a response profile.
+
+
+:::note
+
+You must have the appropriate permissions to read files in the specified directory. Otherwise, you will receive an error.
+
+:::
+
+If you want to perform a Query and filter by date, the connector only supports the **yyyy-MM-dd'T'HH:mm:ss.SSS'Z'** date format. It is unable to parse any other date format.
+
+## Delete 
+
+Delete is an outbound action to remove and delete file objects from the disk in which your Atom resides. The operation returns an exception if the file name is invalid and does not match the ID, or if the file does not exist. You cannot delete a directory with this operation.
+
+## Create 
+
+Create is an outbound action to insert data for an object, upload or create a new object, or perform an update to an object if the object already exists. For file objects, this operation writes data to the disk and you can configure how the connector will proceed if a file already exists \(see Options tab\). For directory objects, this operation creates the directory based on the profile, or fails if the directory already exists.
+
+
+:::note
+
+When creating a new object, you can use File Name and Directory as the document property. File names can include subdirectories \(for example, a/b/foo.txt\).
+
+:::
+
+This operation does not have a request profile because file objects are unstructured. The response profile contains only file metadata, such as File Name, Directory, Created Date, Modified Date, and File Size information and indicates if the file is a directory.
+
+## List 
+
+List is an inbound action to retrieve a list of files in a directory. When successful, the connector produces one JSON document for each file in the specified disk directory. If the file or metadata cannot be read, the operation returns a single document with all resulting errors. The other results are not affected.
+
+The List operation returns a response profile for each file containing a JSON object describing the file's metadata, such as File Name, Directory, Created Date, Modified Date, and File Size information and indicates if the file is a directory. This operation does not have a request profile.
+
+## Listen
+
+:::note
+
+The Listen action is available only if the start step is configured as Disk V2 connector.
+
+:::
+
+After being started by its Listen Manager, the Disk V2 Listen operation listens for and retrieves files from a directory or sub-directory on the disk in the underlying file system. Listen targets one directory to retrieve files. The directory is determined by combining the **Directory** specified in the connection and the operation's **Sub Directory** field, and all files retrieved by the operation are resolved relative to that directory. See the descriptions for those fields to understand how they work together, and how to utilize document properties to override the **Directory** in the connection.
+
+Further operation refinement is possible utilizing the **Polling Interval** in the connection and the **Include create events**, **Include delete events**, **Include modify events**, and **Include initial content** check boxes in the operation. After successful process execution, the files are retrieved. The operations properties **File Name Filter**, **File Matching Type**, and **Singleton Listener** also allow for greater user control during Listen operations.
+
+### Prerequisites
+
+Before creating a Disk v2 listener and using it in a process, verify that you have created a connection to a directory on the file system of the machine where the Atom is running. Listen events on a remote file system may not work as expected.
+
+### Considerations
+
+Consider the following when creating a Listen operation:
+
+-   Listening
+    -   Listening occurs only in directories, not directly to files.
+    -   If the directory specified in the connection and operation does not exist, the listener does not start and an error occurs upon process execution.
+    -   The operation properties **Include create events**, **Include modify events**, and **Include delete events** determine which events are watched and generate process executions when their check boxes are selected.
+    -   If the **Include inital events** operation property is checked, the Listen operation submits process executions for pre-exisitng files in the configured directory when the execution begins. The **File Name Filter** also applies to these events.
+    -   A folder created in the listen directory initiates a CREATE event that the listener tracks, if the corresponding **Include create events** check box is selected.
+    -   Overflow events where the service receives more events than it can process are submitted regardless of the configuration of **File Name Filter** and **File Matching Type**.
+-   Subdirectories
+    -   Listening occurs in the specified directory and not to changes in the sub directories.
+    -   Changes over content in the first sub directory level initiates a MODIFY event for the sub directory that the listener tracks. The event content is empty, but contains metadata.
+    -   Changes to the file content in lower-level subdirectories does not initiate an event to track.
+-   Renaming directories
+    -   If the directory configured in the operation is renamed in the file system after the listener starts, the listener remains active. However, any attempt to restart the listener results in an error until a directory having the same name is created.
+    -   If the directory configured in the operation is deleted from the file system after the listener starts, the listener immediately stops listening. In this situation, create a directory with the same name specified in the operation and restart the Listen operation.
+-   Payload
+    -   CREATE, MODIFY, and INITIAL watch events tracked on files return the file content in the document payload.
+    -   DELETE watch events tracked on files return an empty payload.
+    -   All watch events tracked on sub directories of the listen directory return an empty payload.
+    -   OVERFLOW watch events occurring when the service receives more events than it can process return an empty payload. Both the **Event Kind** and **Event Source Type** tracked properties return OVERFLOW.
+    -   When more than one watch event for the same file or directory is tracked in the same iteration, the payload content is always the last one processed.
+-   Tracked Properties
+    -   All returned documents contain the following tracked properties:
+        -   File Name
+        -   Directory \(the full path\)
+        -   Event Kind \(CREATE, DELETE, MODIFY, OVERFLOW\)
+        -   Event Source Type \(FILE, DIRECTORY, OVERFLOW, UNKNOWN, INITIAL\)
+        -   Event Count
+-   Operation Properties
+    -   File Name Filter
+    -   File Matching Type
+    -   Singleton Listener
+
+## Upsert 
+
+
+:::note
+
+As of the November 2019 release, the recommended best practice is to use a Create action instead of an Upsert when you create a new operation.
+
+:::
+
+Upsert is an outbound action to either upload and create a new object in the specified disk directory, or to perform an update to an object if the object already exists.
+
+When creating a new object, you can use File Name and Directory as the document property. Filenames can include subdirectories \(for example, a/b/foo.txt\). If the file name is invalid or is not provided, the connector returns an error message. If the file name already exists, the connector automatically overrides the existing file and performs an update operation.
+
+This operation does not have a request profile because file objects are unstructured. The response profile contains only file metadata, such as File Name, Directory, Created Date, Modified Date, and File Size information and indicates if the file is a directory.
+
+## Status codes 
+
+When you perform an execution, you will receive a status code. If an error occurs, an error message is returned along with an appropriate status code. These codes help you troubleshoot your Disk v2 connector and are another way to verify when an execution is or is not successful.
+
+|Status Code|Cause|
+|-----------|-----|
+|0|The execution is successful.|
+|1|The specified object exists but it is a directory rather than a regular file, the directory does not exist and cannot be created, the directory cannot be opened, or there is no directory specified in the connection.|
+|2|**Action if File Exists** is set to Error and the file you specified already exists.|
+|3|The Java API is providing this code because an issue may have occurred when moving, deleting, or copying files.|
+|4|The object you tried to delete is a directory, not a file.|
+|5|A file name is not set before the Disk v2 connector in your process.|
+|6|A directory is not specified in the connection.|
+|7|The parent folder does not have the permissions required to complete the operation.|
+
+<OperationEnd />

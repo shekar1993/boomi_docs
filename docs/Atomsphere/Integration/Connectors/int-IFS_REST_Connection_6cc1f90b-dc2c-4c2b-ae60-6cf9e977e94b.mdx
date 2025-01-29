@@ -1,0 +1,35 @@
+import TestConnection from './_TestCon.md'
+
+# IFS REST – Partner connection 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-6cc1f90b-dc2c-4c2b-ae60-6cf9e977e94b"/>
+</head>
+
+
+The IFS REST – Partner connection represents and contains all the information that is needed to connect and log into a single IFS account that is associated with your workspace.
+
+If you have multiple accounts, you need a separate connection for each. You can pair a single connection with different operations to perform a unique action against an instance of IFS.
+
+## Connection tab
+
+The IFS REST – Partner connector supports Basic Authentication \(username:encodedpassword\).
+
+**URL**: \(Required\) The home URL of your IFS Application endpoint. For example: https://server-name.ifsworld.com
+
+**Ports**: Depending on the IFS Application setup you may also need to include the port within the URL. For example:`https://server-name.ifsworld.com:48080` \(in this example, replace 48080 with your port number\)
+
+**Authentication Type**: The authentication type used by the service:
+
+  -   **Basic** – provide a user name and password.
+
+**Username**: The IFS Application username associated to the account to be used to authenticate.
+
+**Password**: The IFS Application password associated to the account to be used to authenticate.
+
+## Tracked properties
+
+This connector has no predefined tracked properties. See the topic [Adding tracked fields to a connector operation](../Process%20building/t-atm-Adding_tracked_fields_to_a_connector_operation_f71821dd-95ee-4ebd-bfc9-3333262f56f6.md) to learn how to add a custom tracked field.
+
+<TestConnection />

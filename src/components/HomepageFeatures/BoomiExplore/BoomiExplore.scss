@@ -1,0 +1,170 @@
+.boomi-explore-wrapper {
+  .section-header {
+    text-align: center;
+    margin-bottom: calc(var(--exo-spacing-small) * 3);
+    font-family: var(--exo-font-brand);
+    color: var(--exo-color-font);
+    font-weight: var(--exo-font-weight-regular);
+    font-size: var(--exo-font-size-3x-large);
+    font-style: normal;
+    line-height: var(--exo-line-height-looser);
+  }
+
+  .explore-container {
+    background-image: url("../../../../static/img/ExploreBG.svg");
+    margin-bottom: var(--exo-spacing-3x-large);
+    background-repeat: no-repeat;
+    background-position: center calc(var(--exo-spacing-4x-small) * 60);
+    background-size: auto 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--exo-spacing-x-small);
+    padding-bottom: var(--exo-spacing-medium);
+
+    .prev-left-side-caret {
+      visibility: hidden;
+    }
+
+    .show-prev-left-side-caret {
+      visibility: visible;
+    }
+
+    .next-right-side-caret {
+      visibility: hidden;
+    }
+
+    .show-next-right-side-caret {
+      visibility: visible;
+    }
+
+    .carousel-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: fit-content;
+
+      .carousel {
+        padding-bottom: calc(var(--exo-spacing-x-small) * 5);
+        max-width: calc(calc(var(--exo-size-1) / 8) * 99.2);
+
+        .swiper-wrapper {
+          .swiper-slide {
+            width: fit-content !important;
+          }
+        }
+
+        .swiper-pagination {
+          display: flex;
+          justify-content: center;
+          gap: calc(var(--exo-spacing-4x-small) * 5.33);
+
+          .swiper-pagination-bullet {
+            background: var(--exo-color-background-info);
+            margin: var(--exo-spacing-none);
+          }
+
+          .swiper-pagination-bullet-active {
+            background: var(--exo-color-background-action);
+          }
+        }
+      }
+
+      .carousel-desktop-version {
+        display: block;
+      }
+
+      .carousel-responsive-version {
+        display: none;
+        .carousel{
+          padding-bottom: var(--exo-spacing-standard);
+        }
+      }
+
+      .prev-next-bottom-buttons {
+        display: none;
+        width: 100%;
+        gap: var(--exo-spacing-x-small);
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1100px) {
+  .boomi-explore-wrapper {
+    .explore-container {
+      .prev-left-side-caret {
+        display: none;
+      }
+      .next-right-side-caret {
+        display: none;
+      }
+
+      .carousel-wrapper {
+        .carousel {
+          max-width: calc(calc(var(--exo-size-1) / 8) * 99.2);
+        }
+
+        .carousel-desktop-version {
+          display: none;
+        }
+
+        .carousel-responsive-version {
+          display: block;
+        }
+
+        .prev-next-bottom-buttons {
+          display: flex;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 996px) {
+  .boomi-explore-wrapper {
+    margin-bottom: var(--exo-spacing-none);
+    .section-header {
+      margin-bottom: var(--exo-spacing-x-large);
+    }
+    .explore-container {
+      height: fit-content;
+      margin: var(--exo-spacing-none) auto var(--exo-spacing-none);
+
+      .carousel-wrapper {
+        .carousel {
+          max-width: calc(calc(var(--exo-size-1) / 8) * 66);
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 680px) {
+  .boomi-explore-wrapper {
+    .explore-container {
+      .carousel-wrapper {
+        .carousel {
+          max-width: calc(calc(var(--exo-size-1) / 8) * 32);
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 544px) {
+  .boomi-explore-wrapper {
+    margin-bottom: var(--exo-spacing-none);
+    .section-header {
+      padding: var(--exo-spacing-none);
+      text-align: left;
+      line-height: var(--exo-line-height-heading);
+      width: 100%;
+      margin: var(--exo-spacing-none) var(--exo-spacing-large)
+        var(--exo-spacing-x-large);
+    }
+    .explore-container {
+      margin: var(--exo-spacing-x-small) var(--exo-spacing-none);
+    }
+  }
+}

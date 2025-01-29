@@ -1,0 +1,156 @@
+import TestConnection from './_TestCon.md'
+
+# Snowflake connection 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-f5a608f1-fdcf-462a-9f45-4d745f8d1398"/>
+</head>
+
+
+The Snowflake connection represents a single instance and contains the connection settings for Snowflake, including the connection URL, username, password and other optional fields.
+
+## Connection tab
+
+**Connection URL\*** - 
+The connection string to establish a connection to the Snowflake instance. Replace ACCOUNTNAME with the full account name provided by Snowflake, and it may include `[account].[region_id].[platform]`.
+
+**Username\*** - 
+Username to authenticate with Snowflake.
+
+**Password\*** - 
+Password to authenticate with Snowflake.
+
+**Private Key String \(Optional\)** - 
+User Private Key.
+
+:::note
+
+Do not enter/select, if you are using username/password authentication.
+
+:::
+
+**Passphrase \(Optional\)** - 
+Passphrase for your Private Key.
+
+:::note
+
+Do not enter/select, if you are not using passphrase.
+
+:::
+
+**Warehouse Name \(Optional\)** - 
+The warehouse name which is case sensitive if written between double quotation marks.
+
+**Database Name \(Mandatory\)** - 
+The name of the database that contains the target data. Case sensitive, if written between double quotation marks.
+
+**Schema Name \(Mandatory\)**
+The name of the schema that contains the target table. Case sensitive, if written between double quotation marks.
+
+:::note
+
+-   The database and schema name must be specified either in the Connection or Extension settings \(whichever is preferred/used by the user\).
+-   If the database and schema name are available in both Connection and Extension settings, the extension settings will take precedence over the connection settings.
+
+:::
+
+**Role \(Optional\)** - 
+The user’s role.
+
+**S3 Access Key ID \(Optional\)** - 
+Enter the access key for your AWS account if you want to use Amazon S3 for staging. You can manage access keys for your AWS account using the AWS Management Console as the AWS account root user.
+
+:::note
+
+Do not enter/select, if you are not using AWS S3 for bulk loading.
+
+:::
+
+**S3 Secret Key \(Optional\)** - 
+Enter the secret access key for your AWS account. When you create an access key, AWS allows you to view and download your secret key.
+
+:::note
+
+Do not enter/select, if you are not using AWS S3 for bulk loading.
+
+:::
+
+**Date Time Format \(Optional\)** - 
+Select the desired Date Time format.
+
+:::note
+
+The connector applies the selected Date/Time formats when it is writing date/time values into Snowflake and also when it is reading date/time values from Snowflake into variables.
+
+:::
+
+**Date Format \(Optional\)** - 
+Select the desired Date format.
+
+**Time Format \(Optional\)** - 
+Select the desired Time format.
+
+:::note
+
+In the **Date Time Format**, **Date Format**, and/or **Time Format** drop down list, choose the **AUTO** option to use other Snowflake supported date and time formats that are not listed in the drop down. The AUTO option is applicable only for the Input and the corresponding Output formats are set as given in the below table \(the default output format as supported by Snowflake\).
+
+Date - 
+`yyyy-MM-dd`
+
+Time - 
+`HH:mm:ss`
+
+DateTime - 
+`yyyy-MM-dd HH:mm:ss.S`
+
+These OUTPUT format must be set in the profile manually for AUTO processing. For more information, please see the [Snowflake Documentation - Supported Formats for Auto Detection](https://docs.snowflake.com/en/user-guide/date-time-input-output.html#supported-formats-for-auto-detection).
+
+:::
+
+**Enable Connection Pooling \(Optional\)** - 
+Select the check box to use the connection pooling feature. If selected, the fields specific to connection pooling settings will be displayed.
+
+:::note
+
+Most integrations do not require connection pooling. Consider pooling if you execute a large number of statements during an integration.
+
+:::
+
+Boomi Integration manages the Snowflake Data Warehouse connection pools as follows:
+
+-   When you change a connection’s primary settings used for establishing Snowflake connection such as user or password, a new connection pool is created when the connection is redeployed. This allows existing pools used by deployed processes to continue to operate without interruption.
+-   When you change a connection’s secondary settings on the Connection Pool tab, such as maximum or minimum connections, the existing connection pool is updated the first time the new version of the connection is requested.
+-   Every 30 minutes, Integration monitors all connection pools used by the connector to reclaim unused connections and to restart extra connections to satisfy the Minimum Connections setting. When a connection pool has not been used in six hours and it has no active connections, then it is considered a dead or surplus connection.
+
+**Maximum Connections \(Optional\)** - 
+Enter the maximum number of connections allowed in the pool. The default is -1, which indicates an unlimited number of connections. You will receive an error, if you attempt to exceed the maximum.
+
+**Minimum Connections \(Optional\)** - 
+Enter the minimum number of connections allowed in the pool. The default is 0.
+
+**Maximum Idle Time \(Optional\)** - 
+Enter the maximum amount of time \(in seconds\) that a connection can remain open in an idle state. The default is 0.
+
+**When Exhausted Action \(Optional\)** - 
+Indicates whether to wait for a connection or immediately fail, when a connection pool is exhausted.
+
+**Maximum Wait Time \(Optional\)** - 
+Enter the maximum amount of time \(in seconds\) to wait for a connection from the pool. The default is 0. Applicable, if the **When Exhausted Action** is selected as Wait for a connection.
+
+**Test Connection When Borrowing from Pool \(Optional\)** - 
+Select this check box to verify if a connection is still valid while taking it from the pool.
+
+**Test Connection When Returning from Pool \(Optional\)** - 
+Select this check box option to test if a connection is still valid, when returning it back to the pool.
+
+**Test Idle Connections \(Optional\)** - 
+Select this check box to test if the idle connections are still valid .
+
+**Validation Query \(Optional\)** - 
+Enter a simple SQL Statement to return a single row of data, if the connection is valid. This query will be executed to test the connection, when any of the above test connection option is selected.
+
+-   If an invalid query is entered, the connector will throw appropriate error message.
+-   If this field is left empty, the connector will use default SQL query to test the connection.
+
+<TestConnection />

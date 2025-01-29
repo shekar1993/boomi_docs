@@ -1,0 +1,30 @@
+@media (min-width: 997px) {
+  .expandButton {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color var(--ifm-transition-fast) ease;
+    background-color: var(--exo-color-background-action-secondary) !important;
+  }
+
+  .expandButton:hover,
+  .expandButton:focus {
+    background-color: var(--exo-color-background-action-hover-weak) !important;
+  }
+
+  [data-theme="dark"] .expandButtonlightIcon {
+    display: none;
+  }
+
+  [data-theme="dark"] .expandButtondarkIcon {
+    display: flex;
+  }
+  .expandButtondarkIcon {
+    display: none;
+  }
+}

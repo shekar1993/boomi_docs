@@ -1,0 +1,107 @@
+pipeline:
+  name: BoomiDocs
+  identifier: BoomiDocs
+  projectIdentifier: boomi_ux
+  orgIdentifier: boomi
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: account.Bitbuckethttp
+        repoName: boomi_docs.git
+        build: <+input>
+  stages:
+    - stage:
+        type: CI
+        spec:
+          cloneCodebase: true
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: <+stage.variables.Build_EKS_Connector>
+              namespace: harness-builds
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Export Varialbles
+                  identifier: Export_Varialbles
+                  spec:
+                    connectorRef: account.DockerHub
+                    image: node:16.20.0-alpine3.16
+                    shell: Sh
+                    command: |-
+                      export git_url=<+codebase.repoUrl>
+                      export GIT_REPO=$(echo "$git_url" | awk -F'/' '{print $5}' | awk -F'.' '{print $1}')
+                    outputVariables:
+                      - name: GIT_REPO
+              - parallel:
+                  - step:
+                      name: Snyk-code-test
+                      identifier: Snykcodetest
+                      template:
+                        templateRef: org.orgsnykcodetestci
+                  - step:
+                      name: snyk-test
+                      identifier: snyktest
+                      template:
+                        templateRef: org.orgsnyktestci
+              - step:
+                  type: Run
+                  spec:
+                    connectorRef: account.DockerHub
+                    image: sonarsource/sonar-scanner-cli
+                    shell: Sh
+                    command: |-
+                      export SONAR_SCANNER_OPTS="-Xmx512m"
+
+                      cat > /opt/sonar-scanner/conf/sonar-scanner.properties << EOF
+                      sonar.projectKey=boomi_docs
+                      sonar.host.url=$SONAR_HOST_URL
+                      sonar.branch.name=$branch
+                      sonar.sources=/harness
+                      EOF
+
+                      cat /opt/sonar-scanner/conf/sonar-scanner.properties
+
+                      echo "Kicking off Sonar Scan"
+
+                      sonar-scanner -Dsonar.login=$SONAR_LOGIN
+                    envVariables:
+                      SONAR_HOST_URL: https://sonarqube.manage-pipeline.boomi.com/
+                      SONAR_LOGIN: <+input>
+                      SONAR_PROJECT_KEY: <+input>
+                      branch: <+codebase.branch>
+                    imagePullPolicy: Always
+                    resources:
+                      limits:
+                        memory: 2G
+                  when:
+                    stageStatus: Success
+                  name: Sonar Scan
+                  identifier: Sonar_Scan
+          caching:
+            enabled: false
+            paths: []
+        variables:
+          - name: Build_Type
+            type: String
+            default: install
+            description: ""
+            value: <+input>.allowedValues(install,release)
+          - name: Build_EKS_Connector
+            type: String
+            default: org.eks_managepipelinecidelegate_connector
+            description: ""
+            value: <+input>.allowedValues(org.eks_managepipelinecidelegate_connector,account.eksmanageprod)
+          - name: SONAR_LOGIN
+            type: Secret
+            description: ""
+            value: account.sonartoken
+        name: Sonar
+        identifier: Build_and_Sonar
+  delegateSelectors:
+    - manage-pipeline-ci-delegate

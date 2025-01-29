@@ -1,0 +1,1 @@
+**Response Profile** - Select or add an XML profile component that represents the structure received by the connector.

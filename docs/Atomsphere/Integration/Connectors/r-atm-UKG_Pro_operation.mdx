@@ -1,0 +1,37 @@
+import OperationEnd from './_operationEnd.md'
+import ReturnErrRes from './_ReturnResponse.md'
+
+# UKG Pro operation 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-b5f2471f-55aa-4670-a872-3915fa2623a3"/>
+</head>
+
+
+The UKG Pro operation defines how to interact with your UKG Pro account and represents a specific action performed against a specific UKG Pro record type or object.
+
+Create a separate operation component for each action/object combination required for your integration. The UKG Pro operation browses local and Cloud Atoms to generate and import profiles for the following actions:
+
+-   Get — retrieves data from UKG Pro and returns it to the process.
+-   Query — searches linked entities as well as entity types. When you select fields to query, the field names are appended to the URL. As a result, the browser’s URL length limit can be exceeded, which generates a 502 server error. If this happens, unselect all fields.
+
+
+Click **Import Operation** to select the object\(s\) to integrate. The Import wizard uses the connector browser and imports the request and response profiles for the selected action.
+
+## Options tab 
+
+The following table describes the default field definitions for each action type:
+
+**Object** - 
+An object defines what you want to integrate or the action to run, which you select in the **Import Operation** wizard.
+
+<ReturnErrRes />
+
+**$skip** -
+Skip the designated number of records and return the remaining records. For example, entering 25 skips the first 25 records and returns records 26 and higher.
+
+**$top** -
+Retrieve the designated number of top records. You can combine $top with $skip. For example, setting $skip to 25 retrieves records 26 and up. Setting $top to 5 then receives records 26 to 30.
+
+<OperationEnd />

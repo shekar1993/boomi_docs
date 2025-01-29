@@ -1,0 +1,1 @@
+The current version of the SDK is 2.20.0.

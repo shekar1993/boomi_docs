@@ -1,0 +1,36 @@
+inputSet:
+  name: Staging
+  identifier: Staging
+  orgIdentifier: boomi
+  projectIdentifier: UX_Documentation
+  pipeline:
+    identifier: Soanr_Snyk_Scan
+    properties:
+      ci:
+        codebase:
+          build:
+            type: branch
+            spec:
+              branch: staging
+    stages:
+      - stage:
+          identifier: Build_and_Sonar
+          type: CI
+          spec:
+            execution:
+              steps:
+                - step:
+                    identifier: Sonar_Scan
+                    type: Run
+                    spec:
+                      envVariables:
+                        SONAR_LOGIN: ""
+                        SONAR_PROJECT_KEY: ""
+          variables:
+            - name: Build_Type
+              type: String
+              value: install
+            - name: Build_EKS_Connector
+              type: String
+              value: org.eks_managepipelinecidelegate_connector
+  object Object: pipeline.properties.ci.codebase

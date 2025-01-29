@@ -1,0 +1,79 @@
+# Creating an integration connecting systems 
+
+<head>
+  <meta name="guidename" content="Platform"/>
+  <meta name="context" content="GUID-f8ae5b2d-d514-4d4a-8f22-90e18412c0bb"/>
+</head>
+
+You can ask [Boomi DesignGen](/docs/Atomsphere/Platform/atm-BoomiAI_Boomi_DesignGen.md) to design an integration based on two specific applications or systems. For example, you can enter the prompt "Connect Salesforce to NetSuite". As you type the prompt, it auto-completes to indicate that it is a common design pattern. When you use these common patterns, Boomi DesignGen shows you multiple data objects you can connect, such as account records to customer records. 
+
+Integration editing is not supported for this type of prompt. After creating the integration, you can ask [Boomi Scribe](/docs/Atomsphere/Platform/atm-BoomiAI_Boomi_Scribe.md) to generate process documentation.
+
+Review [Creating an integration connecting system types](/docs/Atomsphere/Platform/atm-BoomiAI_Create_Integrations_Connecting_System_Types_d851212c-a9e5-451a-99bc-c49988763ba8.md) to learn more about prompting with a system type, such as a CRM, instead of an application name. Review [Creating a process or sub-process](/docs/Atomsphere/Platform/atm-BoomiAI_Create_Integration_Based_on_a_Business_Process_4f594693-91b9-4885-9fe0-d052d114465c.md) to learn more about creating integrations with technical connectors, such as the Mail connector.
+
+<iframe width="700px" height="400px" src="https://embed.app.guidde.com/playbooks/4ivRn4w3skcHNKR2hGhTZv" title="Creating an integration connecting two systems" frameborder="0" referrerpolicy="unsafe-url" allowfullscreen="true" allow="clipboard-write" sandbox="allow-popups allow-popups-to-escape-sandbox allow-scripts allow-forms allow-same-origin allow-presentation"></iframe>
+
+## Prerequisites
+
+To use Boomi DesignGen, you must have the following:
+
+-   Integration Build Read Write access. Read [User roles and privileges](c-atm-User_roles_and_privileges_5a1c8a1a-4d58-4e7d-a6b6-b684a0c6d672.md) to learn more about default Boomi Enterprise Platform roles and permissions.
+-   Create Component API feature enabled on your account.
+-   Agreement to the Boomi AI terms and conditions. Administrators can select the AI icon > Get Started to view and accept terms and conditions.  
+-   Connectors enabled on your account. Many connectors are enabled by default. However, certain connectors may not be available due to licensing or your subscription. Read [Connector licenses and classes](../Integration/Connectors/c-atm-Connectors_bb305b35-0f13-4937-a918-f85dbbe1b27b.md) to learn more about connection licenses and your subscription.
+
+## Important considerations
+
+-   Boomi DesignGen currently supports the English language.
+-   The Component Create API is used to generate integrations. These API calls count towards your API usage. Read [API usage](c-atm-API_Usage_tab_49e6a2e4-90c8-44ae-8a2b-d151913367b9.md) to learn more.
+-   The Boomi AI large language model's responses are dependent upon the input it receives by the user, and different inputs may return different results.
+- The model is continuously learning and responses will continue to improve as the model improves.
+- Boomi DesignGen is only focused on responding to prompts related to generating integration designs.
+- It has no knowledge of previous integration conversations and designs. You cannot refer to a previous prompt or response. To make adjustments to your prompt, copy and paste the previous prompt with your edits in the chat window.  
+- If you mention an unsupported connector in your Boomi GPT prompt, Boomi DesignGen replaces it with the HTTP connector step. Read [Boomi GPT Supported Connectors](/docs/Atomsphere/Platform/atm-BoomiAI_Connectors_9f8a52e4-5ef2-49ec-bb15-bba51d58fb59.md) for more information.
+
+## Walkthrough
+
+1.  Enter a prompt in the Boomi GPT chat window. For example, “Connect Salesforce to NetSuite”. Prompts have a 750 character limit.
+  
+  :::note
+
+  Boomi DesignGen uses the Component Create API to generate integrations. These API calls count towards your API usage. Read [API usage](c-atm-API_Usage_tab_49e6a2e4-90c8-44ae-8a2b-d151913367b9.md) to learn more.
+
+  :::
+
+2.  Select a suggestion to tell Boomi DesignGen which integration to design. For example, select Account to Customer. Boomi DesignGen may take approximately up to one minute to respond. Boomi Scribe generates a high-level description of the integration. You can click the **Copy** icon to copy and paste the high-level description into the process canvas or your content management system. The text is in Markdown.
+3. If Boomi DesignGen finds that you have an existing connection for a connector in the design, you can:
+    - Select **Create new connection** to generate a new connection configuration for the connector. 
+    - Select **Choose existing connection** to use a current connection you've already configured in Integration.
+
+    :::note
+
+    Boomi DesignGen currently supports reusing existing connections if there are five or less connection component options. If more than five options exists, it creates a new connection.
+    
+    :::
+
+4. **Optional**: Click **Show more**. Boomi Scribe generates a detailed process summary that includes information about each step and its operation. You can click the **Copy** icon to copy and paste the summary into your content management system. The text is in Markdown.
+5. **Optional**: Click **Process Documentation**.Documentation includes a summary, process metadata, business context, process steps, profile names, and functions of each step. When this information is available, it describes object names and operation types for connectors. Connector steps also include information about the operation name, request profile, and response profile.
+   
+   The documentation includes details about the source and target objects for mapping components with XML or JSON profile types. When documentation includes a Map components or subprocess, it contains a link that opens the object in the Integration build canvas to provide more context. Boomi Scribe also generates a process diagram. 
+   
+6. **Optional**: Click the **Copy** icon to copy and paste the documentation into your content management system. The text is in [Markdown](https://en.wikipedia.org/wiki/Markdown).
+6. **Optional**: Click the **Download** icon to export documentation as a .docx file. When opened in a .docx-supported editor, the content includes the process diagram and appears similar to how content appears in Boomi GPT. Layout and spacing may differ depending on the editor.
+7.  Do one of the following:
+    -  Select **Take a look** to open the integration canvas and review the design.
+    -  Select **Profile mapping** to open the Map component so you can see how fields are mapped from one format to another. Boomi Pathfinder auto-maps source to target fields if a suggested mapping is available. Functions are currently not supported. Read [Map components](../Integration/Process%20building/c-atm-Map_components_87f669d6-4999-445f-9f29-ed24e79c92dd.md) for assistance.
+8.  Configure, test, and deploy your integration. Read [Process Building](../Integration/Process%20building/c-atm-Process_building_b422a00a-b17b-4ea8-ae01-d04adaf97e16.md) and [Deployment](../Integration/Deployment/c-atm-Deployment_4e723d20-3e2b-41b7-8d57-010dccb940b8.md#GUID-2B2B0AFE-4862-4535-9A45-15D1F5A3B41C) for assistance.
+
+## Prompt examples
+
+Use the following prompt examples to explore common integration patterns that connect two systems. Read [Boomi GPT](/docs/Atomsphere/Platform/atm-BoomiAI_BoomiGPT.md) to learn more about prompt examples and creating prompts.
+
+|Prompt Example|
+|--------------|
+|"Connect Salesforce to NetSuite"|
+|"Connect Shopify to NetSuite"|
+|"Connect Shopify to NetSuite"|
+|"Create a process to connect Autotask to Salesforce"|
+|"Create a process to connect Workday to Salesforce"|
+

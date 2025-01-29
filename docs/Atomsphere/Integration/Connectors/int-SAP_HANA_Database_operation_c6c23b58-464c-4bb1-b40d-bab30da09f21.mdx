@@ -1,0 +1,207 @@
+import OperationEnd from './_operationEnd.md'
+
+# SAP HANA Database operation
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-c6c23b58-464c-4bb1-b40d-bab30da09f21"/>
+</head>
+
+
+The SAP HANA Database connector operations define how to interact with your database and represent a specific action \(INSERT, QUERY, UPDATE, UPSERT, DELETE, STORED PROCEDURE, BULK LOAD, BULK UNLOAD\) to be performed against one/many database objects. Create a separate operation component for each action combination that your integration requires.
+
+Insert, Query, Update, and Delete operations support the following SQL query insert options,
+
+-   Standard — Uses prepared SQL statement entered by the user.
+-   Dynamic — Based on the user's input request, the connector uses statement class to build dynamic SQL queries during the runtime.
+
+Create a separate operation component for each action/object combination that your integration requires. The SAP HANA Database connector supports the following actions:
+
+-   Inbound: QUERY, BULK LOAD
+-   Outbound: INSERT, UPDATE, UPSERT, DELETE, BULK UNLOAD
+-   Execution of STOREDPROCEDURE \(IN, OUT and INOUT Parameters\)
+
+Click **Import Operation**, then use the Import wizard to select the object \(specific database table name\) to integrate. The wizard uses the connector browser and imports the request and response profiles for the selected action. To know about the supported column data types in the request and response profiles, please see the Supported Data Types section in this topic.
+
+## Options tab
+
+When you configure an action, the following fields appear on the **Options** tab.
+
+**Connector Action \(All Operations\)** - 
+Determines the type of operation the connector is performing related to Inbound or Outbound. Depending on how you create the operation component, the action type is either configurable or non-configurable from the drop-down list.
+
+**Tracking Direction** - Select the document tracking direction for the operation, either **Input Documents** or **Output Documents**. This setting enables you to choose which document appears in **Process Reporting**. Start steps always track output documents regardless of your selection.
+
+:::note
+
+If the tracking direction is read-only, the feature to change the direction is either unavailable or the developer set the configuration to read-only. The default value you see shows you which document appears in Process Reporting.
+
+:::
+
+**Request Profile \(All Operations\)** - 
+The profile represents the structure required to process a specific request on the selected object type \(database table\). Import the Request Profile by choosing the table name from the **Object Type** drop-down. The request profile is built based on the database column names and data types metadata.
+
+-   For CLOB and JSON insert, the request profile is unstructured.
+-   The Import Wizard \(for Insert, Query, Update and Delete operation\) provides an option to pass the SQL Query as part of the input request along the parameter values. This can be done by selecting the **Enable SQL Query** check box, provided if the Operation Type is Standard and the Commit Option is Commit By Profile. This allows user to prepare and execute SQL queries dynamically. The SQL Query passed in the input request overrides the query entered in the Operation – **Options** settings.
+
+**Response Profile \(All Operations\)** - 
+The response profile highlights the format in which the response should be processed. Import the Response profile with Structured or Unstructured JSON. The response for Insert, Update, Upsert, and Delete operation with commit option as Commit By Profile includes the following details.
+    -   Query - SQL query used.
+    -   Rows Effected - Number of rows affected.
+    -   Status – Status of the operation.
+
+**Insert Operation Type \(Insert\)** - 
+Select the required SQL query mode for performing Insert operation. The available options are,
+   
+ -   Standard Insert - User must enter the prepared SQL statement for data insertion in the **SQL Query** field available on the Options tab or passed as part of the input request.
+ -   Dynamic Insert - The SQL statement is generated dynamically based on the input parameters in the Request Profile.
+ -   CLOB Insert - Query is built by the connector in the runtime based on the user inputs. The single CLOB value is inserted into first CLOB type column of the database.
+ -   JSON Insert - Input is provided as JSON document and stored in the JSON document store as JSON collection.
+
+**Query Operation Type \(Query\)** - 
+Select the required SQL query mode for performing Query operation. The available options are Standard Query and Dynamic Query.
+
+**Update Operation Type \(Update\)** - 
+Select the required UPDATE operation type. The available options are Standard Update and Dynamic Update.
+
+**Delete Operation Type \(Delete\)** - 
+Select the required DELETE Operation Type. The available options are Standard Delete and Dynamic Delete.
+
+**SQL Query \(Insert, Query, Update, Delete\)** - 
+Type or paste a SQL query statement valid for the selected operation \(Insert/Query/Update/Delete\). Mandatory for Standard Operation type. If the Dynamic Operation is selected and SQL statement is provided, then the SQL statement is not considered for execution. During Request and Response Profile import, if the **Enable SQL Query** option is selected, the SQL Query entered here is not considered.
+
+**Commit Option \(Insert, Update, Upsert, Delete\)** - 
+\(Mandatory\) Select the required commit type to be applied when the connector writes to the database. The available options are,
+
+-   Commit By Profile - Performs a single commit after all SQL statements in the profile have been executed. This option avoids orphaned rows when the database profile contains multiple statements, for example tables that have a parent-child relationship.
+
+    **Note:** The SQL query applied is displayed in the response, post the successful execution.
+
+-   Commit By Number of Rows - Commit action is performed based on the row count specified in the **Batch Count** field using JDBC batching. A final commit is performed at the end of each document to commit the outstanding rows. Not applicable for CLOB Insert and JSON Insert.
+
+**Batch Count \(Insert, Update, Upsert, Delete, Storedprocedure\)** - 
+Set the number of statements to be batched when the selected Commit Option is Commit by Rows\). This field is not applicable for CLOB and JSON Insert.
+
+-   During the batch processing, if any of the records within a batch fail the details of failed records and the corresponding batch details can be found in the Base Process Log page \(Process - View Log\).
+-   For STOREDPROCEDURE operation, the batch processing is applicable for procedures with input parameters \(IN\) only.
+
+    **Note:** If you opt for batching during the Dynamic Insert/Update/Upsert/Delete operation, the names of the table column provided in the first request must remain the same for all subsequent requests within your batch input for insert/update/upsert/deletion of the rows.
+
+
+**Include IN Clause \(Query\)** - 
+Select this check box to include IN clause query in the SQL query.
+
+**Note:** IN Clause can take multiple values, therefore you can specify one parameter in the SQL query and can pass multiple values for that parameter in the input request.
+
+``` {#codeblock_dbn_5x2_qrb}
+Example:
+Query: 
+SELECT * FROM CUSTOMER WHERE CUSTOMER_NAME IN($CUSTOMER_NAME) AND CUSTOMER_DOB=$CUSTOMER_DOB AND CUSTOMER_COUTRY=(SELECT CUSTOMER_COUTRY FROM CUSTOMER WHERE CUSTOMER_NAME IN($CUSTOMER_NAME) AND CUSTOMER_DOB=$CUSTOMER_DOB AND CUSTOMER_ID IN($CUSTOMER_ID)) AND CUSTOMER_ID IN($CUSTOMER_ID)
+
+Input:
+{
+"CUSTOMER_NAME":["JHON1","BOB"],
+"CUSTOMER_DOB":"10-MAR-20",
+"CUSTOMER_ID":[148,149]
+}
+```
+
+**Table Names \(Query\)** - 
+Type or paste the names of tables in the SQL query using comma separated values. IN clause has been enhanced to support multiple tables. This option is available in the Query - Import Wizard.
+
+```json
+select * from (select id,name,time,paymentDate,marks from diffdatatype where marks in ($diffdatatype.marks))a
+left join customerdata c on c.customerId != a.id and a.paymentDate not in ($diffdatatype.paymentDate) and 
+c.customer_dob in ($customerdata.customer_dob) limit 2
+Input:
+{
+"diffdatatype.marks":[50,55,56,55,90],
+"diffdatatype.paymentDate": ["1190-02-02"],
+"customerdata.customer_dob":["1995-07-20","1985-07-20"]
+}
+```
+
+**Link Element \(Query\)** - 
+\(Optional\) Specify a required field/column name \(Usually primary key in the database table\) to split or group the query operation results fetched from the database. This is applicable for Standard Query operation.
+
+**Max Rows \(Query\)** - 
+Optional\) Sets the maximum number of rows to be fetched from the database in response to a Query request.
+
+**Use Pagination \(Query\)** - 
+Select this check box to retrieve maximum number of records \(as defined in the Max Rows field\) for each request, until it retrieves all the matched records. If this check box is selected and the **Max Rows** field value is empty, then default number of records per request is 200.
+
+**Local File Path \(Bulk load\)** - 
+Specify the absolute path of the CSV file to be uploaded. e.g. C:\\Windows\\……\\example.csv
+
+**Remote Directory \(Bulk load\)** - 
+Specify the SAP HANA file system directory path to which the CSV file to be copied.
+
+**Note:** Make sure the remote directory exists and SAP HANA Database user has access to the directory for file transfers.
+
+**Remote File Path \(Bulk Load, Bulk Unload\)** - 
+Enter the absolute path of the CSV file in the SAP HANA Database file system.
+
+**Note:** For Bulk Load - Use this option, if the CSV file exists in the SAP HANA Database file system.
+
+## Insert
+
+Insert is an outbound action that allows you to insert data objects into a target table in the SAP HANA database. For Commit by rows, batch count is taken from Batch Count field and performs JDBC statement batching.
+
+**Note:** JDBC batching is not supported for CLOB and JSON insert.
+
+Supported Insert operation types are:
+
+-   Dynamic Insert - Connector builds the insert query during runtime based on the user input.
+-   Standard Insert - User must provide the SQL statement and input parameter. The connector executes the insert SQL by providing the input parameters.
+-   CLOB Insert - User must provide the input request and the query is built by the connector in the runtime based on the user inputs. The single CLOB value is inserted into first CLOB type column of the database.
+-   JSON Insert - User must provide the JSON document input and it is stored in the JSON document store as JSON collection.
+
+## Query
+
+Query is an inbound action to retrieve the records from the SAP HANA database based on the parameter defined on the connector’s Parameters tab. It supports pagination, where user can split the output results into multiple pages while retrieving large dataset. The maximum number of rows to be returned in the page can be defined in the **Max Rows** field. Use the **Include IN Clause** check box to specify single parameter in the SQL query and pass multiple values for that parameter in the input request. Supported Query operation types are Dynamic Query and Standard Query.
+
+## Update
+
+Update is an outbound action to update the existing records in a database table. The connector operates with SINGLE-mode-like behavior. It takes JSON documents as input, with the output as a JSON response document with the results of the operation. This connector supports both Standard and Dynamic Update operation.
+
+## Upsert
+
+Upsert is an outbound action that allows to either insert a new row, or update an existing row. Using the unique/primary key ID provided in the input, the connector Inserts or Updates the input automatically into the database. On successful execution, the Response contains;
+
+-   Query with the affected row count, if the selected commit option is Commit by Profile.
+-   Batch number with number of records in each batch, in case of commit option as Commit by Number of Rows.
+
+## Delete
+
+Delete is an outbound action to delete records from the database based on the inputs and the SQL statements provided by the user. It takes JSON documents as input, and the deleted record appears as a JSON response. It supports both Standard and Dynamic Delete operations.
+
+## Stored Procedure
+
+Storedprocedure executes the procedure in the database. The connector uses callable statements to call the procedure in the database. The request and response profile supports both the input and output parameters of the procedure. If the procedure returns the result set, the result set is displayed in the response on successful execution of the procedure. This operation supports JDBC batching if the procedure has only input parameters.
+
+## Bulk Load
+
+Bulk load operation allows you to load or insert large volume of data \(approximately 4 to 5 million records per load\) into the SAP HANA database. Here, the connector input must be a CSV file containing all the records to be inserted. The CSV file transfer from the local system to the destination SAP HANA Database file system is performed using the Secure Copy Protocol \(SCP\). Once the file gets transferred to the SAP file system, contents of the CSV file content get imported into the respective SAP HANA Database tables. For successful bulk loading of records into the SAP HANA DB, make sure the following settings are defined:
+
+-   SAP HANA Database file system host and user login credentials must be provided in the Connection UI.
+-   Local file directory path of the CSV file and the directory path of the SAP HANA DB file system must be configured in the Operations UI.
+
+## Bulk Unload
+
+BULK UNLOAD operation allows you to export large volume of data \(approximately 4 to 5 million records per load\) from the SAP HANA database tables. This operation requires the SAP HANA DB file system details configured in the Connection UI and the SAP HANA DB File system to be specified in the **Remote file Path** field as input in the Operation UI. The connector exports all the records into the Platform using the EXPORT command. The CSV containing the exported contents are placed in the destination remote directory path using the Secure File Transfer Protocol \(SFTP\) protocol.
+
+## Supported Operations and Data Types
+
+The connector builds the JSON schema automatically by identifying the data types of each column in the table. The table names are selected in the Object type drop down. The table below provides the list of operations and data types supported in the Database specific connectors.
+
+|**Connector**|**Supported Operations**|**Supported Data Types**|
+|-------------|------------------------|------------------------|
+|**SAP HANA Database Connector**|• INSERT<br />• QUERY<br />• UPDATE<br />• UPSERT<br />• DELETE<br />• STORED PROCEDURE<br />• BULK LOAD<br />• BULK UNLOAD|INT, VARCHAR, NVARCHAR, NCHAR, CLOB, DATE, TIME, TIMESTAMP, BOOLEAN, DECIMAL.
+|
+|**Database V2 Connector \(MySQL\)**|•   INSERT<br />• GET<br />• UPDATE<br />• UPSERT<br />• DELETE<br />• STORED PROCEDURE|INT, BIGINT, SMALLINT, TINYINT, CHAR, VARCHAR, NVARCHAR, NCHAR, LONGNVARCHAR \(text\), LONGVARCHAR \(text\), DATETIME, TIMESTAMP, BOOLEAN, DECIMAL, DOUBLE, FLOAT, CLOB, JSON, BLOB, LONGBLOB.|
+|**Database V2 Connector \(Postgres\)**|Same as Database V2 Connector \(MySQL\).|INT, SMALLINT, BIGINT, CHAR, NCHAR, VARCHAR, VARCHAR \(n\), LONGNVARCHAR \(text\), LONGVARCHAR \(text\), DATETIME, TIMESTAMP, DECIMAL \(Numeric\), DOUBLE \(Double Precision\), BOOLEAN, CLOB, JSON, FLOAT, BYTEA \(variable-length binary string\).|
+|**Database V2 Connector \(MS SQL\)**|Same as Database V2 Connector \(MySQL\).|INT, BIGINT, SMALLINT, TINYINT, CHAR, VARCHAR, NVARCHAR, NCHAR, LONGNVARCHAR \(NTEXT\), LONGVARCHAR \(TEXT\), DATETIME, BOOLEAN, DECIMAL, DOUBLE PRECISION, FLOAT, CLOB, JSON, BLOB \(Varbinary/Image\).|
+|**Database V2 Connector \(Oracle\)**|Same as Database V2 Connector \(MySQL\).|INT, SMALLINT, DECIMAL, FLOAT, DOUBLE PRECISION/NUMBER, CHAR, NCHAR, VARCHAR, NVARCHAR2, LONGNVARCHAR \(LONG\), LONGVARCHAR \(LONG\), DATETIME, TIMESTAMP, CLOB, JSON, BLOB.|
+|**Oracle Database Connector**|• INSERT<br />• GET<br />• UPDATE<br />• UPSERT<br />•   DELETE<br />• STORED PROCEDURE|INT, VARCHAR, DATE, TIME, TIMESTAMP, CLOB, VARRAY, BOOLEAN, JSON, CHAR, LONGVARCHAR, NVARCHAR, DECIMAL, NUMERIC, BIT, DOUBLE, FLOAT, REAL, BLOB, BINARY, VARBINARY - Applicable for all operations.<br />XMLType - Applicable for Storedprocedure only.<br />NESTED TABLE and VARRAY - Applicable for storedprocedure only.<br/>-   NESTED TABLE, OBJECT \(supported data types: NUMBER, VARCHAR, DATE, TIMESTAMP, CHAR, NCHAR, DOUBLE, FLOAT, DECIMAL, NUMERIC, REAL, BLOB, INTEGER, SMALLINT\). These datatypes are also applicable for object type attribute used in the nested table.<br />-   VARRAY \(supported data types: NUMBER, VARCHAR, DATE, FLOAT, NCHAR, NVARCHAR, TIMESTAMP, LONGVARCHAR, INTEGER, TINYINT, SMALLINT, DOUBLE, DECIMAL, NUMERIC.<br />-   VARRAY \(supported user defined data types: INTEGER, TINYINT, SMALLINT, DECIMAL, NUMERIC, BOOLEAN, NVARCHAR, BIGINT, DOUBLE, FLOAT, VARCHAR, CHAR, LONGVARCHAR, NCHAR, LONGNVARCHAR, REAL, BLOB, BINARY, LONGVARBINARY, VARBINARY, DATE, and TIMESTAMP.<br />**Note:** In Oracle Database, usage of BOOLEAN data type within VARRAY and TABLE TYPE is not supported. Similarly, BLOB datatype is not supported in VARRAY Type.<br />Supported TIMESTAMP Format: yyyy-mm-dd hh:mm:ss and yyyy-mm-dd hh:mm:ss.ff.<br />Supported DATE Format: dd-MMM-yyyy and dd/MMM/yyyy.<br />The following formats are applicable for both TIMESTAMP and DATE data type \(all operations\).<br />• yyyy-MM-dd'T'HH:mm:ss.SSSXXX<br />• dd/MMMM/yyyy hh:mm:ss a<br />• dd-MMM-yy hh.mm.ss.SSSS a<br />• yyyy-MM-dd HH:mm:ss<br />NESTED TABLE and VARRAY - Applicable for INSERT, GET, UPDATE, and DELETE operations. Please note, supported only for nested table of object type and single record.|
+
+<OperationEnd />

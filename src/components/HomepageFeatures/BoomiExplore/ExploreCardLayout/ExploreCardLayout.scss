@@ -1,0 +1,66 @@
+.explore-card-layout-wrapper {
+  width: calc(calc(var(--exo-size-1) / 8) * 32);
+  height: calc(calc(var(--exo-size-1) / 8) * 24);
+  border-radius: calc(var(--exo-spacing-4x-small) * 5);
+  border: var(--exo-spacing-4x-small) solid var(--exo-color-border-secondary);
+  background: var(--exo-color-background);
+
+  .explore-card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--exo-spacing-standard);
+    gap: var(--exo-spacing-2x-small);
+    flex: 1 0 0;
+    align-self: stretch;
+
+    .explore-card-header-wrapper {
+      display: flex;
+      align-items: center;
+      padding-bottom: var(--exo-spacing-small);
+      gap: var(--exo-spacing-small);
+      border-bottom: var(--exo-spacing-4x-small) solid var(--exo-color-border-secondary);
+      width: 100%;
+
+      .explore-card-header-icon{
+        color: var(--exo-color-data-solid-coral);
+        font-size: var(--exo-font-size-6x-large);
+      }
+
+      .explore-card-header {
+        color: var(--exo-color-font);
+        font-feature-settings: "liga" off, "clig" off;
+        font-family: var(--exo-font-family);
+        font-size: var(--exo-font-size-large);
+        font-style: normal;
+        font-weight: var(--exo-font-weight-bold);
+        line-height: 150%;
+        letter-spacing: -0.18px;
+      }
+    }
+
+    .explore-card-links-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding-top: var(--exo-spacing-x-small);
+      gap: var(--exo-spacing-x-small);
+      align-self: stretch;
+
+      .explore-card-link {
+        display: flex;
+        min-height: var(--exo-spacing-large);
+        align-items: center;
+        gap: var(--exo-spacing-2x-small);
+        color: var(--exo-color-font-link);
+        font-feature-settings: "liga" off, "clig" off;
+        font-family: var(--exo-font-family);
+        font-size: var(--exo-font-size-small);
+        font-style: normal;
+        font-weight: var(--exo-font-weight-regular);
+        line-height: 171.429%;
+        letter-spacing: -0.28px;
+      }
+    }
+  }
+}

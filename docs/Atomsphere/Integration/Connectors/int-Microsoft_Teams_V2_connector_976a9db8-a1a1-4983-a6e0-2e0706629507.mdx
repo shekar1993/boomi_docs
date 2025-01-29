@@ -1,0 +1,52 @@
+import TrackedProperties from './_TrackedProperties.md'
+
+# Microsoft Teams connector
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-976a9db8-a1a1-4983-a6e0-2e0706629507"/>
+</head>
+
+
+Microsoft Teams connector allows you to connect to your Microsoft Teams server and perform required data transfer from/to, using Microsoft Graph REST APIs.
+
+Microsoft Teams connector allows you to connect to your Microsoft Teams server and perform required data transfer from/to, using [Microsoft Graph](https://docs.microsoft.com/en-us/graph/overview) REST APIs. The Microsoft Graph APIs offer the ability to access data exposed as resources of Microsoft Cloud Services \(e.g. Microsoft 365 services\). The connection to the Microsoft Graph APIs is secured via OAuth 2.0 authentication framework. Through this connector, you can use a Boomi Integration process to Create, Get, Manage, Execute, List, and Delete the Microsoft Teams resources \(e.g. Team, Channel, Chat message, Team members\).
+
+
+:::note
+
+The Microsoft Teams connector supports only on-premise \(local Atoms, Molecules, and Atom Clouds\).
+
+:::
+
+## Connector configuration
+
+To configure the connector to communicate with a Microsoft Teams server, set up the following two components:
+
+-   Microsoft Teams connection - Represents your client application account registered in the Microsoft Azure portal for accessing the Microsoft Graph API.
+-   Microsoft Teams operation - Represents an action against a specific object i.e. Microsoft Teams resource. You will create one or more operations—one for each type of interaction required by your integration scenario.
+
+This design provides reusable components which contain connection settings and operation settings. After building the connection and operation, set up your connector within a process. When the process is defined properly, Integration can map to and from virtually any system using the Microsoft Teams connector to transfer the Microsoft Teams data.
+
+## Supported editions
+
+Microsoft Teams supporting Microsoft Graph v1.0.
+
+## Prerequisites
+
+To use the Microsoft Teams connector, you will require the following:
+
+-   A Microsoft Azure Active Directory tenant account with the privilege to register new application in the Microsoft Azure Portal.
+-   A client app authorized to receive access token to call the Microsoft Graph APIs. For this, you must register a new application \(client\) in the Microsoft Azure Portal and the application must be authorized by either a user or an administrator for accessing the required Microsoft Graph resources. The access token contains information about your app and the permissions it has for the resources and APIs available through Microsoft Graph. For more information, refer to [Microsoft Documentation - Register an application with the Microsoft identity platform](https://docs.microsoft.com/en-us/graph/auth-register-app-v2) and [Authentication and authorization basics for Microsoft Graph.](https://docs.microsoft.com/en-us/graph/auth/auth-concepts?view=graph-rest-1.0)
+-   Client app identification details. You can find these details in the **Microsoft Azure** - **App registrations** - your application's **Overview** page.
+    -   Client ID – A unique application \(client\) ID assigned to your app by the Microsoft Azure, post the app registration.
+    -   Client Secret - A password or a public/private key pair that your app uses to authenticate with the Microsoft Azure. Configured at the time of app registration.
+    -   Tenant ID - Global Unique Identifier \(GUID\) assigned to a tenant.
+-   Microsoft Graph API authentication endpoint details.
+    -   API Service Endpoint - Authentication URL for the Microsoft Graph API service endpoint. Value: [“https://login.microsoftonline.com/:tenant\_id/oauth2/v2.0/token”](https://login.microsoftonline.com/:tenant_id/oauth2/v2.0/token)
+    -   Scope - Use the Microsoft Graph URL suffixed with /.default. Value: `https://graph.microsoft.com/.default`.
+-   Necessary access rights and permissions assigned to the registered client app for using the Microsoft Graph APIs. The required API name and permission type can be found within the respective operation. Delegated authorization must be configured for the client app to perform Get and Execute operation. To know about configuring API permissions for the client app, refer to [Microsoft Graph Documentation – Manage app registration](https://docs.microsoft.com/en-us/graph/notifications-integration-app-registration).
+
+
+
+<TrackedProperties />

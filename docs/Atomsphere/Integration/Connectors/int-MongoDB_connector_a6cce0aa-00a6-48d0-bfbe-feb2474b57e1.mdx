@@ -1,0 +1,114 @@
+import TrackedProperties from './_TrackedProperties.md'
+
+# MongoDB connector
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-a6cce0aa-00a6-48d0-bfbe-feb2474b57e1"/>
+</head>
+
+
+The MongoDB connector allows you to perform single/bulk transfer of data from/to a MongoDB server using MongoDB Java APIs. Also, MongoDB connector supports Azure cosmosDB MongoDB variant.
+
+Through this connector, you can use a Boomi Integration process to GET, QUERY, CREATE, UPDATE, UPSERT and DELETE the data stored in the MongoDB database. The connector provides the ability to use any of the [MongoDB supported client authentication methods](https://docs.mongodb.com/manual/core/authentication/) \(such as Salted Challenge Response Authentication Mechanism \(SCRAM\), X.509, Lightweight Directory Access Protocol \(LDAP\) and KERBEROS\) for a secured database connection. Its flexible design enables using this connector with [MongoDB Sharded Cluster](https://docs.mongodb.com/manual/sharding/#sharded-cluster) deployment.
+
+It supports utilizing the "Mongo+SRV" feature for MongoDB clusters. The use of SRV eliminates the requirement for every client to pass in a complete set of state information for the cluster. Allows more flexibility of deployment and the ability to change the servers in rotation without reconfiguring clients.
+
+:::info Important
+
+- This is an open source connector and you can access the code in the [MongoDB](https://bitbucket.org/officialboomi/mongodb) connector repository.
+
+- The MongoDB connector is supported in both local and cloud atom. The cloud atom support has not been tested for KERBEROS and Mongo+SRV functionalities.
+
+:::
+
+## Connector configuration
+
+To configure the connector to communicate with MongoDB, set up the following two components:
+
+-   MongoDB connection — The connection represents a specific MongoDB server and its associated user authentication.
+-   MongoDB operation — The operation represents an action against a specific record \(document\) type. You will create one or more operations — one for each type of interaction required by your integration scenario.
+
+This design provides reusable components containing connection settings and operation settings. After building the connection and operation, set up your connector within a process. When the process is configured properly, Integration can map to and from virtually any system using the MongoDB connector to communicate with the MongoDB server.
+
+## Prerequisites
+
+To use the MongoDB connector, you will require the following:
+
+-   Hostname and port number of the MongoDB server.
+-   Name of the MongoDB database.
+-   User authentication details required for the selected authentication type.
+    -   **None** — The minimal MongoDB server details such as hostname, port number and MongoDB database name are adequate to establish the connection.
+    -   **SCRAM-SHA-1 & SCRAM-SHA-256** — Requires username, password and name of authentication database \(authorized MongoDB users are registered here at the time of user creation\).
+    -   **X.509** — Uses User certificate \(.pfx/.p12 format\) and Certificate Authority \(CA\) certificate \(.cer/.der format\).
+
+        Valid X.509 certificates generated and signed by a single Certificate Authority should be used. A self-signed CA certificate can also be used. These certificates can be generated using the OpenSSL tool. Obtaining and managing these certificates is beyond the scope of this documentation. Contact the server Admin for further details.
+
+    -   **LDAP** — Uses distinguished username as defined in the LDAP directory server, password and authentication database name.
+    -   **KERBEROS** — Uses client principal name, password, user authentication database name, Kerberos Key Distribution Center \(KDC\) host name, Realm name along with the following configuration files.
+        -   **krb5.conf file** — Kerberos client configuration file contains the location of Kerberos Key Distribution Center \(KDC\) and admin servers for the Kerberos realms. This file is configured as part of the Kerberos setup. If the KDC and Realm names are updated here, the **KDC Name** and **Realm Name** fields in the Connection setup are optional.
+        -   **keytab file** — Stores long-term keys for one or more principals/users in encrypted format.
+
+            :::note
+
+            If you are not aware of the Krb5 and/or keytab files’ location or do not have one already, contact your Kerberos server Admin.
+
+            :::
+
+        -   **gss-jaas.conf file** — Consists of one or more entries, each specifying which underlying authentication technology should be used for an application or applications. This file is mandatory, if the underlying authentication mechanism uses Java driver \(JAVA Authentication and Authorization Service \(JAAS\) & Generic Security Service Application Program Interface \(GSSAPI\)\) to perform Kerberos user authentication.
+
+            Sample format for gss-jaas.conf file is shown below.
+
+            ```java
+            
+            com.sun.security.jgss.initiate {
+            com.sun.security.auth.module.Krb5LoginModule required
+            useKeyTab=true
+            keyTab="<PATH_OF_KEYTAB>"
+            storeKey=false
+            useTicketCache=false
+            principal="<PRINCIPAL_NAME>"
+            doNotPrompt=true
+            debug=true;};
+            ```
+
+            **Remember:**
+
+            -   All these files must be placed in a separate folder in your local machine.
+            -   In the gss-jaas.conf file, go to the line `keyTab="<PATH_OF_KEYTAB>"` and add the local directory path of the keytab file.
+            -   In the connection setup, the local directory path of Krb5.conf file and gss-jaas.conf file must be specified in the **Krb5 Config Path** and **JAAS Config Path** field respectively.
+-   Enterprise Edition of MongoDB for LDAP and Kerberos Authentication.
+-   Connection String for Mongodb+SRV \(mandatory if the Mongo+SRV option is selected\). The connection string contains the end point of the DNS server hosting the SRV record. Optionally, you can pass other required configuration like SSL, authentication type, etc. For more details on SRV connection string, refer to the MongoDB documentation - [DNS Seedlist Connection Format](https://www.mongodb.com/docs/manual/reference/connection-string/#dns-seedlist-connection-format).
+
+    Make sure the following settings are done at the DNS server end.
+
+    -   SRV and TXT record for the cluster must be defined on the DNS server. A single SRV record points to the members of the replica set. The TXT record defines the options for the replica set, specifically the database that will be used for authorization and the name of the replica set. For details on creating the SRV and TXT record, refer to the MongoDB documentation - [MongoDB Seed Lists](https://www.mongodb.com/developer/products/mongodb/srv-connection-strings/).
+    -   User credentials associated with the DNS server. These credentials can be entered in the **Username/Client Principal** and **Password** field. The database name can be provided in the **Database Name** field.
+    -   The DNS must be resolvable from the system, when trying to establish the connection.
+
+## Connector-specific container setting​
+- The following property allows the runtime (Atom, Molecule, or Private cloud and will not support the Public cloud) owner to control the amount of memory that the MongoDB connector uses while retrieving and storing documents in memory before processing. Using this property is helpful for a Cloud owner to ensure that a single tenant or account does not overwhelm the container by consuming a huge amount of heap memory simultaneously. 
+
+- `com.boomi.connector.mongodb.maxDocumentSize` - (Query and Get operations) The property `mongodb.maxDocumentSize` indicates the maximum size of a single document the server returns per request. It represents the Maximum document Size in bytes.
+- Based on the given container value, the document will be filtered for the Query and Get operations.
+
+:::note
+
+The sorting functionality for Query operation with Azure CosmosDB MongoDB variant works only for those fields which are indexed.
+
+:::
+
+:::note
+
+- A value less than 1 indicates no limit on the document size for the Get and Query operations. This enables the Get and Query operations to support the Azure CosmosDB MongoDB variant effectively. For Azure Cosmos DB, the value of this property should be set to less than or equal to Zero.
+
+- Without this container property, the connector will operate AS IS, with a default value set to 1MB, consequently not supporting Get and Query operations for the Azure CosmosDB MongoDB variant.
+
+:::
+
+## Supported editions
+
+MongoDB versions from v2.6 to v6.x.
+
+
+<TrackedProperties />

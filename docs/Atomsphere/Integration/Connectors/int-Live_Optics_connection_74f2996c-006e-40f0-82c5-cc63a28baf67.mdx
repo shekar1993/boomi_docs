@@ -1,0 +1,23 @@
+import TestConnection from './_TestCon.md'
+
+# Live Optics connection
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-74f2996c-006e-40f0-82c5-cc63a28baf67"/>
+</head>
+
+
+The Live Optics connection represents a single account including login credentials. If you have multiple projects, you need a separate connection for each.
+
+## Connection tab
+
+**URL**: The URL of the server to connect to. This can be an http or https address but must be URL encoded. The URL field for the connector helps you to connect to the Live Optics portal. The connection supports the GET operation. Project details can be fetched with the given project ID as input.
+
+**Login ID**: An ASCII string of characters that uniquely identifies the user.
+
+**Login Secret**: A base-64 encoded string used to authenticate the user.
+
+**Shared Secret**: A second base-64 encoded string that is used to extract the session string from the Session Login method response.
+
+<TestConnection />

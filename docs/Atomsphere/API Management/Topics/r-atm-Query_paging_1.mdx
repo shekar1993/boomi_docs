@@ -1,0 +1,71 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+
+# Query paging
+
+Query paging helps you manage the number of results returned by an AtomSphere API request.
+
+The results from QUERY requests are paged to keep the size of responses at acceptable levels. The maximum number of results returned per QUERY response is 100. When there are more than 100 results, the response contains a `queryToken`. You can retrieve additional results by specifying the `queryToken` in a `queryMore` request.
+
+**Note:** The AtomSphere API connector and AtomSphere Partner API connector handle query paging for you. When you use an API connector in a process, there is no limit to the number of results returned by a Query request.
+
+<Tabs groupId="Request Method">
+  <TabItem value="rest" label="RESTish">
+
+The following is an example of an XML response that contains a `queryToken`:
+
+```xml
+<bns:QueryResult numberOfResults="100" xmlns="http://api.platform.boomi.com/">
+    <bns:queryToken>EXAMPLE_QUERY_TOKEN</bns:queryToken>
+    <bns:result xsi:type="bns:">
+    </bns:result>
+    ...
+    <bns:result xsi:type="bns:">
+    </bns:result>
+ </bns:QueryResult>
+```
+
+To perform the `queryMore` request, send an HTTP POST to:
+
+```
+https://api.boomi.com/api/rest/v1/{accountId}/{objectType}/queryMore
+```
+
+where `accountId` is the ID of the authenticating account for the request and `objectType` is the type of object you are querying (such as Account).
+
+To make a `queryMore` request, you need to provide *only the token value* in the body of an XML or JSON request to obtain the next page of results.
+  
+  </TabItem>
+  <TabItem value="soap" label="SOAP">
+
+The following is an example of a SOAP response that contains a `queryToken`:
+
+```xml
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+   <S:Body>
+      <ns4:queryResponse xmlns:api="http://api.platform.boomi.com/" xmlns:bns="http://api.platform.boomi.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns4="http://soap.api.platform.boomi.com/">
+         <api:results numberOfResults="100">
+            <bns:queryToken>EXAMPLE_QUERY_TOKEN</bns:queryToken>
+            ...
+         </api:results>
+      </ns4:queryResponse>
+   </S:Body>
+</soapenv:Envelope>
+```
+
+Here is the `queryMore` request for the next page of results:
+
+```xml
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.api.platform.boomi.com/" xmlns:api="http://api.platform.boomi.com/">
+   <soapenv:Header/>
+      <soapenv:Body>
+            <soap:queryMore>
+            ...
+            </soap:queryMore>
+      </soapenv:Body>
+</soapenv:Envelope>
+```
+
+  </TabItem>
+</Tabs>

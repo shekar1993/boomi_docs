@@ -1,0 +1,229 @@
+import OperationEnd from './_operationEnd.md'
+import TrackingDirection from './_TrackingDirection.md'
+import ReturnErrRes from './_ReturnResponse.md'
+
+# FTP V2 operation 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-c96954c1-26d9-48db-b4fe-29dc614c5154"/>
+</head>
+
+
+The FTP V2 operation defines how to interact with the external FTP server, such as creating, updating, downloading, deleting files, etc.
+
+The FTP V2 operation supports the following actions:
+
+-   Create — create files on an FTP server, or update files if they already exist.
+-   Query — download files from an FTP server.
+-   Delete — delete files from an FTP server.
+-   Get — retrieve a single file from an FTP server by its unique ID \(the filename\).
+-   List — retrieve a list of file metadata entries from a directory on an FTP server.
+
+At the end of the file transfer when the FTP session closes, the connector initiates and sends the FTP QUIT command as long as the operation is successful and completes as expected. This command is sent once for each FTP session, which can include any number of file transfers. The FTP QUIT command is not sent if the connection to the FTP server drops and cannot be reestablished by the connector.
+
+:::info Important
+
+If the connector returns an error \(for example, Error: 425 cannot open the connection with the FTP server\) while attempting an operation, you need to troubleshoot the connection. See [Connection troubleshooting](int-FTP_SDK_connection_0cb8c1ba-68d8-43b5-b04b-4f69ae752946.md#) for more information
+
+:::
+
+## Options tab 
+
+The following table describes the default field definitions for each action type:
+
+<TrackingDirection />
+
+<ReturnErrRes />
+
+**Transfer Format** \(Create, Query, Get\)
+Determines the format the connector uses to upload, retrieve, and transfer files to the FTP server.
+
+-   Binary — Upload and download files as raw data.
+-   ASCII — Upload and download files as text.
+
+**Action if File Exists** \(Create\)
+Specify how the operation behaves if the file name already exists in the Remote Directory on the FTP server.
+
+-   Select **Create unique name** to have the connector append an incremental number to the file name until finding a name that does not exist. For example, if a file named output.txt already exists, the connector attempts to name it output1.txt, then output2.txt, and so on until a file name is found that does not exist.
+-   Select **Overwrite** to replace the existing file with a new one.
+-   Select **Append** to append new data to the end of the file.
+-   Select **Generate error** to generate an error and not upload the file.
+
+**Staging Directory** \(Create\)
+ \(Optional\) Enter the directory \(absolute or relative directory path\) to temporarily put the file, while the upload is in progress and before it is created or updated in the Remote Directory. If you do not specify a Staging Directory or leave this field blank, the file is immediately created or updated in the Remote Directory. When the Staging Directory is defined, the temporary file is created in that directory and the connector ignores any directory that may appear in the File Name property. The Staging Directory is ignored when you select Append in the **Action if File Exists** drop-down list.
+
+
+:::note
+
+The connector uses the Unix style for paths. See the Prerequisites section in the connector topic for more information about how this style affects the path you specify here.
+
+:::
+
+**Temporary Extension \(Create\)** - 
+\(Optional\) Enter a temporary extension \(for example, .tmp or tmp\) to append to the file name until the file is created or updated in the Remote Directory. To avoid overwriting existing files, the connector guarantees that the temporary name is unique with its corresponding file name when creating files. The Temporary Extension is ignored when you select Append in the **Action if File Exists** drop-down list.
+
+**Include all metadata \(Create, Get\)** - 
+This setting controls whether JSON output documents \(Create\) or output document properties \(Get\) include extended metadata or not. When selected, all metadata \(File Name, Remote Directory, and Timestamp\) is included. When cleared, only the File Name and Remote Directory are included. Including extended metadata may impact the operation performance since it requires more interaction with the FTP server.
+
+**Delete file/files after reading \(Get, Query\)** - 
+If selected for Get, the single file is deleted from the FTP server after reading and downloading it into the process. If selected for Query, the files are deleted from the FTP server after reading and downloading them into the process.
+
+Boomi recommends selecting this check box when executing in production mode to prevent data from being processed twice and clearing this check box when testing.
+
+**Fail if unable to delete \(Query, Get\)** - 
+If selected, the process fails with an error when the file cannot be deleted from the FTP server after being read into the process. As a result, an operation error is produced and the downloaded file is not output by the connector. Otherwise, the process continues, the downloaded file is output by the connector, and a warning is written to the log. Additionally, if the file cannot be deleted for any reason \(for example, insufficient access rights\), a warning message is written to the log.
+
+**Maximum Number of Files to Return \(Query\)** - 
+Specify the maximum number of files to retrieve from the Remote Directory on the FTP server at once in a query. Enter any positive number, or accept the default -1 to return as many matching files as possible. Do not enter 0 \(zero\) or the connector returns an error.
+
+**Follow symbolic links \(Query\)** - 
+Select to retrieve files pointed to by symbolic links matching the query. If a file pointed to by a symbolic link is inaccessible, the connector returns an error.
+
+**Maximum Results \(List\)** - 
+Specify the maximum number of file metadata entries to return in a list from the FTP server. Enter any positive number, or accept the default -1 to return as many matching file metadata entries as possible. Do not enter 0 \(zero\) or you will receive an error.
+
+## Create 
+
+Create is an outbound action to create new files or update existing files \(a single file, or multiple in a batch\) in the Remote Directory on the FTP server from the connection \(ASCII or binary format\). Before using this action and to avoid the connector returning an error, verify that you have the appropriate permissions to write files to the Remote Directory. For this action to be successful, you must set the File Name you want to create or update as an input document property in the Set Properties step. File names can include subdirectories \(for example, a/b/foo.txt\). If the file name is blank or invalid, the connector returns an error.
+
+When browsing, the response profile is a JSON schema with the File Name, Remote Directory, and Timestamp fields.
+
+When successful, this action creates or updates one file on the FTP server for each input document and generates a JSON document containing the following information about the created or updated file:
+
+-   The name of the file created or updated. In the input document, the File Name can contain subdirectories. In the output document, the File Name is the actual file name created or updated and does not contain subdirectories.
+-   Identifies the remote directory \(the full path from the operating system's root directory\) where the file is created or updated.
+-   Indicates the date/time \(timestamp in yyyy-MM-dd HH:mm:ss.SSS format; for example, 2019-12-31 19:32:00.000\) for the file created or updated in the server's local time \(without time zone information\).
+
+#### Optional input document properties
+
+Using the Set Properties step, you can set the following optional input document properties:
+
+-   Remote Directory. If set with a non-blank value, the document property value overrides the value from the connection.
+-   Staging Directory. If set with a non-blank value, the document property value overrides the value in the Create action.
+-   Temporary Extension. If set with a non-blank value, the document property value overrides the value in the Create action.
+
+#### Subdirectories in the File Name
+
+To create or update files in a directory having subdirectories \(for example, a directory named Tmp having subdirectories A, B, and C\) set the Remote Directory in the connection or input document property to just the directory name \(for example, Tmp\). Do not include subdirectories. The File Name input document property in the Set Properties step then determines how to create or update the subdirectories.
+
+-   If the File Name property string contains a relative path with subdirectories, the connector appends the subdirectories to the specified Remote Directory.
+-   If the File Name property string contains an absolute path with subdirectories, the Remote Directory is determined by the path and the connector ignores the specified Remote Directory.
+
+#### Create limitations
+
+Some FTP servers \(for example, ProFTPD\) have limitations affecting the connector's Create actions. In some cases, the limitations may be resolved by changing the FTP server's configuration.
+
+-   The connector's **Append** option, providing the ability to append new data to the end of the file if the file name already exists in the Remote Directory on the FTP server, may not be supported. If this issue cannot be resolved by changing the FTP server's configuration, complete these steps:
+    1.  Download the file locally.
+    2.  Append the content to the file.
+    3.  Upload the file again to the FTP server using the **Overwrite** option to replace the existing file with a new one.
+-   The ability to resume an interrupted upload from the point at which the upload stopped may not be supported. If this issue cannot be resolved by changing the FTP server's configuration, try to upload the file again from the beginning and discard the previously-uploaded content.
+
+## Query 
+
+Query is an inbound action to download multiple files from an FTP server based on specific search criteria. This action provides flexibility so you can specify the following:
+
+-   Whether to delete the files from the FTP server after being read and downloaded.
+-   The format for the download \(ASCII/text format or binary/raw data\).
+-   The maximum number of files to return.
+-   Any number of query filters \(using AND/OR logical groupings\) and parameter values to download files by:
+    -   File Name — a file name that is a regular expression \(specific strings or characters\), equal to, not equal to, greater than, or less than the parameter value you specify. You can use wildcards for all files names beginning with a specific numeric value \(for example, a\*\).
+    -   Timestamp — a specific date/time a file was last modified that is a regular expression \(specific strings or characters\), equal to, not equal to, less than, or greater than based on the parameter value you specify. You can use wildcards for a timestamp.
+
+        When entering a query filter for Timestamp, the format is yyyy-MM-dd HH:mm:ss.SSS; for example, 2019-12-31 19:32:00.000. Otherwise, the connector returns an error. This value is compared against timestamps of file entries from the FTP server in the server's local time \(without time zone information\).
+
+
+Before using this action and to avoid the connector returning an error, verify that you have the appropriate permissions to read files in the Remote Directory from the connection. This action uses the Remote Directory from the connection to determine the directory on the FTP server to download files from, or overrides the connection value with the Remote Directory input document property, if set in the Set Properties step. Once the Remote Directory is set, Query executes against that directory without trying to recursively match files from the subdirectories of the Remote Directory. When successful, Query returns one document for each file matching the query and downloaded from the FTP server. The document contains the corresponding file's content and as output, the document properties including the file name, remote directory, and timestamp.
+
+#### Querying subdirectories
+
+Query downloads files from the Remote Directory specified in the connection or input document property. This action does not explore and return files in subfolders, and if you include a subfolder in the file name filter, the query will not work. To query and retrieve files from a subfolder, perform an additional query by setting the specific path in the Remote Directory property. For example, suppose you have a directory /home/ISO\_downloads with the following content:
+
+-   /home/ISO\_downloads/download1.iso
+-   /home/ISO\_downloads/download2.iso
+-   /home/ISO\_downloads/java/download3.iso
+-   /home/ISO\_downloads/java/download3.iso
+
+If you perform a Query by setting the Remote Directory to /home/ISO\_downloads/ and specify a File Name query filter set to download1.iso, that file is downloaded.
+
+If you perform a Query by setting the Remote Directory to /home/ISO\_downloads and specify a File Name query filter set to java/download3.iso, that file is not downloaded. To download files from the /java directory, you must set the Remote Directory to /home/ISO\_downloads/java/.
+
+## Delete 
+
+Delete is an outbound action to delete files \(a single file, or multiple in a batch\) from an FTP server. Before using this action and to avoid the connector returning an error, verify that you have the appropriate permissions \(write permissions\) to delete files from the Remote Directory on the FTP server.
+
+For this action to be successful, you must set the ID of the file to delete \(one ID for each file\) on the Parameters tab in the Connector step. You can set the ID with a string containing subdirectories, which determines the Remote Directory as follows:
+
+-   If the filename parameter contains a relative path with subdirectories, the connector appends the subdirectories to the specified Remote Directory.
+-   If the filename parameter contains an absolute path with subdirectories, the Remote Directory is determined by the path and the connector ignores the specified Remote Directory.
+
+If the ID of the file is blank or invalid, or if the file does not exist, the connector returns an error. This action uses the Remote Directory from the connection to determine the directory on the FTP server to delete files from, or overrides the connection value with the Remote Directory input document property, if set.
+
+## Get 
+
+Get is an inbound action to retrieve and download a single file from an FTP server by its unique ID \(the filename\). This action provides flexibility so you can specify whether to:
+
+-   Delete the file from the FTP server after it is read into the process. Boomi recommends selecting this option when executing in production mode to prevent data from being processed twice, and clearing when testing.
+-   Fail the process with an error when the file cannot be deleted from the FTP server after being read into the process. As a result, an operation error is produced and the downloaded file is not output by the connector. Otherwise, the process continues, the downloaded file is output by the connector, and a warning is written to the log.
+-   Retrieve the file from the FTP server in binary format \(raw data\), or in ASCII format \(text\).
+-   Have the output document include metadata as tracked properties. If you select the **Include all metadata** check box, the File Name, Remote Directory, and Timestamp tracked properties are included. If you clear the check box, only the Remote Directory and File Name are included.
+
+When the specified ID matches the name of a file in the Remote Directory from the connection on the FTP server and can be successfully retrieved, the operation returns a binary document. When the specified ID is not the name of a file in the specified Remote Directory on the FTP server, the operation ends with an empty success.
+
+#### Permissions
+
+Before using this action and to avoid the connector either returning an error or not retrieving a file, verify that you have the following permissions:
+
+-   Enabled the PWD, CWD, TYPE, RETR, and NLST commands on the target FTP Server.
+    -   If the **Include all metadata** check box is selected, enabling the SYST and LIST commands is also required.
+    -   If the **Delete file after reading** check box is selected, enabling the DELE command is also required.
+-   The user from the connection has read permissions to the default working directory, the Remote Directory, and the target file.
+    -   If the **Delete file after reading** check box is selected, additional permissions are required and vary depending on your FTP server. For example, write permissions on the file, write permissions on the directory containing the file, etc.
+
+#### Remote Directory document property
+
+When creating an FTP V2 connection, you can optionally specify a Remote Directory on the FTP server where the connector reads files from or writes files to. You can override the connection value using the Remote Directory input document property. This operation considers the subdirectories that may be included as the ID. For example, if the Remote Directory is /aaa/bbb and the filename is ccc/ddd, the file to download is /aaa/bbb/ccc/ddd.
+
+#### Retrying file downloads
+
+When the connection to the FTP server is interrupted for some reason when attempting to retrieve and download a file, the connector does the following:
+
+-   Automatically reestablishes the connection to the FTP server.
+-   Identifies the amount of data that has already been transferred.
+-   Resumes the download from the point at which the download stopped, rather than starting at the beginning of the file.
+
+This process continues until the file is completely downloaded, or until a maximum number of six \(6\) interruptions occur during the file transfer. As a result, you may see that a file is downloaded as a series of file chunks.
+
+## List 
+
+List is an inbound action to retrieve a list of file metadata entries from a directory on an FTP server. This is a convenient way to retrieve a set of documents, with each document having the metadata for a file or directory stored in the corresponding FTP server. When successful, the connector produces a list of JSON documents, one for each file found on the FTP server matching the specified criteria. Each returned JSON document contains the fileName, fileType, linkPath, remoteDirectory, and timestamp.
+
+-   fileName — a file name not containing subdirectories.
+-   fileType — the type of file, either regular\_file, directory, symbolic\_link, or unknown.
+-   linkPath — if the file metadata entry corresponds to a symbolic link, the path of the linked file. When the entry is not a symbolic link, this value is empty \(null\).
+-   remoteDirectory — an absolute directory path to the remote directory.
+-   timestamp — a specific date/time a file was created in the FTP server's local time \(yyyy-MM-dd HH:mm:ss.SSS format; for example, 2020-02-07 19:32:00.000\) without time zone information.
+
+#### Permissions
+
+Before using this action and to avoid the connector either returning an error or not returning a list, verify that you have the following permissions:
+
+-   Enabled the PWD, CWD, and LIST commands on the target FTP Server.
+-   The user from the connection has read permissions to the Remote Directory.
+
+#### Filters
+
+This action provides flexibility when filtering so you can specify:
+
+-   The maximum number of file metadata entries to return in a list from the FTP server. You can enter any positive number, or accept the default -1 to return as many matching entries as possible. Do not enter 0 \(zero\) or you will receive an error.
+-   Any number of query filters \(using AND/OR logical groupings\) and parameter values by:
+    -   fileName — a file name that is a regular expression \(specific strings or characters\), equal to, not equal to, greater than, or less than the parameter value you specify. You can use wildcards for all files names beginning with a specific numeric value \(for example, a\*\). Make sure and only enter a string not containing subdirectories, otherwise no results are returned.
+    -   fileType — a specific type of file. Accepted values are: regular\_file, directory, symbolic\_link, and unknown.
+    -   timestamp — a specific date/time a file was created. This is a regular expression \(specific strings or characters\), equal to, not equal to, less than, or greater than based on the parameter value you specify. You can use wildcards for a timestamp. The format is yyyy-MM-dd HH:mm:ss.SSS; for example, 2020-02-07 19:32:00.000. Otherwise, the connector returns an error. This value is compared against timestamps of file entries from the FTP server in the server's local time without time zone information.
+
+#### Remote Directory document property
+
+When creating an FTP V2 connection, you can optionally specify a Remote Directory on the FTP server where the connector reads files from or writes files to. You can override the connection value using the Remote Directory input document property. No output document properties are provided by the operation.
+
+<OperationEnd />

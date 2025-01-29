@@ -1,0 +1,119 @@
+import OperationEnd from './_operationEnd.md'
+import ReturnErrRes from './_ReturnResponse.md'
+import TrackingDir from './_TrackObject.md'
+
+# OpenAPI operation 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-7213708b-a969-40ed-952f-e249022f9e1d"/>
+</head>
+
+
+The OpenAPI operation determines how to interact with the REST API defined by the **OpenAPI Specification** in the connection.
+
+Create a separate operation component for each action/object combination that your integration requires.
+
+The OpenAPI operations use JSON or YAML format to build the request and response profiles matching the **OpenAPI Specification** from the connection and support the following actions:
+
+-   DELETE — Delete an existing resource from the server.
+-   GET — Retrieve information about an existing resource from the server.
+-   HEAD — Retrieve header information about an existing resource from the server, and not the actual resource itself.
+-   OPTIONS — Retrieve information about the communication options available for an existing resource from the server.
+-   PATCH — Update and make partial changes to an existing resource without replacing the original version of the resource.
+-   POST — Request that a web server accept the data enclosed in the body of the request message.
+-   PUT — Replace the resource at the current URL on the server with the resource contained within the request.
+-   TRACE — Perform a message loop-back test along the path to the target resource.
+
+## Options tab 
+
+Click **Import Operation**, then use the Import wizard to select the object to integrate. When you configure an action, the following fields appear on the **Options** tab.
+
+**Object** - 
+An object defines what you want to integrate or the action to run, which you select in the Import Operation wizard.
+
+**Request/Response Profile** - 
+Indicates that the incoming and outgoing data is no data, a raw and unstructured document, or JSON data, determined by the schema definition.
+
+
+:::note
+
+In the OpenAPI 3.0 specification, request profiles are optional for OPTIONS, PATCH, POST, PUT, and TRACE, and not available for DELETE, GET, and HEAD. The connector supports requests without a content type \(no `requestBody` in the schema definition\). As a result, no request profile is generated. To learn more, see the [Describing Request Body](https://swagger.io/docs/specification/describing-request-body/) topic in the Swagger documentation.
+
+:::
+
+<TrackingDir />
+
+<ReturnErrRes />
+
+## DELETE 
+
+DELETE sends an HTTP request to delete an existing resource from the server identified by a URI. You can use this operation, for example, when you have a resource that was previously created using PUT to undo the creation.
+
+-   The operation does not generate a request profile and a request payload is not sent to the endpoint, because the operation does not declare a request body. If the **OpenAPI specification** referenced in the connection has a request body for this operation, the connector logs a warning in the container logs and generates a log message.
+-   A response profile is generated, if the schema has one.
+
+## GET 
+
+GET sends an HTTP request to retrieve information about an existing resource from the server. You can use this operation, for example, when you have an API with a `/Application` endpoint. Making a GET request to that endpoint returns a list of all available applications.
+
+-   The operation does not generate a request profile and a request payload is not sent to the endpoint, because the operation does not declare a request body. If the **OpenAPI specification** referenced in the connection has a request body for this operation, the connector logs a warning in the container logs and generates a log message.
+-   A response profile is generated, if the schema has one.
+
+## HEAD 
+
+HEAD sends an HTTP request to retrieve header information about an existing resource from the server, and not the actual resource itself. HEAD is identical to GET except that the server does not send a message body in the response. You can use this operation, for example, when caching data to see if a specific document has changed since it was last accessed.
+
+-   The operation does not generate a request profile and a request payload is not sent to the endpoint, because the operation does not declare a request body. If the **OpenAPI specification** referenced in the connection has a request body for this operation, the connector logs a warning in the container logs and generates a log message.
+
+## OPTIONS 
+
+OPTIONS sends an HTTP request to retrieve information about the communication options available for an existing resource from the server. You can use this operation, for example, to find out which request methods a server supports or to test a proxy for HTTP compliance.
+
+-   The operation generates a request profile based on the **OpenAPI specification** referenced in the connection and a request payload is sent to the endpoint.
+-   If the optional attribute `required: true` is set in the specification for the operation's request body and the request body/payload is missing, process execution fails.
+-   When successful, the connector returns a structured or unstructured document as output from the operation, based on the schema.
+
+
+## PATCH 
+
+PATCH sends an HTTP request to update and make partial changes to an existing resource without replacing the original version of the resource. You can use this operation, for example, to update one field for a resource, rather than the entire resource.
+
+-   The operation generates a request profile based on the **OpenAPI specification** referenced in the connection and a request payload is sent to the endpoint.
+-   Data passed into the OpenAPI connector is included and set in the payload of the request.
+
+-   If the optional attribute `required: true` is set in the specification for the operation's request body and the request body/payload is missing, process execution fails.
+-   When successful, the connector returns a structured or unstructured document as output from the operation, based on the schema.
+
+
+## POST 
+
+POST sends an HTTP request to request that a web server accept the data enclosed in the body of the request message. You can use this operation, for example, to store data and is typically used when uploading a file or when submitting a completed web form.
+
+-   The operation generates a request profile based on the **OpenAPI specification** referenced in the connection and a request payload is sent to the endpoint.
+-   If the optional attribute `required: true` is set in the specification for the operation's request body and the request body/payload is missing, process execution fails.
+-   When successful, the connector returns a structured or unstructured document as output from the operation, based on the schema.
+
+
+## PUT 
+
+PUT sends an HTTP request to replace the resource at the current URL on the server with the resource contained within the request. PUT is used to both create and update the state of a resource on the server. You can use this operation, for example, to replace or update an article or blog at a specific URL.
+
+-   The operation generates a request profile based on the **OpenAPI specification** referenced in the connection and a request payload is sent to the endpoint.
+-   Data passed into the OpenAPI connector is included and set in the payload of the request.
+
+-   If the optional attribute `required: true` is set in the specification for the operation's request body and the request body/payload is missing, process execution fails.
+-   When successful, the connector returns a structured or unstructured document as output from the operation, based on the schema.
+
+
+## TRACE 
+
+TRACE sends an HTTP request to perform a message loop-back test along the path to the target resource. TRACE provides a useful debugging mechanism.
+
+-   The operation generates a request profile based on the **OpenAPI specification** referenced in the connection and a request payload is sent to the endpoint.
+-   Data passed into the OpenAPI connector is included and set in the payload of the request.
+
+-   If the optional attribute `required: true` is set in the specification for the operation's request body and the request body/payload is missing, process execution fails.
+-   When successful, the connector returns a structured or unstructured document as output from the operation, based on the schema.
+
+<OperationEnd />

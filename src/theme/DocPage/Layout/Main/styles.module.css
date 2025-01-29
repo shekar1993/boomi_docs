@@ -1,0 +1,22 @@
+.docMainContainer {
+  display: flex;
+  width: 100%;
+  padding-bottom: var(--exo-spacing-2x-large);
+}
+
+@media (min-width: 997px) {
+  .docMainContainer {
+    flex-grow: 1;
+    max-width: calc(100% - var(--ifm-doc-sidebar-width));
+  }
+
+  .docMainContainerEnhanced {
+    max-width: calc(100% - var(--doc-sidebar-hidden-width));
+  }
+
+  .docItemWrapperEnhanced {
+    max-width: calc(
+      var(--ifm-container-width) + var(--ifm-doc-sidebar-width)
+    ) !important;
+  }
+}

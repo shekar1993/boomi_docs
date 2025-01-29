@@ -1,0 +1,506 @@
+# API Key object 
+
+<head>
+  <meta name="guidename" content="API Management"/>
+  <meta name="context" content="GUID-b7223835-43b5-4641-9732-1a12d762c1c5"/>
+</head>
+
+
+The API Key object provides the capability of triggering actions, such as query, create, update, delete, or fetching applications without using the user interface.
+
+## Structure 
+
+:::note
+
+You cannot update the key id for Create or Update operations.
+
+:::
+
+```xml
+<ApiKey apiId="" applicationId="" contractId="" deleted="" enabled="" environmentId="" generatedAt="" generatedDate="" key=""> </ApiKey>
+```
+
+|Field|Type|Description|
+|-----|----|-----------|
+|`apiId`|*string*|Used for query operations to identify API Service or Proxy components.|
+|`applicationId`|*string*|Used to designate the application attached to this API.|
+|`contractId`|*string*|Used for query operations to identify contracts.|
+|`deleted`|*boolean*|Used to identify a deleted API Key. Do not use this field as a filter in queries.|
+|`enabled`|*boolean*|Used to designate an API Key as enabled or disabled. Do not use this field as a filter in queries.|
+|`environmentId`|*string*|Used in query operations to designate an environment.|
+|`generatedBy`|*string*|Used in query operation to identify the user who generated an API key.|
+|`generatedAt`|*datetime*|Used in query operations to designate the generation date of an API Key.|
+|`key`|*string*|Used to designate the GUID for this API Key.|
+
+## Supported operations 
+
+The API Key object is supported in the following operations:
+
+|GET|QUERY|CREATE|UPDATE|DELETE|
+|---|-----|------|------|------|
+|✅ Supported |✅ Supported |✅ Supported|✅ Supported|✅ Supported||
+
+## Implementation 
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+<TabItem value="REST" label="REST" default>
+
+<Tabs>
+  <TabItem value="get" label="GET" default>
+
+Send an HTTP GET to:
+```shell
+https://api.boomi.com/apim/api/rest/v1/{accountId}/apiKey/id
+```
+where `accountId` is the Boomi API Management account that you are authenticating with and where id is the API Key object you are attempting to GET.
+
+For a response, send the request with the following HTTP header:
+
+`Accept: application/json`
+
+#### Response:
+
+```json
+{
+      "@type": "ApiKey",
+      "applicationId": "aa70d90f-6fab-4fd9-983e-a54fc02a9daf",
+      "key": "c269f372-ae85-495d-a10c-2fcbd07c9af6",
+      "environmentId": "f53f7a3b-4462-4cfb-9085-ed5c78004ab7",
+      "apiId": "61ab0543-e95c-4c22-9b1d-0eefd6c23119",
+      "generatedBy": "tester@boomi.com",
+      "generatedAt": "2017-08-14T15:09:14Z",
+      "enabled": true,
+      "deleted": false
+}
+```
+</TabItem>
+
+<TabItem value="query" label="QUERY">
+
+Send an HTTP POST to:
+
+```shell
+https://api.boomi.com/apim/api/rest/v1/{accountId}/apiKey/query
+```
+
+where `accountId` is the ID of the authenticating account for the request.
+
+For a JSON request, send the request with the following HTTP header:
+
+`Content-Type: application/json`
+
+#### Request
+
+```xml
+<QueryConfig xmlns="http://api.platform.boomi.com/"
+   <QueryFilter>
+      <expression operator="and" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:type="GroupingExpression"
+         <nestedExpression operator="NOT_EQUALS" property="enabled"xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SimpleExpression"
+            <argument>false</argument>
+         </nestedExpression>
+         <nestedExpression operator="BETWEEN" property="generatedAt"xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SimpleExpression"
+            <argument>2017-08-14T15:09:14Z</argument>
+            <argument>2018-01-01T00:00:00Z</argument></nestedExpression>
+      </expression>
+   </QueryFilter>
+</QueryConfig>
+```
+
+#### Response
+
+```json
+    "@type": "ApimQueryResult",
+    "result": [
+        {
+            "@type": "ApiKey",
+            "applicationId": "aa70d90f-6fab-4fd9-983e-a54fc02a9daf",
+            "key": "c269f372-ae85-495d-a10c-2fcbd07c9af6",
+            "environmentId": "f53f7a3b-4462-4cfb-9085-ed5c78004ab7",
+            "apiId": "61ab0543-e95c-4c22-9b1d-0eefd6c23119",
+            "generatedBy": "tester@boomi.com",
+            "generatedAt": "2017-08-14T15:09:14Z",
+            "enabled": true,
+            "deleted": false
+        },
+        {
+            "@type": "ApiKey",
+            "applicationId": "aa70d90f-6fab-4fd9-983e-a54fc02a9daf",
+            "key": "77e3439f-4dd4-4ed9-b72a-c48cf6049f6c",
+            "environmentId": "f53f7a3b-4462-4cfb-9085-ed5c78004ab7",
+            "apiId": "61ab0543-e95c-4c22-9b1d-0eefd6c23119",
+            "generatedBy": "tester@boomi.com",
+            "generatedAt": "2017-08-14T15:22:08Z",
+            "enabled": true,
+            "deleted": false
+        },
+        {
+            "@type": "ApiKey",
+            "applicationId": "aa70d90f-6fab-4fd9-983e-a54fc02a9daf",
+            "key": "f26c4230-5b76-47c9-88d9-3d3b753c75f0",
+            "environmentId": "f53f7a3b-4462-4cfb-9085-ed5c78004ab7",
+            "apiId": "61ab0543-e95c-4c22-9b1d-0eefd6c23119",
+            "generatedBy": "tester@boomi.com",
+            "generatedAt": "2017-08-14T15:22:40Z",
+            "enabled": true,
+            "deleted": false
+        },
+        
+    ],
+    "numberOfResults": 3
+```
+  </TabItem>
+
+  <TabItem value="create" label="CREATE">
+
+Send an HTTP POST to:
+```shell
+https://api.boomi.com/apim/api/rest/v1/{accountId}/apiKey/
+```
+
+where `accountId` is the API Management account that you are authenticating with.
+
+For a JSON request, send the request with the following HTTP header:
+
+`Content-Type: application/json`
+
+#### Request:
+
+```json
+{
+      "apiId" : "61ab0543-e95c-4c22-9b1d-0eefd6c23119",
+      "environmentId" : "f53f7a3b-4462-4cfb-9085-ed5c78004ab7",
+      "applicationId" : "aa70d90f-6fab-4fd9-983e-a54fc02a9daf"
+  
+}
+```
+
+#### Response:
+
+```json
+{
+      "@type": "ApiKey",
+      "applicationId": "aa70d90f-6fab-4fd9-983e-a54fc02a9daf",
+      "key": "2b899173-8690-4fd6-a519-c9082db6c50a",
+      "environmentId": "f53f7a3b-4462-4cfb-9085-ed5c78004ab7",
+      "apiId": "61ab0543-e95c-4c22-9b1d-0eefd6c23119",
+      "generatedBy": "tester@boomi.com",
+      "generatedAt": "2017-08-15T15:32:41.290Z",
+      "enabled": true,
+      "deleted": false
+}
+```
+</TabItem>
+
+<TabItem value="update" label="UPDATE">
+Send an HTTP POST to:
+
+```shell
+https://api.boomi.com/apim/api/rest/v1/{accountId}/apiKey/id/update
+```
+where `accountId` is the API Management account that you are authenticating with and id is the API key object you are attempting to UPDATE.
+
+For a JSON request, send the request with the following HTTP header:
+
+`Content-Type: application/json`
+
+#### Request:
+
+```json
+{
+    "key": "eb6f1db8-331f-415e-8912-70f8faa52477",
+    "apiId": "a8e1755c-ae89-40ca-881c-8674cf53a171",
+    "environmentId":"30a2e828-c16e-4d5f-8711-81fdbb09cfec",
+    "applicationId":"16d00d86-b773-404b-9954-391ebe157e4a",
+    "contractId":"a0c2e85a-f470-420b-88bd-803b764f7aaa",
+    "enabled": true
+}
+```
+
+#### Response:
+
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<apim:ApiKey
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:bns="http://api.platform.boomi.com/"
+    xmlns:apim="http://apim.api.platform.boomi.com/" applicationId="16d00d86-b773-404b-9954-391ebe157e4a" contractId="a0c2e85a-f470-420b-88bd-803b764f7aaa" key="eb6f1db8-331f-415e-8912-70f8faa52477" environmentId="30a2e828-c16e-4d5f-8711-81fdbb09cfec" apiId="a8e1755c-ae89-40ca-881c-8674cf53a171" generatedBy="admin@boomi.com" generatedAt="2022-08-23T19:29:02Z" enabled="true" deleted="false"/>
+```
+</TabItem>
+
+<TabItem value="delete" label="DELETE">
+
+Send an HTTP DELETE to:
+
+```shell
+https://api.boomi.com/apim/api/rest/v1/{accountId}/apiKey/id
+```
+
+where `accountId` is the API Management account that you are authenticating with and where id is the Application object you are attempting to DELETE.
+
+If you successfully delete the role, the response is `<true/>`.
+
+:::note
+
+You can delete all API Keys in pending, accepted, disabled, and rejected states. If you deleted an API Key previously, you cannot delete the key from the API Key object.
+
+:::
+
+For a JSON response, send the request with the following HTTP header:
+
+`Accept: application/json`
+
+If the role was successfully deleted, the response is a simple `{true}`.
+
+```json
+{
+      "@type": "ApiKey",
+      "applicationId": "aa70d90f-6fab-4fd9-983e-a54fc02a9daf",
+      "key": "2b899173-8690-4fd6-a519-c9082db6c50a",
+      "environmentId": "f53f7a3b-4462-4cfb-9085-ed5c78004ab7",
+      "apiId": "61ab0543-e95c-4c22-9b1d-0eefd6c23119",
+      "generatedBy": "tester@boomi.com","generatedAt": 
+      "2017-08-15T15:32:41Z",
+      "enabled": true,
+      "deleted": true
+}
+```
+</TabItem>
+
+</Tabs>
+
+</TabItem>
+
+<TabItem value="SOAP" label="SOAP">
+
+
+
+<Tabs>
+  <TabItem value="get2" label="GET" default>
+
+Send an HTTP GET to:
+```shell
+https://api.boomi.com/apim/api/rest/v1/{accountId}/apiKey/id
+```
+where `accountId` is the Boomi API Management account that you are authenticating with and where id is the API Key object you are attempting to GET.
+
+For a response, send the request with the following HTTP header:
+
+`Accept: application/json`
+
+#### Response:
+
+```json
+{
+      "@type": "ApiKey",
+      "applicationId": "aa70d90f-6fab-4fd9-983e-a54fc02a9daf",
+      "key": "c269f372-ae85-495d-a10c-2fcbd07c9af6",
+      "environmentId": "f53f7a3b-4462-4cfb-9085-ed5c78004ab7",
+      "apiId": "61ab0543-e95c-4c22-9b1d-0eefd6c23119",
+      "generatedBy": "tester@boomi.com",
+      "generatedAt": "2017-08-14T15:09:14Z",
+      "enabled": true,
+      "deleted": false
+}
+```
+  </TabItem>
+
+  <TabItem value="query2" label="QUERY">
+
+Send an HTTP POST to:
+
+```shell
+https://api.boomi.com/apim/api/rest/v1/{accountId}/apiKey/query
+```
+
+where `accountId` is the ID of the authenticating account for the request.
+
+For a JSON request, send the request with the following HTTP header:
+
+`Content-Type: application/json`
+
+#### Request
+
+```xml
+<QueryConfig xmlns="http://api.platform.boomi.com/"
+   <QueryFilter>
+      <expression operator="and" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:type="GroupingExpression"
+         <nestedExpression operator="NOT_EQUALS" property="enabled"xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SimpleExpression"
+            <argument>false</argument>
+         </nestedExpression>
+         <nestedExpression operator="BETWEEN" property="generatedAt"xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SimpleExpression"
+            <argument>2017-08-14T15:09:14Z</argument>
+            <argument>2018-01-01T00:00:00Z</argument></nestedExpression>
+      </expression>
+   </QueryFilter>
+</QueryConfig>
+```
+
+#### Response
+
+```json
+    "@type": "ApimQueryResult",
+    "result": [
+        {
+            "@type": "ApiKey",
+            "applicationId": "aa70d90f-6fab-4fd9-983e-a54fc02a9daf",
+            "key": "c269f372-ae85-495d-a10c-2fcbd07c9af6",
+            "environmentId": "f53f7a3b-4462-4cfb-9085-ed5c78004ab7",
+            "apiId": "61ab0543-e95c-4c22-9b1d-0eefd6c23119",
+            "generatedBy": "tester@boomi.com",
+            "generatedAt": "2017-08-14T15:09:14Z",
+            "enabled": true,
+            "deleted": false
+        },
+        {
+            "@type": "ApiKey",
+            "applicationId": "aa70d90f-6fab-4fd9-983e-a54fc02a9daf",
+            "key": "77e3439f-4dd4-4ed9-b72a-c48cf6049f6c",
+            "environmentId": "f53f7a3b-4462-4cfb-9085-ed5c78004ab7",
+            "apiId": "61ab0543-e95c-4c22-9b1d-0eefd6c23119",
+            "generatedBy": "tester@boomi.com",
+            "generatedAt": "2017-08-14T15:22:08Z",
+            "enabled": true,
+            "deleted": false
+        },
+        {
+            "@type": "ApiKey",
+            "applicationId": "aa70d90f-6fab-4fd9-983e-a54fc02a9daf",
+            "key": "f26c4230-5b76-47c9-88d9-3d3b753c75f0",
+            "environmentId": "f53f7a3b-4462-4cfb-9085-ed5c78004ab7",
+            "apiId": "61ab0543-e95c-4c22-9b1d-0eefd6c23119",
+            "generatedBy": "tester@boomi.com",
+            "generatedAt": "2017-08-14T15:22:40Z",
+            "enabled": true,
+            "deleted": false
+        },
+        
+    ],
+    "numberOfResults": 3
+```
+  </TabItem>
+
+  <TabItem value="create2" label="CREATE">
+
+Send an HTTP POST to:
+```shell
+https://api.boomi.com/apim/api/rest/v1/accountId/apiKey/
+```
+
+where `accountId` is the API Management account that you are authenticating with.
+
+For a JSON request, send the request with the following HTTP header:
+
+`Content-Type: application/json`
+
+#### Request:
+
+```json
+{
+      "apiId" : "61ab0543-e95c-4c22-9b1d-0eefd6c23119",
+      "environmentId" : "f53f7a3b-4462-4cfb-9085-ed5c78004ab7",
+      "applicationId" : "aa70d90f-6fab-4fd9-983e-a54fc02a9daf"
+  
+}
+```
+
+#### Response:
+
+```json
+{
+      "@type": "ApiKey",
+      "applicationId": "aa70d90f-6fab-4fd9-983e-a54fc02a9daf",
+      "key": "2b899173-8690-4fd6-a519-c9082db6c50a",
+      "environmentId": "f53f7a3b-4462-4cfb-9085-ed5c78004ab7",
+      "apiId": "61ab0543-e95c-4c22-9b1d-0eefd6c23119",
+      "generatedBy": "tester@boomi.com",
+      "generatedAt": "2017-08-15T15:32:41.290Z",
+      "enabled": true,
+      "deleted": false
+}
+```
+  </TabItem>
+
+  <TabItem value="update2" label="UPDATE">
+
+Send an HTTP POST to:
+```shell
+https://api.boomi.com/apim/api/rest/v1/{accountId}/apiKey/id/update
+```
+where `accountId` is the API Management account that you are authenticating with and id is the API key object you are attempting to UPDATE.
+
+For a JSON request, send the request with the following HTTP header:
+
+`Content-Type: application/json`
+
+#### Request:
+
+```json
+{
+    "key": "eb6f1db8-331f-415e-8912-70f8faa52477",
+    "apiId": "a8e1755c-ae89-40ca-881c-8674cf53a171",
+    "environmentId":"30a2e828-c16e-4d5f-8711-81fdbb09cfec",
+    "applicationId":"16d00d86-b773-404b-9954-391ebe157e4a",
+    "contractId":"a0c2e85a-f470-420b-88bd-803b764f7aaa",
+    "enabled": true
+}
+```
+
+#### Response:
+
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<apim:ApiKey
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:bns="http://api.platform.boomi.com/"
+    xmlns:apim="http://apim.api.platform.boomi.com/" applicationId="16d00d86-b773-404b-9954-391ebe157e4a" contractId="a0c2e85a-f470-420b-88bd-803b764f7aaa" key="eb6f1db8-331f-415e-8912-70f8faa52477" environmentId="30a2e828-c16e-4d5f-8711-81fdbb09cfec" apiId="a8e1755c-ae89-40ca-881c-8674cf53a171" generatedBy="admin@boomi.com" generatedAt="2022-08-23T19:29:02Z" enabled="true" deleted="false"/>
+```
+  </TabItem>
+
+  <TabItem value="delete2" label="DELETE">
+
+Send an HTTP DELETE to:
+
+```shell
+https://api.boomi.com/apim/api/rest/v1/{accountId}/apiKey/id
+```
+
+where `accountId` is the API Management account that you are authenticating with and where id is the Application object you are attempting to DELETE.
+
+If you successfully delete the role, the response is `<true/>`.
+
+:::note
+
+You can delete all API Keys in pending, accepted, disabled, and rejected states. If you deleted an API Key previously, you cannot delete the key from the API Key object.
+
+:::
+
+For a JSON response, send the request with the following HTTP header:
+
+`Accept: application/json`
+
+If the role was successfully deleted, the response is a simple `{true}`.
+
+```json
+{
+      "@type": "ApiKey",
+      "applicationId": "aa70d90f-6fab-4fd9-983e-a54fc02a9daf",
+      "key": "2b899173-8690-4fd6-a519-c9082db6c50a",
+      "environmentId": "f53f7a3b-4462-4cfb-9085-ed5c78004ab7",
+      "apiId": "61ab0543-e95c-4c22-9b1d-0eefd6c23119",
+      "generatedBy": "tester@boomi.com","generatedAt": 
+      "2017-08-15T15:32:41Z",
+      "enabled": true,
+      "deleted": true
+}
+```
+  </TabItem>
+
+</Tabs>
+
+</TabItem>
+</Tabs>

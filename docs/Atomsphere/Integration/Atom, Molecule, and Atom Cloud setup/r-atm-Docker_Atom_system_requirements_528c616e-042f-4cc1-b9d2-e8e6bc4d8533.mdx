@@ -1,0 +1,40 @@
+import MinSysReq from './_MinimumHardwareRequirements.mdx';
+
+# Docker Atom system requirements 
+
+If you plan to use Docker to install an Atom, review the system requirements to identify a correct computer for your Docker Atom.
+
+If you need to connect to applications and data locations within your local network, install an Atom on a machine within the network. If you use ’s Docker Atom installer, you do not have to worry about operating system requirements or need to install Java because the Docker image contains them. Use the following guidelines to identify the correct Linux computer for the Docker Atom.
+
+## Docker requirements 
+
+To use Docker to install an Atom, you must:
+
+-   Install Docker on a 64–bit Linux computer. The minimum supported Docker version is 19.03.8.
+
+-   Have access to Docker commands such as `docker ps`, `docker run` and `docker images`.
+
+-   Be familiar with [Docker technology](https://www.docker.com/) and you must know how to use [Docker commands](https://docs.docker.com/reference/).
+
+<MinSysReq />
+
+## Minimum hardware requirements for high volumes of data
+
+The requirements for a single Atom, Molecule node, or Cloud Molecule node, or Cloud Molecule, within an Atom Cloud that must process high volumes of data are:
+
+| Processor | Dual 64-bit processors or higher, More processors allow for increased, simultaneous process runs |
+| --------- | ------------------------------------------------------------ |
+| Memory    | 4 GB of RAM (minimum 2 GB dedicated to the Atom, Molecule node, or Cloud Molecule)More RAM allows for increased, simultaneous process runs |
+| Hard disk | 100–200 GB of hard disk spaceIncrease purging levels to minimize Atom, Molecule node, or Cloud Molecule disk space |
+
+## Other Docker Atom requirements 
+
+-   You must have a persistent high-speed internet connection such as cable, DSL or higher.
+
+-   You must have the appropriate LAN connectivity and security permissions to access the applications and data locations required for your particular integration scenarios.
+
+-   If you install more than one Docker Atom on the same machine, you must map the additional Atom’s port. Each Atom can use port 9090 internally in its Docker image, but they cannot both map to port 9090 on the host.
+
+
+If your system meets all of these requirements, you are ready to download the Docker Atom installer.
+

@@ -1,0 +1,37 @@
+# Disk v2 connection 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-a324bf17-3f98-4623-bc81-1ecb1c09b852"/>
+</head>
+
+
+The Disk v2 connection represents a directory on the file system of the machine where the Atom is running. The directory can be local or on a network.
+
+## Connection tab 
+
+**Directory**
+
+The directory where data is written to or read from.
+
+-   The path can be local \(e.g. `C:\\TEMP` or `/tmp/`\), a UNC path \(e.g. `\\\\server1\\share`\), or an NFS path \(e.g. /home/Boomi\).
+
+-   The path can be absolute \(full path from the operating system's root directory\) or relative to the Atom installation directory \(..\\Boomi Platform\\Atom — `<Atom_name>` by default\).
+
+-   For Windows, you can use forward or back slashes interchangeably for directories \(for example, either C:\\Temp and C:/Temp\).
+
+-   When using the Directory or File Name document property to override the connection, you can leave this field blank. When specifying the directory in both a document property and the connection, the document property overrides the connection value. When using a File Name document property, the file name must be included in the directory path to ensure a successful connection.
+
+-   For the Listen operation, the connector targets one directory to retrieve files from the file system. The directory is determined by combining this **Directory** field and the Listen operation's **Sub Directory** field. All file names used by the operation are resolved relative to that directory. You can leave this field blank, as long as you have provided a value in the Listen operation's **Sub Directory** field to specify the full path of the directory to target. Otherwise, an error occurs upon process execution.
+
+**Polling Interval**
+
+Specify how often (in milliseconds) the connector's Listen operation polls the file system to retrieve batches of events.
+
+import TestConnection from './_TestCon.md'
+
+<TestConnection />
+
+## Test Connection troubleshooting 
+
+When testing the Disk v2 connection, an empty connection directory will fail the test connection unless a Directory or File Name document property is used to override the connection.

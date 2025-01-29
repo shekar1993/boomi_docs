@@ -1,0 +1,5 @@
+@media screen and (max-width: 599px){
+    .sort-dd-container{
+        margin-top: var(--exo-spacing-x-small);
+    }
+}

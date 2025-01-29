@@ -1,0 +1,46 @@
+import TrackedProperties from './_TrackedProperties.md'
+
+
+# Microsoft Azure Data Lake Storage connector 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-a80bb83d-3f78-425a-a6b3-2a99ecca8686"/>
+</head>
+
+
+Microsoft Azure Data Lake Storage \(ADLS\) Gen2 connector enables you to access and interact with your ADLS Gen2 storage account using the ADLS Gen2 REST APIs.
+
+This connector allows you to create and manage file systems, directories and files in your storage account that has hierarchical namespace \(HNS\) enabled. Using this connector, you can Create, Get, List, Update and Delete filesystems and/or paths \(directories and files\). It supports handling both the structured or unstructured data stored inside the files or filesystems. The connection to the ADLS Gen2 storage is secured using the OAuth 2.0 authentication protocol.
+
+:::note
+
+This is an open source connector and you can access the code in the [Microsoft Azure Data Lake Storage](https://bitbucket.org/officialboomi/azure-dls) connector repository.
+
+:::
+
+
+## Connector configuration 
+
+To configure the connector to communicate with ADLS Gen2 storage account, set up the following components:
+
+-   Microsoft ADLS connector's connection — Represents your ADLS Gen2 Storage account and login credentials.
+-   Microsoft ADLS connector's operation — Represents an action against an object \(Filesystem and/or Path\).
+
+This design provides reusable components which contain connection settings and operation settings. After building your connection and operation, set up your connector within a process. When the process is defined properly, Boomi Integration can map to and from virtually any system using the Microsoft ADLS connector to the required ADLS Gen2 storage account.
+
+## Prerequisites 
+
+The Microsoft ADLS connector requires the following:
+
+-   An ADLS Gen2 storage account. Refer to the [Azure Documentation - Create a Storage account](https://docs.microsoft.com/en-us/azure/storage/blobs/create-data-lake-storage-account).
+-   An application \(client\) registered in the Azure Active Directory \(Microsoft Azure Portal - App Registrations page\). Once the registration is complete, an Application \(client\) ID will be generated. This client App credentials will be used in the Microsoft ADLS connector's connection settings for OAuth2.0 authorization to the ADLS Gen2 system. You can get the client app credentials and OAuth access token in the Azure Portal App registration - Overview page of the client app.
+-   The client app must be assigned with proper role to have required permissions on the storage account and its contents. Refer to the [Azure Documentation - Manage ACL](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-acl-azure-portal).
+-   An Atom/Molecule/Atom Cloud.
+
+## Supported editions 
+
+Microsoft Azure Data Lake Storage Gen2 with hierarchical namespace enabled.
+
+
+<TrackedProperties />

@@ -1,0 +1,163 @@
+import TestConnection from './_TestCon.md'
+
+# Mail \(IMAP\) connection 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-d6273f78-192b-4c03-bf9d-ed70a3076439"/>
+</head>
+
+
+The Mail \(IMAP\) connection represents and contains all of the information that is necessary to connect to and log into your mail server.
+
+When configuring the Mail \(IMAP\) connection, you configure one single connection. The single connection helps to avoid any potential issues with outgoing and incoming email on the server, and also simplifies setup because you only have to choose the valid connection for each operation.
+
+The connection options include the inbound/outbound host, port, inbound/outbound authentication type \(Basic Authentication, OAuth 2.0\), connection security \(SSL/TLS, StartTLS\), whether login credentials are required to authorize with the mail server, and the inbound/outbound user name and password. You can create connections for the mail server using SMTP for outgoing messages, and IMAP for incoming messages. The mail server must support sending email messages using SMTP and receiving email messages using IMAP.
+
+-   For the *outbound* mail server, specify the host name, port number, select the authentication type, select the connection security protocol, and if required, enter the user name and password. When authenticating using OAuth 2.0, generate an access token on the **Outbound OAuth 2.0** tab.
+-   For the *inbound* mail server, specify the host name, port number, select the authentication type, select the connection security protocol, and enter the user name. The password is ignored in favor of the generated OAuth 2.0 access token based on the selected **Inbound Authentication Type**.
+
+## Connection tab 
+
+**Outbound Host** - 
+The IP address or the domain name of the mail server that handles and processes outgoing email messages. The mail server is where the email client application resides. The Mail \(IMAP\) connector sends email messages and attachments to the mail server.
+
+**Outbound Port** - 
+The port number where the mail server listens for outgoing connections from the mail client. The default port number for an SMTP server \(outgoing email messages for outbound operations\) without an encrypted connection is 25.
+
+
+:::note
+
+If you have trouble sending email using port 25 on any Boomi Cloud, we strongly recommend that you configure the connection to use a different port such as 587, 110, 993, or 995. By switching to an alternative port, you avoid the possibility of email sporadically being blocked and not sent in your process. We have noticed that some mail servers may throttle and limit email sent using port 25 with the intention of reducing spam. The Boomi Clouds also throttle and limit email on this port.
+
+:::
+
+**Outbound Use Authentication** - 
+Select if you must provide login credentials \(e.g., user name and password\) to authorize yourself with the mail server for outgoing email messages.
+
+**Outbound Authentication Type** - 
+Defines the authentication type of the mail server for outgoing email messages. Select Basic Authentication to connect using the **Outbound User Name** and **Outbound Password** on this tab. Select OAuth 2.0 to connect using the **Outbound User Name** on this tab and the OAuth 2.0 token generated on the **Outbound OAuth 2.0** tab.
+
+**Outbound Connection Security** - 
+Defines the security protocol \(NONE, SSL/TLS, or Start/TLS\) to be used to encrypt outgoing email messages that are sent from the mail server.
+
+-   NONE — Do not encrypt outgoing email messages from the mail server.
+-   SSL/TLS — Use the SSL \(Secure Sockets Layer\) and/or TLS \(Transport Layer Security\) protocol to encrypt outgoing email messages from the mail server.
+    -   When using SSL, you manually import the certificate into the Java keystore. All data that is exchanged between Integration and the server is encrypted with a digital security certificate, making it difficult to steal your email address and/or password. For more information, see the Certificates topic. When making the connection to the mail server, Integration automatically uses the correct certificate.
+    -   When using TLS, all data that is exchanged between Integration and the server is encrypted with a digital security certificate, making it difficult to steal your email address and/or password. You must import this certificate into Integration. For more information, see the Certificates topic. When making the connection to the mail server, Integration automatically uses the correct certificate.
+-   StartTLS — Use the StartTLS protocol to take an existing insecure connection and upgrade it to a secure connection using SSL/TLS. When using this protocol, you do not have to use TLS, you can use SSL.
+
+**Outbound User Name** - 
+The user name of the account on the mail server for outgoing email messages. You must provide a user name when outbound authentication is required, using either Basic Authentication or OAuth 2.0 Authentication.
+
+This is typically the primary email address from which the connector sends email messages. However, you may have a mail server where the user name is not an email address.
+
+**Outbound Password** - 
+The password of the account on the mail server for outgoing email messages. You must provide a password when using Basic Authentication for outbound authentication. When using OAuth 2.0 Authentication, do not enter a password here. Instead, use the Outbound OAuth 2.0 tab to generate a token.
+
+**Inbound Host** - 
+The IP address or the domain name of the mail server that handles and processes incoming email messages.
+
+**Inbound Port** - 
+The port number where the mail server listens for incoming connections from the mail client. The default port number for an SMTP server \(incoming email messages for inbound operations\) without an encrypted connection is 143.
+
+**Inbound Connection Security** - 
+Defines the security protocol \(NONE, SSL/TLS, or Start/TLS\) to be used to encrypt incoming email messages that are retrieved from the mail server.
+
+-   NONE — Do not encrypt incoming email messages from the mail server.
+-   SSL/TLS — Use the SSL \(Secure Sockets Layer\) and/or TLS \(Transport Layer Security\) protocol to encrypt incoming email messages from the mail server.
+    -   When using SSL, you manually import the certificate into the Java keystore. All data that is exchanged between and the server is encrypted with a digital security certificate, making it difficult to steal your email address and/or password. For more information, see the Certificates topic. When making the connection to the mail server, automatically uses the correct certificate.
+    -   When using TLS, all data that is exchanged between and the server is encrypted with a digital security certificate, making it difficult to steal your email address and/or password. You must import this certificate into . For more information, see the Certificates topic. When making the connection to the mail server, automatically uses the correct certificate.
+-   StartTLS — Use the StartTLS protocol to take an existing insecure connection and upgrade it to a secure connection using SSL/TLS. When using this protocol, you do not have to use TLS, you can use SSL.
+
+**Inbound Authentication Type** - 
+Defines the authentication type of the mail server for incoming email messages. Select Basic Authentication to connect using the **Inbound User Name** and **Inbound Password** on this tab. Select OAuth 2.0 to connect using the **Inbound User Name** on this tab and the OAuth 2.0 token generated on the **Inbound OAuth 2.0** tab. Select Same as Outbound OAuth 2.0 to connect using the **Inbound User Name** on this tab and the OAuth 2.0 token generated on the **Outbound OAuth 2.0** tab.
+
+**Inbound User Name** - 
+The user name of the account on the mail server for incoming email messages. This is typically the primary email address from which the connector receives email messages. However, you may have a mail server where the user name is not an email address.
+
+**Inbound Password** - 
+The password of the account on the mail server for incoming email messages. You must provide a password when using Basic Authentication for inbound authentication. When using OAuth 2.0 Authentication, do not enter a password here. Instead, use the Inbound OAuth 2.0 tab to generate a token.
+
+## Outbound OAuth 2.0 tab 
+
+The Mail \(IMAP\) connector can use the OAuth 2.0 protocol for authentication and authorization to protect outbound email messages to the authorized mail server. A successful connection fetches OAuth 2.0 credentials from the authorization server. The mail server obtains an access token from the authorization server, extracts a token from the response, and then sends the token to the mail server that you are requesting to access. The connector automatically manages refresh tokens.
+
+
+:::note
+
+For OAuth 2.0 authentication, you may need to specify in the external application the Boomi callback or redirect URL. The callback URL is `https://platform.boomi.com/account/<your_account_ID>/oauth2/callback` where `<your__account_ID>` is your Integration account ID. You can also find your account ID in the Integration platform at **Settings > Account Information** and **Setup > Account Information**.
+
+:::
+
+**Client ID** - 
+The client ID obtained from the authorized mail server when it is registered.
+
+**Client Secret** - 
+The client secret obtained from the authorized mail server when it is registered.
+
+**Authorization Token URL** - 
+The endpoint address \(URL\) of the authorized mail server.
+
+**Scope** - 
+You can add one or more permissions the mail server requests, which are case-sensitive and separated by a space, to application request URLs. If you change scope permissions, you need to re-authenticate to ensure that all of the requested permissions are granted.
+
+**Add Authorization Parameter** - 
+\(Optional\) The name and value of extensible endpoint parameters.
+
+**Access Token URL** - 
+The URL of the token endpoint provided by the mail server to make API requests.
+
+**Add Access Token Parameter** - 
+\(Optional\) The name and value of additional or custom token parameters required by the mail server.
+
+**Access Token** - 
+The encrypted access token retrieved from the mail server. It provides the connector an instance URL and access to protected resources.
+
+**Generate** - 
+Click to generate the access and refresh tokens. When a new window opens asking you to confirm offline access, click **Accept**. A second message indicates that the access token was received and successfully generated.
+
+## Inbound OAuth 2.0 tab 
+
+The Mail \(IMAP\) connector can use the OAuth 2.0 protocol for authentication and authorization to protect inbound email messages from the authorized mail server. A successful connection fetches OAuth 2.0 credentials from the authorization server. The mail server obtains an access token from the authorization server, extracts a token from the response, and then sends the token to the mail server that you are requesting to access. The connector automatically manages refresh tokens.
+
+:::note
+
+For OAuth 2.0 authentication, you may need to specify in the external application the Boomi callback or redirect URL. The callback URL is `https://platform.boomi.com/account/<your_account_ID>/oauth2/callback` where `<your__account_ID>` is your Integration account ID. You can also find your account ID in the Integration platform at **Settings > Account Information** and **Setup > Account Information**.
+
+:::
+
+**Client ID** - 
+The client ID obtained from the authorized mail server when it is registered.
+
+**Client Secret** - 
+The client secret obtained from the authorized mail server when it is registered.
+
+**Authorization Token URL** - 
+The endpoint address \(URL\) of the authorized mail server.
+
+**Scope** - 
+You can add one or more permissions the mail server requests, which are case-sensitive and separated by a space, to application request URLs. If you change scope permissions, you need to re-authenticate to ensure that all of the requested permissions are granted.
+
+**Add Authorization Parameter** - 
+\(Optional\) The name and value of extensible endpoint parameters.
+
+**Access Token URL** - 
+The URL of the token endpoint provided by the mail server to make API requests.
+
+**Add Access Token Parameter** - 
+\(Optional\) The name and value of additional or custom token parameters required by the mail server.
+
+**Access Token** - 
+The encrypted access token retrieved from the mail server. It provides the connector an instance URL and access to protected resources.
+
+**Generate** - 
+Click to generate the access and refresh tokens. When a new window opens asking you to confirm offline access, click **Accept**. A second message indicates that the access token was received and successfully generated.
+
+<TestConnection />
+
+:::note
+
+Test Connection tests both the inbound and outbound connections to verify that they are correct. When a connection fails, you receive a message indicating which connection failed \(inbound/outbound\) and the reason why the connection failed.
+
+:::

@@ -1,0 +1,58 @@
+:root {
+  --docusaurus-collapse-button-bg: transparent;
+  --docusaurus-collapse-button-bg-hover: rgb(0 0 0 / 10%);
+}
+
+[data-theme='dark']:root {
+  --docusaurus-collapse-button-bg: rgb(255 255 255 / 5%);
+  --docusaurus-collapse-button-bg-hover: rgb(255 255 255 / 10%);
+}
+
+[data-theme="dark"] .collapselightIcon,
+[data-theme="light"] .collapsedarkIcon {
+  display: none;
+}
+
+@media (min-width: 997px) {
+  .collapseSidebarButton {
+    display: block !important;
+    background-color: var(--exo-color-background-action-secondary) !important;
+    height: calc(0.5 * var(--exo-size-1));
+    position: sticky;
+    bottom: 0;
+    border-radius: 0;
+    border: var(--exo-spacing-4x-small) solid var(--ifm-toc-border-color);
+    margin: var(--exo-spacing-none);
+    align-items: flex-start;
+    padding: var(--exo-spacing-2x-small) var(--exo-spacing-small); 
+  }
+
+  .collapseSidebarButtonIcon {
+    display: flex;
+    padding: var(--exo-spacing-2x-small);  
+    align-items: center;
+    gap: var(--exo-spacing-2x-small);
+  }
+
+  .collapseSidebarButton:hover,
+  .collapseSidebarButton:focus {
+    background-color: var(--exo-color-background-action-hover-weak) !important;
+  }
+
+  .collapsecontent{
+    color: var(--exo-color-background-action);
+    font-feature-settings: 'clig' off, 'liga' off;
+    font-family: var(--exo-font-family);
+    font-size: var(--exo-font-size-small);
+    font-style: normal;
+    font-weight: var(--exo-font-weight-semi-bold);
+    line-height: var(--exo-line-height-body); 
+    letter-spacing: -0.14px;
+    cursor: pointer;
+  }
+}
+
+.collapseSidebarButton {
+  display: none;
+  margin: var(--exo-spacing-none);
+}

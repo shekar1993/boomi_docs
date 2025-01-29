@@ -1,0 +1,33 @@
+import TestConnection from './_TestCon.md'
+
+# Salesforce Marketing Cloud connection
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-6be1e40c-c2aa-4f88-ac05-14f3ca4eb58e"/>
+</head>
+
+
+The Salesforce Marketing Cloud \(SFMC\) connection represents a single instance and contains the connection settings for SFMC, including the client ID and password.
+
+## OAuth2.0 tab
+
+The Salesforce Marketing Cloud \(SFMC\) connector uses OAuth 2.0 credentials for authentication and authorization. It supports the Client Credentials grant type for client authentication. The connector fetches OAuth 2.0 access tokens from the SFMC Platform and sends the tokens to the SFMC API with each request. The connector automatically manages refresh tokens.
+
+**Grant Type**: Refers to the supported grant type used by application to get an access token for protected access to cloud resources. Supports **Client Credentials** grant type only.
+
+**Client ID**: Provide the unique client ID to generate a valid access token for accessing the Salesforce Marketing Cloud.
+
+**Client Secret**: Click the **Encrypted** button, enter or paste the password associated to your above SFMC client ID, and click **Apply**.
+
+**Access Token URL**: Enter the URL of the tenant-specific Marketing Cloud endpoint that provides the access tokens. This URL contains the tenant's subdomain. Example: `https://mcmnrd0n6x1vkyqgyp4927gslgx8.auth.marketingcloudapis.com/v2/token`
+
+    For more details, refer to the [Get an Access token](https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/requestToken.html) topic.
+
+The following fields are standard attributes used in the OAuth 2.0 authentication type and are not mandatory for establishing the connection with the SFMC platform.
+
+**Scope**: Enter the space-delimited list that defines permission restrictions and resource limitations for the access token. Indicates which parts of the user's account you wish to access.
+
+**Add Access Token Parameter**: Click the **+** icon to add any additional parameters \(parameter name and its value\) to be passed for getting the access tokens.
+
+<TestConnection />

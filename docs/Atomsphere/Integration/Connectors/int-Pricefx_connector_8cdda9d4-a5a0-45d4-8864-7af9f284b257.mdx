@@ -1,0 +1,39 @@
+import TrackedProperties from './_TrackedProperties.md'
+import PartnerSupport from './_PartnerSupport.md'
+
+# Pricefx - Partner connector
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-8cdda9d4-a5a0-45d4-8864-7af9f284b257"/>
+</head>
+
+<PartnerSupport />
+
+Together, Boomi Integration and the Pricefx - Partner connector enable you to easily connect any customer data or application to Pricefx, which enables the creation of a full suite of pricing management solutions.
+
+The connector uses the REST API to communicate to Pricefx and to manipulate the data and execute actions. The connector provides the option to fetch the data by building a JSON request message manually, or dynamically build the filter by query parameters. The connector also provides the option to update or insert data to Pricefx by building a JSON batch upsert or bulk data load request message, or by uploading an Excel file via other Boomi connectors such as FTP connector or Disk connector, etc. The connector allows you to implement data integration between your applications more efficiently and quickly. You can work with various objects exposed in the connector.
+
+## Connector configuration
+
+To configure the connector to communicate with Pricefx, set up two components:
+
+-   Pricefx - Partner connection
+-   Pricefx - Partner operation
+
+This design provides reusable components which contain connection settings and operation settings. After building your connection and operation, set up your connector within the process. When the process is defined properly, Integration can map to and from virtually any system using the Pricefx connector to create, update, retrieve, and delete records from Pricefx.
+
+## Supported editions
+
+Pricefx application version release “Collins” 5.0.0 and higher.
+
+## Prerequisites
+
+To use the Pricefx connector, you will require the following:
+
+-   Pricefx partition - User account details like username and password.
+-   Pricefx Key - If you would like to use Pricefx API protocol version 2.
+-   Appropriate access rights to the Pricefx resource. You can verify your rights in Pricefx by browsing the data in Pricefx. You would be able to retrieve them from the connector if you could browse it in Pricefx.
+
+
+<TrackedProperties />

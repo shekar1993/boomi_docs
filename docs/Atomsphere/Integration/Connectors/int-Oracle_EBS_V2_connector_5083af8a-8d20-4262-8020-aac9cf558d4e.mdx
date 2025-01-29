@@ -1,0 +1,156 @@
+import TrackedProperties from './_TrackedProperties.md'
+
+# Oracle E-Business Suite V2 connector
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-5083af8a-8d20-4262-8020-aac9cf558d4e"/>
+</head>
+
+
+The Oracle E-Business Suite \(EBS\) V2 connector \(classified as an Enterprise connector\) allows you to connect to an Oracle EBS instance. You can interact with Oracle EBS based on the applicable Interface types defined in the Oracle Integration Repository, or establish a direct connection to the Oracle Database via Oracle JDBC drivers.
+
+## Features
+
+The Oracle E-Business Suite V2 connector supports the following features to connect to Oracle EBS systems:
+
+-   Perform REST\_Query and REST\_Execute operations on the Oracle EBS data through the REST APIs defined in the Oracle Integration Repository.
+-   Perform PLSQL\_Execute operations by calling Oracle PL/SQL stored procedures.
+-   Query the required E-Business database tables by executing PLSQL queries via PLSQL\_Query.
+-   Perform LISTEN operations for XML Gateway and Business Event Messages, and SEND operations for XML Gateway Messages.
+-   Establish secured database connections using the database connect descriptor \(DBC\) file.
+
+Through this connector, you can use a process to interface with different types of Oracle EBS Interfaces. You can browse the list of available APIs for a given interface type in your Oracle EBS Integration Repository, and automatically generate the request and response profiles in XML format to use in processes and maps.
+
+## Supported authentication types
+
+The connector supports any of the following authentication types for secured access of the REST services:
+
+-   HTTP Basic Authentication \(Username and Password\)
+-   Token-based Authentication \(Username and a valid token, such as Oracle EBS session ID\)
+-   Oracle Database User and Password credential
+-   DBC file-based authentication
+
+## Supported interface types
+
+The connector supports the following Interface types:
+
+REST\_EXECUTE and REST\_QUERY operations
+
+-   PL/SQL
+-   Open Interface
+-   Java \(Subtype: Java Bean Services\)
+
+Defined via
+
+-   **Oracle EBS Integrated SOA Gateway** - Responsible for allowing service enablement.
+-   **Oracle Integration Repository** - Central Repository storing all service-related business interfaces. It contains numerous interface endpoints exposed by applications throughout the entire Oracle EBS and enables to easily discover and search on interfaces, regardless of Oracle native or custom ones.
+
+The connector uses a Rest Service Locator API in the Integration Repository to search for all deployed EBS REST APIs. The Rest Service Locator is a sample Java API that consists of methods to retrieve details about the deployed Oracle EBS’ REST APIs. For more information, see the topic [Setting up the REST Service Locator](int-Oracle_EBS_V2_setting_up_the_REST_service_locator_d180e7c1-081b-4325-832e-0995748f23cd.md).
+
+PLSQL\_Execute and PLSQL\_Query operations
+
+-   Execute PL/SQL stored procedures defined via Oracle Integration Repository in the Oracle EBS are accessible.
+-   Basic PL/SQL SELECT queries.
+
+LISTEN and SEND operations
+
+-   Listening XML Gateway Messages from ECX\_OUTBOUND queue
+-   Sending XML Gateway Messages to ECX\_INBOUND queue
+-   Listening Business Event Messages from WF\_BPEL\_Q queue
+
+The connector supports the following operations using the supported interface types:
+
+-   REST\_EXECUTE operation invokes Oracle PL/SQL APIs \(Native and Custom PL/SQL\) deployed in the Oracle Integration Repository, to perform certain actions in the Oracle EBS based on the request input.
+
+    :::note
+    
+    The native and custom APIs must be deployed in the Integration Repository, to make the APIs available for use in the connector. For more information, see the Prerequisites section in this topic.
+    
+    :::
+
+-   REST\_QUERY operation invokes Open Interface and Java \(Java Bean Services\) APIs to retrieve required EBS data based on the user defined filters. To verify if your Open Interface/JAVA APIs support the QUERY operation, see the Prerequisites section in this topic.
+-   PLSQL\_EXECUTE operation calling Oracle PL/SQL stored procedures as defined in the Oracle Integration Repository PL/SQL interfaces. PL/SQL procedures are categorized by module, package, and procedure name. The Oracle EBS connector supports stored procedures with the collection types TABLE, ARRAY, and VARRAY as arguments.
+-   PLSQL\_QUERY operation that executes SQL SELECT queries for E-Business database table for which you define the returned fields, specify nested filter expressions, and return results sorted by one or more fields.
+-   LISTEN operation that retrieves XML Gateway messages from the ECX\_OUTBOUND queue and Business Event messages from the WF\_BPEL\_Q queue.
+-   SEND operation where XML Gateway messages are enqueued into ECX\_INBOUND.
+
+## Connector configuration
+
+To configure the connector to communicate with Oracle EBS, set up the following two components:
+
+-   Oracle EBS connection — The connection represents a specific Oracle EBS instance and its associated user authentication method.
+-   Oracle EBS operation — The operation represents an action against a specific E-Business Integration scenario such as Execution of PL/SQL interfaces to execute actions in Oracle EBS as per the Request Input, Querying the Open Interface and Java APIs to retrieve required Oracle EBS data, Execution of Oracle PL/SQL stored procedures, Querying for required Oracle EBS data by executing PL/SQL queries on the E-Business database tables. With LISTEN and SEND operations, the connector allows you to integrate with Oracle E-Business Suite for XML Gateway and Business Event Messages. The LISTEN operation is for receiving XML Gateway and Business Event messages from ECX\_OUTBOUND Queue and WF\_BPEL\_Q Queue respectively. The SEND operation is for sending XML Gateway messages to ECX\_INBOUND queue.
+
+This design provides reusable components containing connection settings \(such as URL, username, password\) and operation settings \(such as object, action, data definitions\). After building the connection and operation, set up your connector within a process. When the process is configured properly, can map to and from virtually any system using the Oracle EBS V2 connector to communicate with Oracle EBS.
+
+
+:::note
+
+A separate connection is required for REST vs. PL/SQL, LISTEN, SEND. REST operation requires only API details. However, PL/SQL, LISTEN, SEND requires DB details. You have to provide either DB schema details or use the DBC file option for the connection.
+
+:::
+
+## Supported editions
+
+The connector supports the following editions:
+
+-   REST\_Execute and REST\_Query — Oracle EBS version 12.2.x or later \(with proper Integrated SOA Gateway and REST services framework setup\).
+-   PLSQL\_Execute and PLSQL\_Query — Oracle database 12c, 19c or earlier \(requires the JDBC driver for the Oracle DB version\) with Oracle EBS version 12.1.x and 12.2.x.
+-   JDBC Driver Version:
+    -   Add OJDBC [ojdbc8-19.9.0.0](https://repo1.maven.org/maven2/com/oracle/database/jdbc/ojdbc8/19.9.0.0/ojdbc8-19.9.0.0.jar) and UCP [ucp-19.9.0.0](https://repo1.maven.org/maven2/com/oracle/database/jdbc/ucp/19.9.0.0/ucp-19.9.0.0.jar) version dependency.
+    -   Create Custom Library for [ojdbc8-19.9.0.0](https://repo1.maven.org/maven2/com/oracle/database/jdbc/ojdbc8/19.9.0.0/ojdbc8-19.9.0.0.jar) and [ucp-19.9.0.0](https://repo1.maven.org/maven2/com/oracle/database/jdbc/ucp/19.9.0.0/ucp-19.9.0.0.jar) jars at the time of executing this process.
+
+## Prerequisites
+
+To use the connector, you require the following:
+
+REST\_EXECUTE and REST\_QUERY operation
+
+-   Oracle EBS instance with proper Integrated SOA Gateway and REST service framework setup.
+-   REST URL of the Oracle EBS instance.
+-   Username and password for an Oracle EBS account.
+-   Security token \(e.g. Oracle EBS session ID\) provided by the Oracle EBS server. This is required only if token-based authentication is used.
+-   Rest Service Locator API \(oracle.apps.fnd.rep.ws. service. EbsRestLocator\) deployed in the Oracle Integration Repository. For more information, see the topic [Setting up the REST Service Locator](int-Oracle_EBS_V2_setting_up_the_REST_service_locator_d180e7c1-081b-4325-832e-0995748f23cd.md).
+-   Security Grants permission to access or execute the GET service operation \(getRestInterface\) contained in the Rest Service Locator API.
+-   Alias name of the Rest Service Locator API deployed in your Oracle Integration Repository.
+
+REST\_EXECUTE operation
+
+-   Required PL/SQL APIs deployed in the Oracle Integration Repository.
+-   Security Grants permission to access or execute certain service operations of the PL/SQL API. For access request, contact your Oracle EBS Integration Repository Administrator.
+    
+    :::note
+
+    Refer to the Oracle Help Topic on [Using PL/SQL REST Services – Deploying a PL/SQL REST Web Service](https://docs.oracle.com/cd/E18727_01/doc.121/e12065/T511473T522190.htmisgdg_restpl).
+
+    :::
+
+-   Custom PL/SQL APIs packaged and deployed in the Oracle Integration Repository to make it available for use in the connector \(**APPLICABLE ONLY if custom PL/SQL API to be used**\).
+
+REST\_QUERY operation
+
+-   Required Open Interface / Java \(Java Bean Services\) APIs deployed and configured with GET HTTP method in the Oracle Integration Repository, for use in **QUERY** operation.
+-   Security Grants permission to access or execute certain service operations of the APIs. For access request, contact your Oracle EBS Integration Repository Administrator.
+
+PLSQL\_EXECUTE, PLSQL\_QUERY, LISTEN and SEND operations
+
+-   Oracle EBS Database — OJDBC connection string.
+-   Username and password for an Oracle EBS account.
+-   JDBC Driver Version:
+    -   Add OJDBC [ojdbc8-19.9.0.0](https://repo1.maven.org/maven2/com/oracle/database/jdbc/ojdbc8/19.9.0.0/ojdbc8-19.9.0.0.jar) and UCP [ucp-19.9.0.0](https://repo1.maven.org/maven2/com/oracle/database/jdbc/ucp/19.9.0.0/ucp-19.9.0.0.jar) version dependency.
+    -   Create Custom Library for [ojdbc8-19.9.0.0](https://repo1.maven.org/maven2/com/oracle/database/jdbc/ojdbc8/19.9.0.0/ojdbc8-19.9.0.0.jar) and [ucp-19.9.0.0](https://repo1.maven.org/maven2/com/oracle/database/jdbc/ucp/19.9.0.0/ucp-19.9.0.0.jar) jars at the time of executing this process.
+        
+:::note
+
+If you have JDBC drivers for Oracle in the general custom directory, those drivers take precedence to the drivers in the connector directory. Therefore, you must either use the same version in general directory or have specific JDBC drivers for Oracle in its own connector directory.
+
+:::
+
+
+Database connection using DBC via ebsdb.dbc file
+
+-   ebsdb.dbc file obtained from Oracle EBS environment and converted as JAR file. For more information, see the topic [Creating DBC jar file "ebsdb.dbc"](int-Oracle_EBS_V2_creating_DBC_jar_file_ebsdb.dbc_0ef041e0-0c59-4ac1-9949-818fc15ac48d.md). For information about the process to upload the JAR file as custom library component, see the topic [Working with custom libraries](../Process%20building/c-atm-Working_with_custom_libraries_96f10864-334e-4eba-ac3f-f52b4e65fdb2.md).
+
+<TrackedProperties />
+

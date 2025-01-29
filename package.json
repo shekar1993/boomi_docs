@@ -1,0 +1,95 @@
+{
+  "name": "boomi",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "docusaurus": "docusaurus",
+    "start": "npm run generate-routes; docusaurus start",
+    "build": "docusaurus build; cp google2f7b6bcf5ec120c5.html build; cp -R downloads build/downloads",
+    "swizzle": "docusaurus swizzle",
+    "deploy": "docusaurus deploy",
+    "clear": "docusaurus clear",
+    "serve": "docusaurus serve",
+    "test": "react-scripts test",
+    "coverage": "npm run test -- --coverage --watchAll=false",
+    "write-translations": "docusaurus write-translations",
+    "write-heading-ids": "docusaurus write-heading-ids",
+    "typecheck": "tsc",
+    "generate-routes": "node ./scripts/mismatchRoutesGenerator.js"
+  },
+  "dependencies": {
+    "@boomi/exosphere": "^4.0.0",
+    "@coveo/headless": "^2.7.0",
+    "@docusaurus/core": "^3.6.3",
+    "@docusaurus/preset-classic": "^3.6.3",
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@mdx-js/react": "^3.0.0",
+    "@mui/material": "^5.11.6",
+    "@netlify/functions": "^2.4.0",
+    "axios": "^1.7.9",
+    "cli-progress": "^3.12.0",
+    "clsx": "^1.2.1",
+    "docusaurus-plugin-sass": "^0.2.5",
+    "html2pdf.js": "^0.10.1",
+    "node-cache": "^5.1.2",
+    "nodemailer": "^6.9.9",
+    "prism-react-renderer": "^2.3.0",
+    "raw-loader": "^4.0.2",
+    "react": "^18.2.0",
+    "react-device-detect": "^2.2.3",
+    "react-dom": "^18.2.0",
+    "react-google-recaptcha-v3": "^1.10.1",
+    "react-helmet": "^6.1.0",
+    "sass": "^1.83.0",
+    "swiper": "^11.1.11"
+  },
+  "devDependencies": {
+    "@docusaurus/module-type-aliases": "^3.6.3",
+    "@docusaurus/tsconfig": "^3.6.3",
+    "@docusaurus/types": "^3.6.3",
+    "@swc/core": "^1.3.67",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^14.2.1",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/jest": "^29.5.12",
+    "react-scripts": "^5.0.1",
+    "swc-loader": "^0.2.3",
+    "typescript": "^4.8.4"
+  },
+  "browserslist": {
+    "production": [
+      ">0.5%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "engines": {
+    "node": ">=18.0"
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "<roodDir>/node_modules/(?!@boomi/exosphere/)"
+    ],
+    "moduleNameMapper": {
+      "^@boomi/exosphere": "<rootDir>/node_modules/@boomi/exosphere/dist/react/index.mjs",
+      "@docusaurus/(use.*)": "<rootDir>/jest/useBaseUrl.ts",
+      "@docusaurus/Link": "<rootDir>/jest/Link.ts",
+      "@docusaurus/ExecutionEnvironment": "<rootDir>/jest/ExecutionEnvironment.ts",
+      "@docusaurus/theme-common": "<rootDir>/jest/theme-common.ts",
+      "@docusaurus/router": "<rootDir>/jest/router.ts",
+      "@generated/.*": "<rootDir>/jest/mockDocusaurus.ts",
+      "^swiper/.*": "<rootDir>/jest/swiper/react.ts"
+    },
+    "collectCoverageFrom": [
+      "./src/components/**/*.tsx",
+      "./src/components/**/*.ts",
+      "!./src/index.tsx"
+    ]
+  }
+}

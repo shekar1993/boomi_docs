@@ -1,0 +1,73 @@
+# Web Services SOAP Client connector 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-dd65922d-746f-4dae-b9c5-45a05a477d53"/>
+</head>
+
+
+Use the Web Services SOAP Client connector \(a generic connector\) to integrate with any web-based or on-premise application that exposes a SOAP web services interface.
+
+This connector enables developing integrations against various SOAP-enabled applications. Our user base has integrated it with Siebel. The connector browses the list of services or messages supported by the specific web service – those defined in the Web Services Description Language \(WSDL\) – in real time. The types of messages are limited only by the web service itself.
+
+Many of the technical details of this connection, such as SOAP headers, error handling, HTTPS authentication, and XML syntax, are abstracted to simplify your implementation. The connector operates in a request/response manner and does not support "listening" for outbound messages from the web service application.
+
+
+:::note
+
+The Web Services SOAP Client connector works with SOAP 1.1 and SOAP 1.2. When both profiles are referenced, the connector defaults to 1.1. For more information, see the Supported editions section in this topic.
+
+:::
+
+## Connector configuration 
+
+To configure a connector to communicate with web services, set up these components:
+
+-   Web Services SOAP Client connection
+
+-   Web Services SOAP Client operation
+
+This design provides reusable components, which contain connection settings such as the user name and password. After building your connection and operation, set up your connector within a process. When your connector is configured properly within your process, Integration can map to and from virtually any system using the Web Services SOAP Client connector to retrieve data from or send data to the application.
+
+## Supported editions 
+
+The following web services are supported:
+
+-   Any web service implementation that follows SOAP 1.1, such as Apache Axis, .NET, and StrikeIron \(also referred to as "document" or "literal" style\) or SOAP 1.2.
+
+    -   Document-Literal
+
+    -   RPC-Literal
+
+-   Web services that use WS-Security
+
+-   Multipart SOAP attachments
+
+
+## Limitations 
+
+The following known limitations affect this connector:
+
+-   RPC/SOAP-Encoded styles are not supported.
+
+-   There are no choreographed calls or session persistence. Every call must be an independent, self-contained action. This is most relevant to authentication. If the web services require authentication, the necessary credentials like user name and password must be able to be passed within the request itself.
+
+-   The WSDL and associated schemas must be accessible via a publicly or locally accessible URL. If the WSDL is a local URL, a local Atom must be installed. File upload of the WSDL and/or XSD schemas is not supported.
+
+
+## Prerequisites 
+
+The Web Services SOAP Client connector requires the following:
+
+-   The URL to connect to the web service and WSDL. The URL to the WSDL is usually the same as the web service with "?WSDL" appended.
+
+    
+:::note
+
+The web service URL is typically different from the URL that you use to log into the user interface.
+
+:::
+
+import TrackedProperties from './_TrackedProperties.md'
+
+<TrackedProperties />

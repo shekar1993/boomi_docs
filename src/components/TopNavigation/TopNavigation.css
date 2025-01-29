@@ -1,0 +1,32 @@
+.top-navigation {
+  background-color: var(--ifm-navbar-background-color);
+  z-index: 1;
+}
+
+.top-menu-wrapper {
+  display: block;
+  padding: var(--exo-spacing-standard);
+  width: 100%;
+  overflow: auto;
+}
+
+.top-menu {
+  min-width: calc(var(--exo-size-6) * 2.2);
+  display: flex;
+  overflow: auto;
+  align-items: center;
+  justify-content: center;
+}
+
+@media only screen and (min-width: 1200px) {
+  .top-menu-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .top-menu {
+    width: 100%;
+  }
+}

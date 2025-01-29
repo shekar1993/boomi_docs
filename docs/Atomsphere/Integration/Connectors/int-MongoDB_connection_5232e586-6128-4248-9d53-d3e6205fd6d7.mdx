@@ -1,0 +1,132 @@
+import TestConnection from './_TestCon.md'
+
+# MongoDB connection
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-5232e586-6128-4248-9d53-d3e6205fd6d7"/>
+</head>
+
+
+The MongoDB connection represents a single account including login credentials. If you have multiple systems, you need a separate connection for each.
+
+## Connection tab
+
+
+
+**Host** - 
+Enter the domain name or IP address of the MongoDB server.
+
+**Port** - 
+Enter the command port number on which the MongoDB server listens for incoming connections from a MongoDB client. The default port is 27017.
+
+**Database Name** - 
+Enter the name of the MongoDB database where the connector reads/writes the data.
+
+**Authentication Database** - 
+Specify the name of the authentication database where the user was added at the time of the user creation. This field is mandatory, if the **Authentication Type** is SCRAM-SHA-1, SCRAM-SHA-256, LDAP, and KERBEROS.
+
+**Mongo+SRV** - 
+Select this check box to use the Mongo+SRV feature for the MongoDB Cluster deployment.
+
+**Connection String** - 
+This field will be visible and mandatory if the **Mongo+SRV** option is selected. Specify the connection URL for Mongo+SRV. The connection string starts with the URI scheme "mongodb+srv" followed by the end point \(domain name\) of server hosting SRV record. The SRV record contains the DNS configuration of the replica sets. In addition to this, you can provide other connection parameters as separate options with the ampersand \(name1=value1&name2=value2\). For
+
+Format: `mongodb+srv://[username:password@]host[/[database][?options]]`
+
+For security purposes, it is recommended to pass the user credentials using the **Username/Client Principal** and **Password** field. The database name should be provided in the **Database Name** field.
+
+Example:
+
+```
+mongodb+srv://srv.accentureboomi.com/admin?ssl=false&authMechanism=SCRAM-SHA-256
+```
+
+    
+:::note
+
+For Mongo+SRV, the required authentication mechanism must be passed as part of the connection string. The applicable authentication types are SCRAM-SHA-1, SCRAM-SHA-256 and LDAP. The value selected in the **Authentication Type** field will not be applied.
+
+:::
+
+**Username/Client Principal** - 
+Specify the username for the MongoDB account. This field is mandatory, if the **Authentication Type** is SCRAM-SHA-1, SCRAM- SHA-256, LDAP, and KERBEROS.
+
+    
+:::note
+
+For Kerberos Authentication, the **Username** is referred as **Client Principal**. Username can be generated using the command below on the Kerberos server by the server Admin.
+
+:::
+
+`addprinc -randkey <CLIENT_PRINCIPAL_NAME>`
+
+In case of Mongo+SRV, if any user account credentials to be used for authentication then specify the required username and password.
+
+**Password** - 
+Specify the password for the user's MongoDB account. This field is mandatory, if the **Authentication Type** is SCRAM-SHA-1, SCRAM- SHA-256, LDAP, and KERBEROS.
+
+**Replica Set Members** - 
+Specify the domain name or IP address of the MongoDB server replica set members as comma-separated values. This value is required in case of MongoDB Replica Set deployment. If both **Host** and **Replica Set Members** are specified, the value provided in the **Replica Set Members** field will take precedence.
+
+    
+:::note
+
+If you are using Mongo+SRV, this field is redundant.
+
+:::
+
+**Authentication Type** - 
+Select the required authentication type to be used for authenticating a user's access to the MongoDB. The MongoDB connector supports the following authentication types:
+
+-   None
+-   SCRAM-SHA-1
+-   SCRAM-SHA-256
+-   X.509
+-   LDAP
+-   KERBEROS
+
+    
+:::note
+
+To know the user authentication details required for each authentication type, refer to the **Prerequisites** section.
+
+:::
+
+**Use SSL** - 
+If selected, connector uses `Secure Socket Layer` to establish the connection. The default value is `False`. This field is mandatory for X.509 authentication.
+
+Based on the selected authentication type, the relevant fields will be displayed.
+
+X.509 Authentication
+
+**CA Certificate** - 
+Attach the digital certificate issued by a Certificate Authority \(CA\) which certifies the ownership of a public key by the user of the certificate. A self-signed CA certificate can also be used. This field is mandatory, if the **Authentication Type** is X.509.
+
+    
+:::note
+
+The CA Certificate should be in .der format. Once generated, you need to import this certificate into the Boomi Enterprise Platform. For more information about certificate import, see the topic [Import certificates](int-MongoDB_import_certificates_c396ea74-2d98-4b5e-b920-47147260e2e5.md).
+
+:::
+
+KERBEROS Authentication
+
+**KDC Name** - 
+Provide the hostname or IP address of the Kerberos Key Distribution Center \(KDC\) server. This field is mandatory for Kerberos authentication. However, the user need not specify this value if the KDC name is already updated in the Krb5.conf file.
+
+**Realm Name** - 
+Provide the domain name applicable for the Kerberos user's account. This field is mandatory for Kerberos authentication. However, the user need not specify this value if the Realm details are already updated in the Krb5.conf file.
+
+**Krb5 Config Path** - 
+Provide the local directory path of the Krb5.conf file. This field is mandatory for Kerberos authentication. This file is available as part of the Kerberos setup and the server Admin can provide this file. For more information, see the [Prerequisites - KERBEROS authentication section of the MongoDB connector page](/docs/Atomsphere/Integration/Connectors/int-MongoDB_connector_a6cce0aa-00a6-48d0-bfbe-feb2474b57e1.mdx).
+
+**JAAS Config Path** - 
+Provide the local directory path of the gss-jaas.conf file. This field is mandatory for Kerberos authentication. Create a gss-jaas.conf file using the sample format provided in the [Prerequisites - KERBEROS authentication section of the MongoDB connector page](/docs/Atomsphere/Integration/Connectors/int-MongoDB_connector_a6cce0aa-00a6-48d0-bfbe-feb2474b57e1.mdx). Make sure to update this conf file with the Keytab file path.
+
+The custom developed connection retry logic used in the earlier version of the MongoDB connector has been replaced by the MongoDB retryable logic \(applicable for MongoDB version 4.2 and later\). In case of network error during the initial connection, DB write and/or read operation, the MongoDB retry logic will be triggered and it will make only one retry attempt. To understand the behaviour of the MongoDB retryable logic, refer to the [MongoDB documentation - Retryable Writes and Reads](https://www.mongodb.com/docs/v5.3/core/retryable-writes/).
+
+If the retry was not successful, then the corresponding error message will be returned. For more information on error labels, see the MongoDB documentation on [Retryable Error Labels](https://github.com/mongodb/specifications/blob/master/source/retryable-writes/retryable-writes.rst#retrywrites).
+
+
+<TestConnection />

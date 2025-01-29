@@ -1,0 +1,341 @@
+import OperationEnd from './_operationEnd.md'
+import TrackingDirection from './_TrackingDirection.md'
+import ReturnErrRes from './_ReturnResponse.md'
+
+# Microsoft Azure Cosmos DB operation
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-1f2f9a69-6162-44ca-8e5b-e6024d861d4e"/>
+</head>
+
+
+The Microsoft Azure Cosmos DB operations define how to interact with your Microsoft Azure Cosmos DB server in Microsoft Azure and represent a specific action \(Get, Update, Delete, Create, Upsert, and Query\).
+
+## Options tab
+
+Create a separate operation component for each action/object combination that your integration requires. The Microsoft Azure Cosmos DB connector supports the following operations:
+
+-   Inbound: Get, Query.
+
+-   Outbound: Update, Delete, Create, Upsert.
+
+
+Click **Import Operation**, then use the Import wizard to select the object with which you want to integrate. When you configure an action, the following fields appear on the Options tab.
+
+
+
+**Connector Action \(All Operations\)** - Determines the type of operation the connector is performing related to Inbound or Outbound, specify the proper connector action. Depending on how you create the operation component, the action type is either configurable or non-configurable from the drop-down list.
+
+**Object \(All Operations\)** - Defines the object with which you want to integrate, and which was selected in the **Import Wizard**.
+
+**Request Profile \(All Operations\)** - The request profile highlights the format in which the response is to be processed. Import the Response profile with Structured or Unstructured JSON format.
+
+    
+:::note
+
+During Import, if the Structured Data check box is selected, the document ID of a specific record must be specified. To retrieve the document from the given partition, the user must pass the partition key from which they want to retrieve the document.
+
+:::
+
+**Response Profile \(All Operations\)** - The response profile highlights the format in which the response is to be processed. Import the Response profile with Structured or Unstructured JSON format. For the delete operation, this field will be “Unstructured”.
+
+    
+:::note
+
+During Import, if the Structured Data check box is selected, the document ID of a specific record must be specified. To retrieve the document from the given partition, the user must pass the partition key from which they want to retrieve the document.
+
+:::
+
+<TrackingDirection />
+
+<ReturnErrRes />
+
+## Get
+
+Get is an inbound action for which you provide the details of the record which you want to retrieve from the Server. When using Get, the document ID must be specified in the configuration of the connector step. To retrieve the document, the user must pass the document ID along with the partition key from which they want to retrieve the document.
+
+## Update
+
+The update is an outbound action where you can update the existing records in the Microsoft Azure Cosmos DB database either in bulk or a single record by specifying Object/Record ID\(s\) and Partition Key. If the ID exists, the connector automatically overrides the existing record in database and performs an update operation and If the ID does not exist, the connector will not process the record.
+
+
+:::note
+
+The connector will not throw any error for records with invalid object/record ID. Updating records across the databases at the same instance is not supported by the connector.
+
+:::
+
+If the Update operation is successful, the record\(s\) is updated in the database and the connector returns a response in JSON format. The connector will also throw an exception/error in case of any failure after retrying 3 times.
+
+Below is the JSON format followed for Update Request:
+
+```
+[ 
+
+  { 
+
+    "Name": "Jerry", 
+
+    "Gender": "2", 
+
+    "Class": "11", 
+
+    "Club": "50", 
+
+    "Persona": "50000", 
+
+    "Crush": "0", 
+
+    "Strength": "0", 
+
+    "Hairstyle": "2345", 
+
+    "Color": "green", 
+
+    "City": "Pune", 
+
+    "Stockings": "None", 
+
+    "Accessory": "0", 
+
+    "ScheduleTime": "7_7_8_13_13.375_15.5_17.25_17.5_99", 
+
+    "ScheduleDestination": "Spawn_Locker_Hangout_Seat_LunchSpot_Seat_Club_Locker_Exit", 
+
+    "ScheduleAction": "Stand_Stand_Socialize_Sit_Socialize_Sit_SocialSit_Shoes_Stand", 
+
+    "id": "user8" 
+
+  }, 
+
+  { 
+
+    "Name": "Jerry12", 
+
+    "Gender": "0", 
+
+    "Class": "11", 
+
+    "Club": "50", 
+
+    "Persona": "50000", 
+
+    "Crush": "0", 
+
+    "Strength": "0", 
+
+    "Hairstyle": "2345", 
+
+    "Color": "green", 
+
+    "city": "Pune", 
+
+    "Stockings": "None", 
+
+    "Accessory": "0", 
+
+    "ScheduleTime": "7_7_8_13_13.375_15.5_17.25_17.5_99", 
+
+    "ScheduleDestination": "Spawn_Locker_Hangout_Seat_LunchSpot_Seat_Club_Locker_Exit", 
+
+    "ScheduleAction": "Stand_Stand_Socialize_Sit_Socialize_Sit_SocialSit_Shoes_Stand", 
+
+    "id": "user60" 
+
+  } 
+
+]
+```
+
+## Delete
+
+Delete is an outbound action where you can delete the existing records in the Microsoft Azure Cosmos DB database either in bulk or a single record by specifying Object/Record ID\(s\) and Partition Key. If ID and Partition Key exists, the connector will automatically delete the existing record and If ID and Partition Key do not exist, the connector will ignore the record.
+
+
+:::note
+
+The connector will not throw any error for records with invalid object/record ID and Partition Key. Deleting records across the databases is not supported by the connector.
+
+:::
+
+If the Delete operation is successful, the record\(s\) is deleted from the database and the connector returns a response in JSON format. The connector will also throw an exception/error in case of any failure post retrying 3 times.
+
+The input format provided through Message or Disk step should be in the format specified below. If disk step is used for input, use Data Process step to split each record using the line break:
+
+```
+'{ 
+
+"id":"2375cdea-df8d-414a-9eac-d26f119bbd72", 
+
+"partitionKey":"Bhubaneswar" 
+
+}'
+```
+
+## Create
+
+Create is an outbound action where you can Upload and add a new document to the Microsoft Azure Cosmos DB by specifying Record ID and Partition Key.
+
+If the Create operation is successful, the document is uploaded and added to the database and the connector returns a response in JSON format. The connector will also throw an exception/error in case of any failure post retrying 3 times.
+
+```
+{ 
+
+  "Name": "Hina", 
+
+  "Gender": "1", 
+
+  "Class": "11", 
+
+  "Club": "50", 
+
+  "Persona": "50000", 
+
+  "Crush": "0", 
+
+  "Strength": "0", 
+
+  "Hairstyle": "2345", 
+
+  "Color": "green", 
+
+  "city": "Pune", 
+
+  "Stockings": "None", 
+
+  "Accessory": "0", 
+
+  "ScheduleTime": "7_7_8_13_13.375_15.5_17.25_17.5_99", 
+
+  "ScheduleDestination": "Spawn_Locker_Hangout_Seat_LunchSpot_Seat_Club_Locker_Exit", 
+
+  "ScheduleAction": "Stand_Stand_Socialize_Sit_Socialize_Sit_SocialSit_Shoes_Stand", 
+
+  "id": "user8" 
+
+} 
+```
+
+## Upsert
+
+Upsert is an outbound action to either update or create a new record in Microsoft Azure Cosmos DB collection. This operation can be performed either in bulk or a single record by specifying Object/Record ID\(s\) and Partition Key. If ID already exists, the connector automatically performs an update operation and If the ID does not exist, the connector will create a new record.
+
+
+:::note
+
+If the Object/Record ID is passed as null with a record, the connector will create a new record in Microsoft Azure Cosmos DB collection with Object/Record ID as Null. The connector will not throw any error for records with invalid Object/Record ID. Updating/Creating records across collections is not supported by the connector.
+
+:::
+
+If the Upsert operation is successful, the connector returns a response in JSON format. The connector will also throw an exception/error in case of any failure post retrying 3 times.
+
+```json
+{ 
+
+    "Name": "Hina", 
+
+    "Gender": "0", 
+
+    "Class": "11", 
+
+    "Club": "50", 
+
+    "Persona": "50000", 
+
+    "Crush": "0", 
+
+    "Strength": "0", 
+
+    "Hairstyle": "2345", 
+
+    "Color": "green", 
+
+    "city": "Pune", 
+
+    "Stockings": "None", 
+
+    "Accessory": "0", 
+
+    "ScheduleTime": "7_7_8_13_13.375_15.5_17.25_17.5_99", 
+
+    "ScheduleDestination": "Spawn_Locker_Hangout_Seat_LunchSpot_Seat_Club_Locker_Exit", 
+
+    "ScheduleAction": "Stand_Stand_Socialize_Sit_Socialize_Sit_SocialSit_Shoes_Stand", 
+
+    "id": "user60" 
+
+  }, 
+
+  { 
+
+    "Name": "Senpai", 
+
+    "Gender": "2", 
+
+    "Class": "132", 
+
+    "Club": "50", 
+
+    "Persona": "1", 
+
+    "Crush": "0", 
+
+    "Strength": "0", 
+
+    "Hairstyle": "1", 
+
+    "Color": "RED", 
+
+    "Stockings": "None", 
+
+    "city": "Bangaore", 
+
+    "Accessory": "0", 
+
+    "ScheduleTime": "7_7_8_13.01_13.375_15.5_99", 
+
+    "ScheduleDestination": "Spawn_Locker_Hangout_Seat_LunchSpot_Seat_Hangoutssss", 
+
+    "ScheduleAction": "Stand_Stand_Read_Sit_Read_Sit_Read", 
+
+    "id": "4f9462f6-85ed-4976-bf9f-eb09181178bb"
+```
+
+## Query
+
+The query is an inbound action that looks up objects in Microsoft Azure Cosmos DB collection and returns zero to many object records. After you select the Query action and use the Import Wizard, the operation component page contains configuration options to add filters and set parameters to limit the results. You can refine the query on the Filters tab and define expressions to create required query logic.
+
+You need to set parameters in the connector for a successful Query operation.
+
+If the operation is successful, the connector returns a response in JSON format. The connector will also throw an exception/error in case of any failure post retrying 3 times.
+
+
+
+
+### Filters   
+1.  **Fields Tab**   
+This is the list of Field names in a collection. You need to select the Field names with which you want to filter.
+
+  
+:::note
+
+For Unstructured Response Profile the fields will be listed from the collection based on the last updated structure.
+
+:::
+
+2.  **Filters Tab**
+
+    Only one filter expression can be created. If you need to set multiple filter expressions, you need a separate connection for each. The filter expression can also be created within AND/OR Logical Sub-Group. Below are the fields under the filter expression section.
+
+    -   Filter Name: The name of the filter expression.
+
+    -   Field: Field\(s\) to be searched \(Field names in a collection\).
+
+    -   Operator: Equal To, Not Equal To, Greater Than, Less Than, Greater Than or Equal, Less Than or Equal, In.
+
+3.  **Sorts Tab**
+
+    This is used to sorting \(Ascending or Descending\) the filter results based on a selected field.
+
+<OperationEnd />

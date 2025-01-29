@@ -1,0 +1,24 @@
+import TestConnection from './_TestCon.md'
+
+# Microsoft Azure Cosmos DB connection
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-1bc86104-5e3e-479b-b6a8-d74226ed817e"/>
+</head>
+
+
+The Microsoft Azure Cosmos DB connection represents a single account including login credentials and database. If you have multiple systems and want to use multiple databases, you need a separate connection for each.
+
+This approach provides reusable components, which contain connection settings such as connection URL for API, master key, database, etc. After building your connection and operation, set up your connector within a process. When your connector is configured properly within your process, Boomi Integration can transfer data from/to Microsoft Azure Cosmos DB.
+
+## Connection tab
+
+Host URL - IP Address or hostname of Microsoft Azure Cosmos DB Server.
+
+Master Key - The master key is generated during the creation of an account. It is an access key token that allows users to have full control of Microsoft Azure Cosmos DB resources in an account.
+
+Database - The database name on the Microsoft Azure Cosmos DB server.
+
+
+<TestConnection />

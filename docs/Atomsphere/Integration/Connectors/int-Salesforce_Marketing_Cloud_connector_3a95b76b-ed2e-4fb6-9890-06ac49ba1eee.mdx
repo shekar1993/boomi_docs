@@ -1,0 +1,43 @@
+import TrackedProperties from './_TrackedProperties.md'
+
+# Salesforce Marketing Cloud connector
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-3a95b76b-ed2e-4fb6-9890-06ac49ba1eee"/>
+</head>
+
+
+Salesforce Marketing Cloud \(SFMC\) connector enables you to interact with the Salesforce Marketing Cloud platform through the Marketing Cloud APIs.
+
+Salesforce Marketing Cloud \(SFMC\) is a marketing automation platform that offers unique features to help users to increase their customer engagement. The SFMC connector allows you to connect and access data to/from the Marketing Cloud platform using the SFMC APIs. You can use this connector to manipulate SFMC data like managing subscribers and list, importing subscribers and scheduling triggered emails. The connector provides a secure way of accessing the SFMC platform via OAuth 2.0 user authentication.
+
+:::note 
+
+The connector is supported in Atom, Molecule, and Cloud \(Public and Private\).
+
+:::
+
+## Connector configuration
+
+To configure the connector to communicate with SFMC, set up the following components:
+
+-   Salesforce Marketing Cloud connection
+-   Salesforce Marketing Cloud operation
+
+This design provides reusable components which contain connection settings and operation settings. After building your connection and operation, set up your connector within a process. When the process is defined properly, Integration can map to and from virtually any system using the SFMC connector to SFMC platform.
+
+## Prerequisites
+
+The SFMC connector requires the following:
+
+-   An Atom deployed in either a hosted environment or on a local machine.
+-   SFMC tenant account details — Client ID and Password.
+-   Web Service Descriptor Language \(WSDL\) URL — Locate your tenant’s SOAP Authentication Base URIs. `Format:https://YOUR_SUBDOMAIN.soap.marketingcloudapis.com/etframework.wsdl`.
+-   SOAP URL API — Locate your tenant’s endpoints, which contain your sub-domain, in the Marketing Cloud. Each tenant will have a unique sub-domain and when your sub-domain is appended to Marketing Cloud APIs, it creates a unique tenant specific endpoint for making API requests. `Example:https://YOUR_SUBDOMAIN.soap.marketingcloudapis.com/Service.asmx`
+
+For details about the Subdomain, refer to the [Your Subdomain and Your Tenant's Endpoints](https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/your-subdomain-tenant-specific-endpoints.html) topic.
+
+For more details on WSDL and SOAP API URL, refer to the [WSDL and Endpoint Links for the SOAP API](https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/wsdl-endpoint-links.html) topic.
+
+<TrackedProperties />

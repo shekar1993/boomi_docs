@@ -1,0 +1,250 @@
+import OperationEnd from './_operationEnd.md'
+import TrackingDirection from './_TrackingDirection.md'
+import ReturnErrRes from './_ReturnResponse.md'
+
+# SFTP V2 operation
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-cd60cd67-a0a3-4d32-9a04-f37dfa8ba443"/>
+</head>
+
+
+The SFTP V2 operations define how to interact with your SFTP server and represent a specific action to be performed against a specific file.
+
+Create a separate operation component for each action/object combination that your integration requires.
+
+The SFTP v2 operations support the following actions:
+
+-   Inbound: Get, List, Query, Listen
+-   Outbound: Create, Upsert, Delete
+
+:::note
+
+When you use the Create and Delete operations, multiple listener executions are triggered by design.
+
+:::
+
+## Options tab
+
+Select a connector action, then use the **Import Wizard** to select the object to integrate. When you configure an action, the following fields appear on the **Options** tab.
+
+**Connector Action \(All operations\)** -  Refers to the action type selected in connector configuration. Auto populated by the Boomi Enterprise Platform.
+
+**Object \(All operations\)** -  Defines the object with which you want to integrate and which was selected in the **Import Wizard**.
+
+**Request Profile \(Create, Delete, Upsert\)** -  The request profile highlights the format \(Structured and Unstructured\) in which the File is to be processed. By default, the format will be Unstructured. For the Upsert operation, the format will always be set as Unstructured as this operation deals with the content within the file.
+
+**Response Profile \(Get, Create, Query, List, Upsert, Listen\)** -  The response profile highlights the format \(Structured and Unstructured\) in which the response is to be processed. For the Query operation, the format will always be set as Unstructured as this operation deals with files and not the content within the file.
+
+<TrackingDirection />
+
+<ReturnErrRes />
+
+Delete files after reading \(Get\): Refers to the option to delete files after they are read into the process.
+
+:::note
+
+If the file cannot be deleted due to insufficient access rights, a warning message is logged. Boomi recommends selecting this option when executing in production mode to prevent data from being processed twice and clearing this option when testing.
+
+:::
+
+Fail if unable to delete \(Get\): Refers to the option to fail a process with an error, if an attempt to delete files after reading them into the process is unsuccessful due to insufficient access rights.
+
+Include all metadata \(Get, Query, Upsert\): Refers to the option to include all metadata as tracked properties including the JSON objects; File Name, File content, and Timestamp. If cleared, only the File Content \(File Name and Directory properties\) and Remote Directory are returned in the file format as available on the SFTP server.
+
+:::note
+
+-   For Get and Query operation, if this option is selected, the returned output will be in JSON format irrespective of the format of the file on the SFTP server. Else, the output will be returned in the same file format as available on the server.
+
+    **Attention:** When the Get/Query operation is executed with the **Include all metadata** option, the output may contain special characters. Example: Every new line in the source text file gets printed as a newline character "\\n" in the output. The images used in the PDF file might be replaced with a set of special characters in the output. Therefore, if the metadata option is used, it is recommended to filter the unwanted characters in the output for further processing.
+
+-   For **Create** operation, the **Include all metadata** check box will be available in the **Import Wizard**.
+
+:::
+
+**Action if File Exists \(Create\)** -  Specifies how the operation behaves if the file name already exists in the Remote Directory on the SFTP server.
+
+-   Select **Create unique name** to append a number to the file name by the connector to make it unique.
+-   Select **Overwrite** to replace the existing content with the new one.
+-   Select **Append** to concatenate the new content at the end of the existing one.
+-   Select **Generate error** to generate an error.
+
+**Staging Directory \(Optional\) \(Create\)** -  Specifies the temporary directory \(absolute or relative directory path\) to put a file, before being moved to the Remote Directory.
+
+-   If specified, the connector uses the default working directory configured as the base folder on the SFTP server.
+-   If not specified, the file is created directly in Remote Directory.
+
+**Temporary Extension \(Optional\) \(Create\)** -  Refers to a temporary extension \(for example, .tmp or tmp\) to append to the file name until the file is created in the Remote Directory. To avoid overwriting existing files, the connector guarantees that the temporary file name is unique when creating files.
+
+**Target File Name \(Optional\) \(Create\)** -  Specify the target file name, if **Create unique name** is selected for **Action if File Exists**. It can be a combination of one or more of the following variables:
+
+-   Alphanumeric string
+-   $BASE, the base file name of the input file.
+-   $EXTENSION, the extension of the input file.
+-   DATE, today's date in MMDDYYYY format.
+-   $TIME, current time in HHMMSS.SSS format.
+-   $UUID, a randomly generated unique id.
+
+e.g., BASE\_$DATE.$EXTENSION will generate a target file name, `example_09142023.csv`, where input document is `example.csv`. If left empty, the target file name will be the same as the source file name.
+
+**Temporary File Name \(Optional\) \(Create\)** -  Specify the temporary file name, if **Create unique name** is selected for **Action if File Exists**. The file naming convention remains same as the Target File Name.
+
+**Maximum Number of Files to Return \(Query, List\)** -  Refers to the option, if checked, failed operations will not be reported in Manage, allowing you to act on them in your process. Enter -1 to return as many files as possible.
+
+**Recursive Listing of Directory \(List\)** -  Refers to the option if selected, will list all the files and directories of the root level as well as files one level deeper. The default behaviour is to only list the files and directories of the root level.
+
+**Append \(Upsert\)** -  Refers to the option to update the existing data by including the new data.
+
+-   If selected, the connector updates existing data to include new data.
+-   If cleared, the connector overwrites the existing data.
+
+**Create directory if it doesn't exist \(Upsert\)** -  Refers to the option if selected, the connector creates a directory \(if it does not already exist\) according to what is specified in the connection or document property.
+
+**Polling Interval \(Listen\)** -  Sets the interval between each poll cycle \(in milliseconds\) on the directory.
+
+**Is Singleton \(Listen\)** -  When set to true, the Atom invokes the isSingleton method of the connector operation and singleton mode is activated if the method returns true.
+
+-   The SFTP V2 connector runs in singleton mode by default and listeners will only submit executions from a single node of a molecule or cloud.
+-   With singleton listen operations, connector deployments in a multi-node or private cloud environment result in a single instance of a listener, preventing duplicate messages from being processed.
+-   To learn more about setting container properties, see the topic [Setting or viewing Atom, Molecule, Cloud, or Account properties](../Integration%20management/t-atm-Setting_or_viewing_Atom_Molecule_Cloud_or_Account_74a45065-dc5f-4c15-8dcb-d1aa1273689b.md). For additional reference, see the topic [Salesforce Platform Events operation](../Connectors/r-atm-Salesforce_Platform_Events_Operation_ef454f61-9d04-4da0-bd81-df1be346f807.md).
+
+Common Profile Generation Steps \(All operations\)
+
+1.  Create a SFTP V2 connector operation component.
+2.  Click the **Import** button.
+3.  In the Import Wizard, specify the required atom details and click the **Next** button.
+
+:::note
+
+For Create operation, you can see the **Include all metadata** check box \(optional\) available during the import action.
+
+:::
+
+4.  Select the **Object Type**.
+5.  Click the **Next** button. The selected object and profile details will be displayed.
+
+## Get
+
+Get is an inbound action that fetches the content of a file at a given location. Enter the details of the file you want to retrieve from the SFTP server. When using Get to download a file from the server, the file name \(ID\) must be specified as the parameter. The remote directory in which the file is located can optionally be provided as a document property or connection property. If the remote directory is not provided, the connector uses the default working directory configured as the base folder on the SFTP server.
+
+:::note
+
+-   When creating a new file, use **File Name**and **Remote Directory** as the document property.
+-   **Import** is required to set ID as file name.
+-   On the **Options** tab, use the **Include all metadata** check box to include the file name and modified Timestamp details along with the retrieved file content.
+-   On the **Options** tab, use the **Include all metadata** check box to include the file name and modified Timestamp details along with the retrieved file content. The output will be in JSON format. This key-value pair formatting is done to segregate the content of a file from its metadata.
+-   There cannot be more than one file with same name \(ID\) in a directory.
+-   The File Name \(ID\) should be set as a parameter for successful operation. If not specified, the connector displays an error.
+
+:::
+
+## Create
+
+Create is an outbound action that supported by the SFTP SDK connector to upload files to the SFTP server. Although one SFTP command per file needs to be executed, Create provides batch support since the same SFTP session can be shared for creating more than one file. If the file name is not set, or if the file name already exists, the connector uses the **Action if file exists** setting to determine the next step.
+
+If the Create operation is successful, the file is uploaded and added to the server and the connector returns a JSON document with information about the file. The file information includes the name of the file, the ID, the user who created the file, when the file was last modified, and other information.
+
+:::note
+
+-   When creating a new file, use **File Name**and **Remote Directory** as the document property.
+-   **Import** is required to get uploaded file metadata and successfully complete operation.
+
+:::
+
+## Query
+
+Query is an inbound action that fetches zero or more files which meet a pre-defined search criteria. This operation looks up objects \(Files\) in the SFTP server and returns zero to many object records from a single Query request based on the filters applied. After you select the Query action and use the **Import Wizard**, the operation component page contains configuration options to add filters and set parameters to limit the number of files returned.
+
+:::note
+
+-   Query operation support using **File Name**and **Remote Directory** as the document property.
+-   This operation supports File object type only.
+-   On the **Options** tab, use the **Include all metadata** check box to include the file name and modified Timestamp details along with the retrieved file content.
+-   On the **Options** tab, use the **Include all metadata** check box to include the file name and modified Timestamp details along with the retrieved file content. The output will be in JSON format. This key-value pair formatting is done to segregate the content of a file from its metadata.
+
+:::
+
+On the **Filters** tab, you can refine the query by applying the required filter and defining expressions to create the required query logic for the following fields:
+
+**Filters**
+
+-   **Filter Name** -  Specify a name for the filter expression.
+-   **Field** -  Select the criteria to perform the file search. File search can be performed based on fileName, fileSize, & modifiedDate.
+    -   If the **Field** value is set as “modifiedDate”, you must specify the date format as a connector parameter for successful processing.
+    -   For Date, the input format is “yyyy-MM-dd'T'HH:mm:ss.SSS”, e.g., `2023-03-23T12:08:56.235`
+-   **Operator** -  Specify the operator value for the selected search criteria. Based on the search criteria value, operator options will vary as listed below.
+    -   **fileName** -  Regex match, Wildcard Match, Equals, Does not Equal, Less Than, Greater Than
+    -   **fileSize** -  Equals, Does not Equal, Less Than, Greater Than
+    -   **modifiedDate** -  Equals, Does not Equal, Less Than, Greater Than
+
+:::note
+
+Only one filter expression can be created. If you need to set multiple filter expressions, you need a separate connection for each. The current SFTP connector does not allow nested expressions in query strings. The filter expression can also be created with AND/OR Logical Sub-Group using the **Filter - Add Logical Sub-Group** option.
+
+:::
+
+## List
+
+List is an inbound action similar to the Query operation which gets a list of files in the remote directory based on a specific criteria. However, the List operation only lists the files \(not file content\) based on the filters. The connector produces one JSON document for each file in the specified disk directory post successful execution of this operation. After you select the List action and use the **Import Wizard**, the operation component page contains configuration options to add filters and set parameters to limit the results.
+
+:::note
+
+-   This operation does not have a request profile. This operation returns a response profile for each file containing a JSON object describing the file's metadata, such as File Name, Directory, Created Date, Modified Date, and File Size information and indicates if the file is a directory.
+-   If the file or metadata cannot be read, the operation returns a single document with all resulting errors.
+-   The List operation can be turned on/off with the **Recursive Listing of Directory** check box in the operation. The default behavior for recursive listing will return the top level and one level down files, as long as the level down has permissions to traverse. Consequently, if you want to restrict the search to just top level, you can set the permissions accordingly.
+
+:::
+
+On the **Filters** tab, you can refine the query by applying the required filter and defining expressions to create the required list logic for the following fields:
+
+**Filters**
+
+-   **Filter Name** -  Specify a name for the filter expression.
+-   **Field** -  Select the criteria to perform the file search. File search can be performed based on fileName, fileSize, modifiedDate, and isDirectory.
+    -   If the **Field** value is set as “modifiedDate”, you must set date format mandatory as a connector parameter for a successful processing.
+    -   For Date, the input format is “yyyy-MM-dd'T'HH:mm:ss.SSS”, e.g., `2023-23-23T15:18:38.235`
+-   **Operator** -  Specify the operator value for the selected search criteria. Based on the search criteria value, operator options will vary as listed below.
+    -   **fileName** -  Regex match, Wildcard Match, Equals, Does not Equal, Less Than, Greater Than
+    -   **fileSize** -  Equals, Does not Equal, Less Than, Greater Than
+    -   **modifiedDate** -  Equals, Does not Equal, Less Than, Greater Than
+    -   **isDirectory** -  Equals, Does not Equal
+
+:::note
+
+Only one filter expression can be created. If you need to set multiple filter expressions, you need a separate connection for each. The SFTP connector does not allow nested expressions in query strings. The filter expression can also be created with AND/OR Logical Sub-Group using the **Filter - Add Logical Sub-Group** option.
+
+:::
+
+## Upsert
+
+Upsert is an outbound action to either upload and create a new file in the specified remote directory or to perform an update to a file if it exists in the SFTP server. This operation can be performed either as bulk or single by specifying file name and location of the file in a remote directory. You will need to have permissions to rename a file and to create temporary files.
+
+-   If file name already exists, the connector automatically overrides the existing file in the SFTP server and replaces it with the new file.
+-   If the file name does not exist, the connector will create a new file in the SFTP server.
+-   If the file name is invalid or is not provided, the connector returns an error message.
+
+:::note
+
+-   When creating a new file, use **File Name** and **Directory** as the document property.
+-   On the **Options** tab, use the **Include all metadata** check box to get include the file name and modified Timestamp details in the response.
+
+:::
+
+## Delete
+
+Delete is an outbound action which deletes a file from a remote directory in the SFTP Server by providing the file name and file directory. This operation returns an exception if the file name specified is invalid and does not match the ID. If the file directory is not specified, the connector will search for the file in the home directory of the SFTP server and will not return error message, if file not found.
+
+**Note:** You cannot delete a directory with this operation.
+
+## Listen
+
+Listen operation is to listen to the events in the root directory of the remote SFTP server. This operation allows listening to file creation, file deletion or any modification on the existing file in the SFTP server remote directory events.
+
+:::note
+
+This operation does not have a request profile.
+
+:::
+
+<OperationEnd />

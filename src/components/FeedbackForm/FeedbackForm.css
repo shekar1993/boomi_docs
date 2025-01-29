@@ -1,0 +1,223 @@
+.feedback-form-wrapper {
+  height: 100vh;
+}
+
+.feedback-form-wrapper .overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.feedback-form-wrapper .feedback-form-layout {
+  padding: var(--exo-spacing-large);
+  width: calc(1.035 * var(--exo-size-5));
+  background-color: var(--exo-color-background);
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100%;
+  padding-bottom: var(--exo-spacing-none);
+  overflow-y: scroll;
+}
+.feedback-form-wrapper .feedback-form-layout::-webkit-scrollbar {
+  width: 4px; 
+}
+
+.feedback-form-wrapper .feedback-form-layout::-webkit-scrollbar-thumb {
+  background: var(--ifm-scrollbar-thumb-hover-background-color);
+}
+
+.feedback-form-wrapper .feedback-form-layout .loader-wrapper {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: calc(1.035 * var(--exo-size-5));
+  background-color: rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.feedback-form-wrapper .feedback-form-layout .loader-wrapper .loader{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.feedback-form-wrapper .feedback-form {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.feedback-form-wrapper .feedback-form-header {
+  display: flex;
+  color: var(--exo-color-font);
+  font-family: var(--exo-font-family);
+  font-style: normal;
+  font-weight: var(--exo-font-weight-semi-bold);
+  line-height: calc(1.16 * var(--exo-line-height-heading));
+  padding-bottom: var(--exo-spacing-large);
+  margin-bottom: var(--exo-spacing-standard);
+}
+
+.feedback-form-wrapper .feedback-form-header .feedback-form-header-icon {
+  font-size: var(--exo-font-size-3x-large);
+  margin-right: var(--exo-spacing-x-small);
+}
+
+.feedback-form-wrapper .feedback-form-feedback,
+.feedback-form-wrapper .feedback-form-review,
+.feedback-form-wrapper .feedback-form-email,
+.feedback-form-wrapper .feedback-form-checkbox {
+  margin-bottom: var(--exo-spacing-standard);
+}
+
+.feedback-form-wrapper .feedback-form-feedback .feedback-form-feedback-text,
+.feedback-form-wrapper .feedback-form-review .feedback-form-review-text,
+.feedback-form-wrapper .feedback-form-email .feedback-form-email-text,
+.feedback-form-wrapper .feedback-form-checkbox .feedback-form-checkbox-text {
+  color: var(--exo-color-font);
+  font: var(--exo-text-link-standard);
+  line-height: var(--exo-line-height-heading);
+  margin-bottom: var(--exo-spacing-x-small);
+}
+
+.feedback-form-wrapper .feedback-form-review .feedback-form-review-text-area {
+  margin-bottom: var(--exo-spacing-none);
+}
+
+.feedback-form-wrapper .feedback-form-feedback .feedback-form-feedback-no-btn {
+  margin-left: var(--exo-spacing-x-small);
+}
+
+.feedback-form-wrapper .feedback-form-email .feedback-form-optional-text {
+  color: var(--exo-color-font-secondary);
+}
+
+.feedback-form-wrapper .feedback-form-checkbox .feedback-form-checkbox-text {
+  font-weight: var(--exo-font-weight-regular);
+}
+
+.feedback-form-wrapper .feedback-form-checkbox .feedback-form-checkbox-text a {
+  text-decoration: underline;
+  color: var(--exo-color-font-link);
+  font-weight: var(--exo-font-weight-semi-bold);
+  margin-left: var(--exo-spacing-2x-small);
+}
+
+.feedback-form-wrapper .feedback-form-checkbox .feedback-form-checkbox-link {
+  font: var(--exo-text-label-standard);
+  color: var(--exo-color-font-secondary);
+  text-decoration-line: underline;
+}
+
+.feedback-form-wrapper .feedback-form-error-message {
+  margin-top: var(--exo-spacing-standard);
+  font-family: var(--exo-font-family);
+  font-size: var(--exo-font-size-small);
+  font-weight: var(--exo-font-weight-regular);
+}
+
+.feedback-form-wrapper .feedback-form-button-wrapper {
+  padding-top: var(--exo-spacing-standard);
+  border-top: 1px solid var(--exo-color-border);
+  display: inline-flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: var(--exo-spacing-standard, 16px);
+  position: sticky;
+  bottom: 0;
+  background-color: var(--exo-color-background);
+  padding-bottom: var(--exo-spacing-large);
+}
+
+@media screen and (max-width: 520px) {
+  .feedback-form-wrapper .feedback-form-layout {
+    width: 300px;
+    padding-bottom: var(--exo-spacing-none);
+  }
+
+  .feedback-form-wrapper .feedback-form-button-wrapper {
+    position: sticky;
+    bottom: 0;
+    background-color: var(--exo-color-background);
+    padding-bottom: var(--exo-spacing-large);
+  }
+
+  .feedback-form-wrapper .feedback-form-recaptcha {
+    transform: scale(0.77);
+    transform-origin: 0 0;
+  }
+}
+
+.feedback-form-wrapper .feedback-form-layout .feedback-form-success {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.feedback-form-wrapper
+  .feedback-form-layout
+  .feedback-form-success
+  .feedback-form-success-header {
+  display: flex;
+  align-items: center;
+  color: var(--exo-color-font);
+  font-family: var(--exo-font-family);
+  font-weight: var(--exo-font-weight-semi-bold);
+  line-height: calc(1.16 * var(--exo-line-height-heading));
+  padding-bottom: var(--exo-spacing-large);
+  margin-bottom: var(--exo-spacing-standard);
+  font-size: var(--exo-font-size-x-large);
+}
+
+.feedback-form-wrapper
+  .feedback-form-layout
+  .feedback-form-success
+  .feedback-form-success-header
+  .feedback-form-success-icon {
+  font-size: var(--exo-font-size-3x-large);
+  margin-right: var(--exo-spacing-x-small);
+}
+
+.feedback-form-wrapper
+  .feedback-form-layout
+  .feedback-form-success
+  .feedback-form-success-message
+  .feedback-form-success-message-section {
+  font: var(--exo-text-label-standard);
+  margin-bottom: var(--exo-spacing-large);
+  color: var(--exo-color-font);
+}
+
+.feedback-form-wrapper
+  .feedback-form-layout
+  .feedback-form-success
+  .feedback-form-success-message
+  .feedback-form-success-message-section-bold {
+    font: var(--exo-text-label-standard);
+  margin-bottom: var(--exo-spacing-large);
+  color: var(--exo-color-font);
+  font-weight: var(--exo-font-weight-bold);
+}
+
+.feedback-form-wrapper
+  .feedback-form-layout
+  .feedback-form-success
+  .feedback-form-success-done-btn-wrapper {
+  padding-top: var(--exo-spacing-standard);
+  border-top: 1px solid var(--exo-color-border);
+  display: inline-flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding-bottom: var(--exo-spacing-large);
+}

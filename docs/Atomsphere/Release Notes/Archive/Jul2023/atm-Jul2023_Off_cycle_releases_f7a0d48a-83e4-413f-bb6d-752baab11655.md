@@ -1,0 +1,15 @@
+# Off-cycle releases
+
+<head>
+  <meta name="guidename" content="Release Notes"/>
+  <meta name="context" content="GUID-f7a0d48a-83e4-413f-bb6d-752baab11655"/>
+</head>
+
+
+The following off-cycle releases occurred subsequent to the July 2023 release:
+
+|Date          |Description                                                                                                                                                                                                                                                                                                                                                                            |Key      |Release note                                                                                                                                                                      |
+|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|July 17, 2023|In an effort to minimize confusion between the connection licenses provisioned and those entitled to your account based on your contract, we've removed the **Purchased** column from the connection licensing page. We'll be augmenting this page in an upcoming release with a more in-depth licensing report to help provide additional visibility and clarity.                                     |INT-9360 |[Integration](atm-Jul2023_Integration_78d6dc7b-f1da-4794-b45c-b9582b260b64.md)|
+|July 20, 2023|There is a patch available for the HL7 connector to fix issues resulting from B2B-3065 that affect data elements of the following segments and versions:<br />• MSH 2.3.1<br />• BHS and MSH 2.1<br />• MSH 2.4<br />• BHS and MSH 2.6<br />• ERR 2.7<br /><br />You must contact Boomi Support to receive version 23.07.1 of the HL7 connector.                                         |B2B-3423 |[B2B/EDI Management](atm-Jul2023_B2B_EDI_Management_af2ce354-995a-4cc6-8a4a-49252ea963d4.md)|
+|July 21, 2023|When a data entity contained null values in a repeatable field group, Master Data Hub quarantined the entity with an Unknown Error. This error occurred in scenarios where the field group values were used in match rules, and the first field group contained non-null values. This fix allows the entity to contribute non-null values to a golden record and allows Master Data Hub to ignore null values in repeatable field groups.|HUB-2686 |[Hub](atm-Jul2023_Hub_9fbbf6c3-d126-4007-86ec-edfc639cce77.md)|

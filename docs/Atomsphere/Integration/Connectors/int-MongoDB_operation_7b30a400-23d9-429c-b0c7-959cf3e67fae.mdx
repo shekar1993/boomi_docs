@@ -1,0 +1,239 @@
+import OperationEnd from './_operationEnd.md'
+
+# MongoDB operation
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-7b30a400-23d9-429c-b0c7-959cf3e67fae"/>
+</head>
+
+
+The MongoDB operations define how to interact with your MongoDB server and represent a specific action \(Get, Query, Create, Update, Upsert and Delete\) to be performed against one/many MongoDB Id\(s\) \(Unique ID of a document stored in the MongoDB collections\).
+
+The connector supports using the following BSON datatypes: Integer, Boolean, String, Decimal128, Date, Double, Long, ObjectId \(hexadecimal value\), Binary data, JavaScript, Timestamp, and Null.
+
+Create a separate operation component for each action combination that your integration requires. The MongoDB supports the following actions:
+
+-   Inbound: Get, Query
+-   Outbound: Create, Update, Upsert, Delete
+
+## Options tab
+
+Click **Import Operation**, then use the Import wizard to select the object to integrate. The wizard imports the request and response profiles for the selected action.
+
+In addition to the Atom, Connection and Filter fields, you can find the following fields \(Not applicable for Delete operation\) in the Import Wizard:
+
+**Structured Data**: Select this check box to generate a JSON response profile based on the value specified in the Id field.
+
+**Id**: Specify the unique ID of the document to be used for profile generation. The ID can be any of the above mentioned MongoDB supported BSON types.
+
+**Datatype**: Select the datatype for the given Id value.
+
+**Object Type \(Create\)**: Select the required collection name from the list of collections available for a given database.
+
+When you configure an action, the following fields appear on the **Options** tab:
+
+**Connector Action \(All Operations\)**: Determines the type of operation the connector is performing related to Inbound or Outbound. Depending on how you create the operation component, the action type is either configurable or non-configurable from the drop-down list.
+
+**Object \(All Operations\)**: Displays the object type that you selected in the Import Wizard.
+
+**Response Profile \(Get, Create, Update, Upsert and Query\)**: The response profile highlights the format in which the response is to be processed.
+
+:::note
+
+In the **Import Wizard**:
+
+-   If the **Structured Data** check box is selected and a valid Id of a document is specified in the Id field, then this generates a proper JSON response profile.
+-   If the check box is cleared, then an unstructured response profile is created.
+-   If the Structured Data check box is selected but an invalid or null ObjectId passed, then the connector throws an error.
+-   The Id field accepts a valid hexadecimal value of an object or a string data type.
+-   The Id field accepts a valid document ID which is of any of the above listed BSON types. For objectId datatype, make sure it is in valid hexadecimal format.
+
+:::
+
+**Request Profile \(Create, Update, Delete and Upsert\)**: The JSON profile representing the structure of properties required in MongoDB to process a specific request on the selected object.
+
+    
+:::note
+
+In the **Import Wizard**, same rules as described above in the Response Profile apply.
+
+:::
+
+**Tracking Direction**: Select the document tracking direction for the operation, either **Input Documents** or **Output Documents**. This setting enables you to choose which document appears in **Process Reporting. Start** steps always track output documents regardless of your selection.
+
+:::note
+
+If the tracking direction is read-only, the feature to change the direction is either unavailable or the developer set the configuration to read-only. The default value you see shows you which document appears in **Process Reporting**.
+
+:::
+
+**Return Application Error Responses**: This setting controls whether an application error prevents an operation from completing:
+
+- If you clear the setting, the process stops and reports the error on the **Process Reporting** page.
+- If you select the setting, processing continues and passes the error response to the next component processed as the connection output.
+
+**Include Size Exceeded Payload \(Create, Update, Upsert\)**: If selected, the input document\(s\) exceeding the maximum size of 1MB is filtered and is considered for processing. The filtered/unprocessed document content is displayed in the output. This is an optional field.
+
+**Batch Size \(Create, Update, Delete, Upsert and Query\)**: Specify the number of documents to be inserted for each batch in case of bulk operation. By default, the value is 1. This is an optional field.
+
+## Get   
+
+Get is an inbound action for which you provide a specific Id \(unique ID of a document\) to retrieve it from the server.
+
+During response profile import using the **Import Wizard**, the ObjectId \(**Id** field\) provided should be a valid hexadecimal representation of an object or a string data type.
+
+The ID value specified during the profile import and/or input can be of any of the BSON types mentioned in the above section. If the ObjectId datatype is used, the Id value should be in a valid hexadecimal representation.
+
+When using the Get operation, the Id value must be specified as a parameter on the connector’s **Parameters** tab.
+
+Input Example: 5e67364777530b7e45bdc351
+
+Input \(Unstructured\) Example for some of the BSON datatypes
+
+-   ObjectId — `{"_id":5e67364777530b7e45bdc351}`
+-   Integer — `{“_id”:1234}`
+-   Number long — `{"_id": Number Long (20908458868678)}`
+-   Binary data — `{"_id": "232sa3d323sd232a32sda3s2d3a2s1d23s21d3sa"}`
+-   Boolean — `{“_id”:” true”}`
+
+For structured input, provide only value of the Id. e.g., for integer datatype, it should be 1.
+
+If the Get operation is successful, the document\(s\) is retrieved from the database and the connector returns a response in JSON format. The response profile is created based on the Id data type provided during the profile import. If the Id is not provided, the response profile will be unstructured.
+
+## Create
+
+Create is an outbound action where you can insert a new document to the MongoDB collection either as single or bulk, by specifying both database and collection name. In the **Import Wizard**, the **Object Type** field allows you to select the required collection name from the list of collections available for a given database. On the **Options** tab, if the **Batch Size** field is configured, the bulk create operation is performed based on the specified batch size.
+
+
+:::note
+
+If required, you can generate a structured request profile by providing an ObjectId in the **Id** field. The objectId can be an object or a string data type.
+
+:::
+
+
+:::note
+
+If required, you can generate a structured request profile by providing the required value in the **Id** field and corresponding datatype in the **Datatype**.
+
+:::
+
+If the Create operation is successful, the document\(s\) is added to the database with a unique Id. The connector returns a response containing the unique Id. If an Id is passed in the input, then the document is created with the given Id. In case of invalid input data, the connector returns a JSON response containing the error code and message details.
+
+Input Example:
+
+-   Input without Id - `{"name":"hsiar","address":"Mumbai","email":"suraj@gmail.com"}`
+-   Input for ObjectId datatype - `{"_id" : ObjectId("5e6b20bc66b93604436ce0bc"),"name":"jemais","address":"Jaipur","email":"panir@gmail.com"}`
+
+## Update
+
+Update is an outbound action where you can update the existing documents in the MongoDB collection either as bulk or single by specifying Id\(s\). The Id provided should be a valid hexadecimal value and can be an object or a string data type.
+
+The Id provided should be of any of the valid BSON datatypes supported by the connector.
+
+If an invalid Id is provided, the connector throws an error.
+
+Input Example: `{"_id" : ObjectId("5ede5246a025fb21cf851158"),"name":"hsiar","address":"Mumbai","email":"suraj@gmail.com"}`
+
+:::note
+
+-   If the Id \(document\) exists, the existing document is overridden by the new document.
+-   If the Id \(document\) does not exist, then the document update operation is not performed, and no error response is returned to the platform.
+
+If the Update operation is successful, the document\(s\) is updated in the database and the connector returns a response in JSON format.
+
+:::
+
+## Delete
+
+Delete is an outbound action to delete a document in the MongoDB collection. This operation can be performed either as bulk or single by specifying the Id\(s\).
+
+-   If the Id \(document\) exists, the connector deletes the existing document in the MongoDB collection.
+-   If the Id \(document\) does not exist, the connector does not perform the delete operation.
+
+For the Delete operation, the Id of the document\(s\) to be deleted must be configured on the Connector’s **Parameters** tab. The Id of all documents to be deleted can be provided in a flat file and defined as below.
+
+-   Input: id \(DeleteProfileConfig/id\)
+-   Type: Profile Element
+-   Profile Type: Flat File
+-   Profile: Flat File Profile - DELETE\_Input\_FlatFileProfile
+-   Element: id \(Record/Elements/id\)
+
+The Id passed in the delete input can be of hexadecimal representation of object or string data type.
+
+Input Example:
+
+Object: 56d61033a378eccde8a83581
+
+String: 56d61033a378eccde8a835ae
+
+If the Delete operation is successful, the connector returns a response in JSON format.
+
+## Upsert
+
+Upsert is an outbound action to either update or create a new document in the MongoDB collection. This operation can be performed either as bulk or single by specifying the Id\(s\).
+
+-   If the Id (document) already exists, the connector automatically overrides the existing document in MongoDB collection and replaces with a new document provided in the update input.
+-   If the Id (document) does not exist, the connector creates a new document with a provided Id in the MongoDB collection.
+-   If the Id (document) is missing from the input record (document), the connector creates a new document in the MongoDB collection with a unique Id.
+
+:::note
+
+If the Id(document) is passed as null with an input record, the unique Id will not be generated, rather null will be treated as an Id.
+
+:::
+
+The ObjectId must be a valid hexadecimal representation of an object or a string data type.
+
+If the Upsert operation is successful, the connector returns a response that contains the unique Id of the newly created/updated document in JSON format.
+
+Input Example: `{"_id" : ObjectId("5ede5246a025fb21cf851158"),"name":"xcxcc","address":"Mumbai","email":"suraj@gmail.com"}`
+
+## Query
+
+Query is an inbound action that looks up objects in the MongoDB collection and returns zero to many objects from a single Query request, based on the applied query filters. After you select the Query action and use the **Import Wizard**, the operation component page contains configuration options to add filters and set parameters to limit the results. You can refine the query on the **Filters** tab and define expressions to create required query logic. If the operation is successful, the connector returns a response in JSON format.
+
+:::note
+
+During Query operation irrespective of the batch size, each record returns as a single document. This helps improve the performance via heap memory usage.
+
+:::
+   
+Filters
+
+-   **Fields Tab** - Includes the list of Field names available in a collection. You need to select one/many Field names with which you need to filter.
+
+    
+    :::note
+
+    For Structured Response Profile, the fields are displayed based on the Id selected during the Import action. For Unstructured Response Profile, the fields are listed based on the last updated/created Id structure in the collection.
+
+    :::
+
+-   **Filters Tab** - Only one filter expression can be created. If you need to set multiple filter expressions, you need a separate connection for each. The filter expression can also be created within AND/OR Logical Sub-Group. Below are the fields under the filter expression section.
+
+    -   Filter Name: The name of the filter expression.
+    -   Field: Criteria based on what you want the files to be searched \(Field names in a collection\).
+
+        
+        :::note
+
+        The \_**ID** field supports ObjectId of an object or a string data type. To query by \_**ID** field, the user must generate the response profile using the same \_ID data type \(Object/String\). To query by other fields, user can generate response profile irrespective of the \_ID data type.
+
+        :::
+
+        
+        :::note
+
+        If the ID value is not provided during the import, then the last provided ID will be considered for the response profile structure.
+
+        :::
+
+    -   Operator: Equal To, Not Equal To, Greater Than, Less Than, Greater Than or Equal, Less Than or Equal, In.
+    After defining the Filter expression, you must specify the value for the selected filter criteria**Field** on the Connector **Parameters** tab. This fetches all documents matching the given query criteria value.
+
+-   **Sorts Tab** - This is used to sorting \(Ascending or Descending\) the filter results based on a selected field.
+
+
+<OperationEnd />

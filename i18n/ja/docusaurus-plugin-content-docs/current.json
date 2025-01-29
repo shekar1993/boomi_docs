@@ -1,0 +1,22 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.tutorialSidebar.category.Atomsphere": {
+    "message": "Atomsphere",
+    "description": "The label for category Atomsphere in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Event Streams": {
+    "message": "Event Streams",
+    "description": "The label for category Event Streams in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Spaces": {
+    "message": "Spaces",
+    "description": "The label for category Spaces in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Spaces API": {
+    "message": "Spaces API",
+    "description": "The label for category Spaces API in sidebar tutorialSidebar"
+  }
+}

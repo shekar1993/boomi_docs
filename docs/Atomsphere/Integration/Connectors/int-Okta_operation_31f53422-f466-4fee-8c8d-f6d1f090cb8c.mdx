@@ -1,0 +1,147 @@
+import OperationEnd from './_operationEnd.md'
+import TrackingDir from './_TrackObject.md'
+import ReturnErrRes from './_ReturnResponse.md'
+
+# Okta operation
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-31f53422-f466-4fee-8c8d-f6d1f090cb8c"/>
+</head>
+
+
+The Okta operation represent a specific action to be performed against a specific Okta account.
+
+The Okta connector supports the following actions:
+
+-   Inbound — GET, LIST.
+-   Outbound — CREATE, UPDATE, DELETE, ADD, REMOVE.
+
+## Options tab
+
+Click **Import Operation**, then use the Import wizard to select the object to integrate. During import, you can select the required **Object Type**. When you configure an action, the following fields appear on the **Options** tab.
+
+**Connector Action \(All Operations\)** - 
+Determines the type of operation the connector is performing related to the Inbound or Outbound operation. Depending on how you create the operation component, the action type is either configurable or non-configurable from the drop-down list.
+
+**Object \(All Operations\)** - 
+Defines a specific API that is selected when browsing.
+
+**Request Profile \(CREATE, REMOVE, ADD, UPDATE, DELETE\)** - 
+Represents the structure of properties required to process a specific request on the selected object type. Import the Request Profile with Structured JSON based on the selected API.
+
+**Response Profile \(All Operations\)** - 
+Indicates the format in which the response is processed. Import the Response Profile with Structured JSON based on the selected API.
+
+<TrackingDir />
+
+<ReturnErrRes />
+
+
+**Limit \(LIST\)**   
+Refers to the number of records to return \(valid range 1-200\).
+
+-   If the Limit value is a valid integer between 1 to 200, the matching top records are fetched using a single API call.
+-   If the Limit value is not between 1 to 200, then 200 records are fetched \(default value\).
+
+**Activate \(CREATE\)**   
+This check box is selected by default, setting the activate flag as true in the query parameter of the URL.
+
+**User Id \(REMOVE, ADD, UPDATE, DELETE\)**   
+The Id of the user that is updated.
+
+**Group Id \(REMOVE, ADD\)**    
+The Id of the group where the user is added.
+
+**Common Profile Generation \(GET, CREATE, LIST, UPDATE\)** - 
+
+All the applicable request/response profiles are kept in the resources/schema folder. Based on the operation and API selected, the appropriate schema is imported.
+
+**Steps:**
+
+1.  Click the **Import** button in the Operation tab.
+2.  Select the appropriate Atom and **Object Type** from the drop-down list.
+
+    The response profile being generated is displayed, and the names they are saved with.
+
+3.  Click the **Edit** icon at the end of the response profiles to view the structure.
+
+Common Profile Generation \(ADD, REMOVE, DELETE\)
+
+For the ADD operation, Okta does not have response data, but returns the response code as 204. When the operation is successful, the response profile displays the following:
+
+`{“userid”: “1234”,“status”: “SUCCESS”}`
+
+## GET
+
+GET is an inbound action to retrieve the user from Okta. GET fetches a specific user when you know the user's id or login. Use the **Import Wizard** to select the Object Type and response profile. GET implements the following Okta APIs:
+
+-   Get User with ID [https://developer.okta.com/docs/reference/api/users/\#get-user-with-id](https://developer.okta.com/docs/reference/api/users/#request-example-5)
+-   Get User with Login [https://developer.okta.com/docs/reference/api/users/\#get-user-with-login](https://developer.okta.com/docs/reference/api/users/#get-user-with-login)
+
+For the APIs in the operation, the single API call \(i.e. “Get User with ID or Login”\) is leveraged where the user can provide the ID or Login in the operation's id field. The response profile is the same for both of the Okta APIs. Filters are not applicable for GET operation.
+
+## CREATE
+
+CREATE is an outbound action to create users in Okta. Use the **Import Wizard** to select the Object Type and request and response profile. CREATE implements the following Okta APIs:
+
+-   Create User with Password and Recovery Question [https://developer.okta.com/docs/reference/api/users/\#create-user-with-password-recovery-question](https://developer.okta.com/docs/reference/api/users/#create-user-with-password-recovery-question)
+-   Create User without Credentials [https://developer.okta.com/docs/reference/api/users/\#create-user-without-credentials](https://developer.okta.com/docs/reference/api/users/#create-user-without-credentials)
+-   Create User in Group [https://developer.okta.com/docs/reference/api/users/\#create-user-in-group](https://developer.okta.com/docs/reference/api/users/#create-user-in-group)
+
+For these APIs, the **Activate** check box is selected by default and the Activate flag is set as “true”. The request / response profiles are generated by following the exact response received from Okta.
+
+## LIST
+
+LIST is an inbound action to list the Okta users, based on the specified filters. LIST utilizes the following API to list users:
+
+-   List Users [https://developer.okta.com/docs/reference/api/users/\#list-users-with-a-filter](https://developer.okta.com/docs/reference/api/users/#response-example)
+
+LIST is implemented using Query, and supports the following filters:
+
+-   eq: Refers to the operator with “equal” description — The attribute and operator values must be identical for a match.
+-   ge: Refers to the operator with “greater than or equal” description — If the attribute value is greater than or equal to the operator value, there is a match.
+-   gt: Refers to the operator with “greater than” description — If the attribute value is greater than operator value, there is a match.
+-   le: Refers to the operator with “less than or equal” description — If the attribute value is less than or equal to the operator value, there is a match.
+-   lt: Refers to the operator with “less than” description — If the attribute value is less than operator value, there is a match.
+-   pr: Refers to the operator with “present \(has value\)” description — If the attribute has a non-empty value, or if it contains a non-empty node for complex attributes there is a match.
+-   sw: Refers to the operator with “starts with” description — Performs a startsWith match eg: profile.firstName sw "perform".
+
+
+:::note
+
+Note: For all operators, the actual comparison is dependent on the attribute type. For String attribute types, this is a lexicographical comparison and for Date types; it is a chronological comparison.
+
+:::
+
+Pagination
+
+The LIST operation supports pagination, based on a cursor and not on page number. The cursor is opaque to the client and specified in either the before or after query parameter. Use the link header to implement pagination based on the Okta documentation. The connector implements a 200 document record maximum per page. If the limit value is between 1 to 200, only that specific number of records is fetched. If the limit value is greater than 200, then 200 records are fetched \(default value\). If the limit value is not specified or the value is invalid, all matching records are fetched using pagination and appear in the connector output.
+
+## UPDATE
+
+UPDATE is an outbound action to update the user's profile or credentials with the user ID. As listed in the Okta documentation, the profile and credentials are updated independently, or together, with a single request by implementing the operation as a single API request.
+
+UPDATE utilizes the following API to update users:
+
+-   Update Profile with ID [https://developer.okta.com/docs/reference/api/users/\#update-profile-with-id](https://developer.okta.com/docs/reference/api/users/#update-profile-with-id)
+
+## ADD
+
+ADD is an outbound action to add existing users to groups in Okta. ADD utilizes the following API to add the users:
+
+-   Add User to Group [https://developer.okta.com/docs/reference/api/groups/\#add-user-to-group](https://developer.okta.com/docs/reference/api/groups/#add-user-to-group)
+
+## REMOVE
+
+REMOVE is an outbound action to remove existing users from their group in Okta. REMOVE utilizes the following API to remove the users:
+
+-   Remove User from Group [https://developer.okta.com/docs/reference/api/groups/\#remove-user-from-group](https://developer.okta.com/docs/reference/api/groups/#remove-user-from-group)
+
+## DELETE
+
+DELETE is an outbound action that is used to delete a user by User ID. DELETE utilizes the following API to delete the users:
+
+-   Delete User [https://developer.okta.com/docs/reference/api/users/\#delete-user](https://developer.okta.com/docs/reference/api/users/#delete-user)
+
+<OperationEnd />

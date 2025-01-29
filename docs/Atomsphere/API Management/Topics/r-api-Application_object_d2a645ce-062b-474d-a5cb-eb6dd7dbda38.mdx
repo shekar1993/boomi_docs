@@ -1,0 +1,495 @@
+# Application object 
+
+<head>
+  <meta name="guidename" content="API Management"/>
+  <meta name="context" content="GUID-d2a645ce-062b-474d-a5cb-eb6dd7dbda38"/>
+</head>
+
+
+The Application object enables you to create, update, delete, query, or get an application without using the API Management interface.
+
+## Structure 
+
+```xml
+<Application applicationID="" applicationName="" companyName="" companyWebsite="" contactName="" contactEmail="" contactPhone="" deleted="" enabled="" description="" notes=""> </Application>
+```
+
+|Field|Type|Description|
+|-----|----|-----------|
+|`applicationID`|*string*|A unique ID for the Application.|
+|`applicationName`|*string*|The name of the Application.|
+|`companyName`|*string*|The name of the company who owns the Application.|
+|`companyWebsite`|*string*|The website address of the company who owns the Application.|
+|`contactName`|*string*|The name of the person within the company who you can contact about the Application.|
+|`contactEmail`|*string*|The contact person’s email address.|
+|`contactPhone`|*string*|The contact person’s phone number.|
+|`deleted`|*boolean*|If you deleted the Application.|
+|`enabled`|*boolean*|If you enabled the Application.|
+|`description`|*string*|A description of the Application.|
+|`notes`|*string*|Account notes for the Application.|
+
+## Supported operations 
+
+The following operations support the Application object:
+
+| GET          | QUERY      | CREATE      | UPDATE      | DELETE      |
+|--------------|------------|-------------|-------------|-------------|
+| ✅ Supported  | ✅ Supported | ✅ Supported | ✅ Supported | ✅ Supported |
+
+
+You can use the following fields as QUERY filters for the Application object:
+
+| Field             | Allowed values                                                                        |
+|-------------------|---------------------------------------------------------------------------------------|
+| `applicationID`   | Any string value.                                                                     |
+| `applicationName` | Any string value.                                                                     |
+| `companyName`     | Any string value.                                                                     |
+| `deleted`         | • `True` – Deleted the Application.<br  />• `False` - Did not delete the Application. |
+| `enabled`         | • `True` - Enabled the Application.<br />• `False` - Disabled the Application.        |
+
+
+## Implementation
+
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+
+<TabItem value="REST" label="REST" default>
+
+<Tabs>
+  <TabItem value="get" label="GET" default>
+    Send an HTTP GET to:
+
+```shell
+https://api.boomi.com/apim/api/rest/v1/{accountId}/Application/id
+```
+
+where `accountId` is the Boomi API Management account from which you authenticate, and id is the Application object you are attempting to GET.
+
+For a JSON response, send the request with the following HTTP header:
+
+`Accept: application/json`
+
+#### Response
+
+```json
+{
+  "@type": "Application",
+  "description": "Boomi testing",
+  "notes": "new application",
+  "applicationId": "d2694eb5-d5b2-43c9-a655-903c3fca9e07",
+  "applicationName": "newApp",
+  "contactName": "test",
+  "contactEmail": "test@boomi.com",
+  "contactPhone": "123-456-7890",
+  "companyName": "Boomi",
+  "companyWebsite": "",
+  "enabled": false,
+  "deleted": false
+}
+```
+  </TabItem>
+
+  <TabItem value="query" label="QUERY">
+    Send an HTTP POST to:
+
+```shell
+https://api.boomi.com/apim/api/rest/v1/{accountId}/Application/query
+```
+
+where `accountId` is the ID of the authenticating account for the request.
+
+For a JSON request, send the request with the following HTTP header:
+
+`Content-Type: application/json`
+
+#### Request \(for all roles\)
+
+```json
+{
+  "QueryFilter" : {
+    "expression" : {
+      "operator" : "and",
+      "nestedExpression" : [
+        {
+          "argument" : [
+            "Boomi"
+          ],
+          "operator" : "NOT_EQUALS",
+          "property" : "companyName"
+        },
+        {
+          "argument" : [
+            "false"
+          ],
+          "operator" : "EQUALS",
+          "property" : "deleted"
+        }
+      ]
+    }
+  }
+}
+
+```
+
+For a JSON response, send the request with the following HTTP header:
+
+`Accept: application/json`
+
+#### Response
+
+```json
+{
+  "@type": "ApimQueryResult",
+  "result": [
+    {
+      "@type": "Application",
+      "description": "",
+      "notes": "",
+      "applicationId": "4e509335-f865-4d10-a4a8-457db2a001a8",
+      "applicationName": "empty",
+      "contactName": "Tester",
+      "contactEmail": "test@boomi.com",
+      "contactPhone": "",
+      "companyName": "",
+      "companyWebsite": "",
+      "enabled": true,
+      "deleted": false
+    },
+    {
+      "@type": "Application",
+      "description": "",
+      "notes": "",
+      "applicationId": "d4c49697-27e3-46e9-b23d-b948717a6d63",
+      "applicationName": "enable",
+      "contactName": "Tester",
+      "contactEmail": "test@boomi.com",
+      "contactPhone": "",
+      "companyName": "",
+      "companyWebsite": "",
+      "enabled": true,
+      "deleted": false
+    },
+    {
+      "@type": "Application",
+      "description": "HelloWorld",
+      "notes": "",
+      "applicationId": "0155ce8d-50fc-41c0-90a1-ec2151e02d73",
+      "applicationName": "HelloWorld",
+      "contactName": "Tester",
+      "contactEmail": "test@boomi.com",
+      "contactPhone": "",
+      "companyName": "",
+      "companyWebsite": "http://fttpboomi.com",
+      "enabled": false,
+      "deleted": false
+    }
+  ],
+  "numberOfResults": 3
+}
+```
+  </TabItem>
+
+  <TabItem value="create" label="CREATE">
+    Send an HTTP POST to:
+
+```shell
+https://api.boomi.com/apim/api/rest/v1/{accountId}/Application/
+```
+
+where `accountId` is the API Management account from which you authenticate.
+
+For a request, send the request with the following HTTP header:
+
+`Content-Type: application/json`
+
+#### Request:
+
+```json
+{
+  "applicationName" : "newApp",
+  "companyName" : "Boomi",
+  "companyWebsite" : "",
+  "contactEmail" : "test@boomi.com",
+  "contactName" : "test",
+  "contactPhone" : "123-456-7890",
+  "deleted" : "false",
+  "enabled" : "false",
+  "description" : "testing",
+  "notes" : "new application"
+}
+```
+
+For a JSON response, send the request with the following HTTP header:
+
+`Accept: application/json`
+
+#### Response:
+
+```json
+{  
+  "@type": "Application",    
+  "description": "testing",
+  "notes": "new application",
+  "applicationId": "d2694eb5-d5b2-43c9-a655-903c3fca9e07",
+  "applicationName": "newApp",
+  "contactName": "test",
+  "contactEmail": "test@boomi.com",
+  "contactPhone": "123-456-7890",
+  "companyName": "Boomi",
+  "companyWebsite": "",
+  "enabled": true,
+  "deleted": false
+}
+```
+  </TabItem>
+
+  <TabItem value="update" label="UPDATE">
+    Send an HTTP POST to:
+
+```shell
+https://api.boomi.com/apim/api/rest/v1/{accountId}/Application/id/update
+```
+
+where `accountId` is the API Management account from which you are authenticating, and id is the Application object you are attempting to UPDATE.
+
+For a request, send the request with the following HTTP header:
+
+`Content-Type: application/json`
+
+#### Request
+
+```json
+{
+    "applicationName" : "Udpate",
+    "contactName" : "NewTester",
+    "contactEmail" : "tester@boomi.com",
+    "contactPhone" : "123-456-7891",
+    "deleted" : "false",
+    "enabled" : "false",
+    "applicationId" : "e0460638-55ce-4bc1-af1e-6186de134318"
+}
+```
+
+For a JSON response, send the request with the following HTTP header:
+
+`Accept: application/json`
+
+#### Response
+
+```json
+{
+  "@type": "Application",
+  "applicationId": "e0460638-55ce-4bc1-af1e-6186de134318",
+  "applicationName": "Udpate",
+  "contactName": "NewTester",
+  "contactEmail": "tester@boomi.com",
+  "contactPhone": "123-456-7891",
+  "enabled": false,
+  "deleted": false
+}
+```
+  </TabItem>
+
+  <TabItem value="delete" label="DELETE">
+    Send an HTTP DELETE to:
+
+```shell
+https://api.boomi.com/apim/api/rest/v1/{accountId}/Application/id
+```
+
+where `accountId` is the API Management account from which you are authenticating, and id is the Application object you are attempting to DELETE.
+
+The response is `<true/>` if you delete the role successfully.
+
+For a JSON response, send the request with the following HTTP header:
+
+`Accept: application/json`
+</TabItem>
+
+</Tabs>
+
+</TabItem>
+
+<TabItem value="SOAP" label="SOAP">
+
+<Tabs>
+  <TabItem value="get" label="GET" default>
+
+#### Request
+
+```xml
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.apim.api.platform.boomi.com/" xmlns:apim="http://apim.api.platform.boomi.com/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <soap:get>
+         <!--Optional:-->
+         <apim:objectType>application</apim:objectType>
+         <!--Optional:-->
+         <apim:objectId>6c693c8e-5e2c-435e-b217-2364ea7931dc</apim:objectId>
+      </soap:get>
+   </soapenv:Body>
+</soapenv:Envelope>
+```
+
+#### Response
+
+```xml
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+   <S:Body>
+      <ns4:getResponse xmlns:apim="http://apim.api.platform.boomi.com/" xmlns:bns="http://api.platform.boomi.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns4="http://soap.apim.api.platform.boomi.com/">
+         <apim:result xsi:type="apim:Application" deleted="false" enabled="false" companyWebsite="" contactPhone="123-456-7890" contactEmail="khtest@boomi.com" contactName="Kathy" applicationName="validCreateTest1" applicationId="6c693c8e-5e2c-435e-b217-2364ea7931dc"/>
+      </ns4:getResponse>
+   </S:Body>
+</S:Envelope>
+```
+  </TabItem>
+
+  <TabItem value="query" label="QUERY">
+    The following example queries the Application named `CreateTest1`.
+
+#### Request
+
+```xml
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.apim.api.platform.boomi.com/" 
+        xmlns:apim="http://apim.api.platform.boomi.com/" xmlns:api="http://api.platform.boomi.com/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <soap:query>
+         <!--Optional:-->
+         <apim:objectType>application</apim:objectType>
+         <!--Optional:-->
+         <api:queryConfig>
+            <api:QueryFilter>
+            <api:expression operator="and"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="api:GroupingExpression">
+                   <api:nestedExpression operator="EQUALS" property="applicationName"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="api:SimpleExpression">
+                   <api:argument>CreateTest1</api:argument>
+                 </api:nestedExpression>
+                  </api:expression>
+            </api:QueryFilter>
+         </api:queryConfig>
+      </soap:query>
+   </soapenv:Body>
+</soapenv:Envelope>
+```
+
+#### Response
+
+```xml
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+   <S:Body>
+      <ns4:queryResponse xmlns:apim="http://apim.api.platform.boomi.com/" xmlns:bns="http://api.platform.boomi.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns4="http://soap.apim.api.platform.boomi.com/">
+         <apim:results numberOfResults="1">
+            <bns:result xsi:type="apim:Application" deleted="false" enabled="false" companyWebsite="" contactPhone="123-456-7890" contactEmail="test@boomi.com" contactName="Name" applicationName="CreateTest1" applicationId="6c693c8e-5e2c-435e-b217-2364ea7931dc"/>
+         </apim:results>
+      </ns4:queryResponse>
+   </S:Body>
+</S:Envelope>
+```
+  </TabItem>
+
+  <TabItem value="create" label="CREATE">
+
+#### Request
+
+```xml
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.apim.api.platform.boomi.com/" 
+        xmlns:apim="http://apim.api.platform.boomi.com/" xmlns:api="http://api.platform.boomi.com/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <soap:create>
+       <apim:object xsi:type="apim:Application" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       applicationName="CreateTest1" deleted="false" enabled="false" companyNme="Boomi" companyWebsite=""
+       contactEmail="test@boomi.com" contactPhone="123-456-7890" contactName="Name"> 
+       </apim:object>
+      </soap:create>
+   </soapenv:Body>
+</soapenv:Envelope>
+```
+
+#### Response
+
+```xml
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+   <S:Body>
+      <ns4:createResponse xmlns:apim="http://apim.api.platform.boomi.com/" xmlns:bns="http://api.platform.boomi.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns4="http://soap.apim.api.platform.boomi.com/">
+         <apim:result xsi:type="apim:Application" deleted="false" enabled="true" companyWebsite="" contactPhone="123-456-7890" contactEmail="test@boomi.com" contactName="Name" applicationName="CreateTest1" applicationId="6c693c8e-5e2c-435e-b217-2364ea7931dc"/>
+      </ns4:createResponse>
+   </S:Body>
+</S:Envelope>
+```
+  </TabItem>
+
+  <TabItem value="update" label="UPDATE">
+
+#### Request
+
+```xml
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.apim.api.platform.boomi.com/"
+         xmlns:apim="http://apim.api.platform.boomi.com/" xmlns:api="http://api.platform.boomi.com/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <soap:update>
+       <apim:object xsi:type="apim:Application" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       applicationName="0wJH" deleted="false" enabled="false" companyNme="Boomi" companyWebsite=""
+       contactEmail="test@boomi.com" contactPhone="123-456-7890" contactName="tester" applicationId="e0460638-55ce-4bc1-af1e-6186de134318">
+        </apim:object>
+      </soap:update>
+   </soapenv:Body>
+</soapenv:Envelope>
+```
+
+#### Response
+
+```xml
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+   <S:Body>
+      <ns4:updateResponse xmlns:apim="http://apim.api.platform.boomi.com/" xmlns:bns="http://api.platform.boomi.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns4="http://soap.apim.api.platform.boomi.com/">
+         <apim:result xsi:type="apim:Application" deleted="false" enabled="false" companyWebsite="" contactPhone="123-456-7890" contactEmail="test@boomi.com" contactName="tester" applicationName="0wJH" applicationId="e0460638-55ce-4bc1-af1e-6186de134318"/>
+      </ns4:updateResponse>
+   </S:Body>
+</S:Envelope>
+```
+  </TabItem>
+
+  <TabItem value="delete" label="DELETE">
+
+#### Request
+
+```xml
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+xmlns:soap="http://soap.apim.api.platform.boomi.com/" 
+xmlns:apim="http://apim.api.platform.boomi.com/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <soap:delete>
+         <apim:objectType>Application</apim:objectType>
+         <apim:objectId>5f0129a4-6134-4851-8699-64413d809efe</apim:objectId>
+      </soap:delete>
+   </soapenv:Body>
+</soapenv:Envelope>
+```
+
+#### Response
+
+```xml
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+   <S:Body>
+      <ns4:deleteResponse xmlns:apim="http://apim.api.platform.boomi.com/" 
+      xmlns:bns="http://api.platform.boomi.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xmlns:ns4="http://soap.apim.api.platform.boomi.com/">
+         <apim:successful>true</apim:successful>
+      </ns4:deleteResponse>
+   </S:Body>
+</S:Envelope>
+```
+  </TabItem>
+
+</Tabs>
+
+</TabItem>
+</Tabs>

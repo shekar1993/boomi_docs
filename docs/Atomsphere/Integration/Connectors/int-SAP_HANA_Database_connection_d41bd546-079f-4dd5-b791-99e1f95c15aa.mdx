@@ -1,0 +1,44 @@
+import TestConnection from './_TestCon.md'
+
+# SAP HANA Database connection
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-d41bd546-079f-4dd5-b791-99e1f95c15aa"/>
+</head>
+
+
+The SAP HANA Database connector's connection represents a single account including login credentials. If you have multiple systems, you need a separate connection for each.
+
+## Connection tab
+
+**Connection URL** - 
+Enter the JDBC URL of the SAP HANA Database.
+
+**User Name** - 
+Enter the username for connecting to the SAP HANA DB.
+
+**Password** - 
+Enter the user’s password.
+
+**Note:** The above fields are mandatory for connecting to the SAP HANA Database. When you use Test Connection, the connector validates only these connection properties.
+
+The following fields are applicable for file transfer \(Bulk Load and Unload\) only.
+
+**File System User** - 
+Specify the username for accessing the SAP HANA Database file system.
+
+**File System Host** - 
+Specify the host name of the SAP HANA Database file server.
+
+**File System Port** - 
+Specify the secure shell \(SSH\) port number for the SAP HANA Database file system.
+
+**File System Key File Path** - 
+Specify the private key or .pem file path to authenticate with SAP HANA Database host.
+
+**File System Key File Password** - 
+Set the password of the private key file, if the key file is password protected.
+
+
+<TestConnection />

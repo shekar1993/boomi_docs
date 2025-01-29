@@ -1,0 +1,44 @@
+import TestConnection from './_TestCon.md'
+
+# Pricefx - Partner connection
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-787c825d-1e49-44a7-94db-d7ec3da7e5c6"/>
+</head>
+
+
+The Pricefx - Partner connection represents a specific Pricefx partition and its associated user authentication details. If you have multiple accounts or multiple partitions, you need a separate connection for each.
+
+## Connection tab
+
+**URL** -  
+Refers to the URL when you access Pricefx via browser. The path is not required. For example, if the URL is [https://www.pricefx.eu/app/](https://www.pricefx.eu/app/), you would just need to input [https://www.pricefx.eu](https://www.pricefx.eu).
+
+**Username** - 
+Refers to the username that you used to login to Pricefx via browser.
+
+**Password** - 
+Refers to the password that you used to login to Pricefx via browser.
+
+**Partition** - 
+Refers to the name of the partition that you used to login to Pricefx via browser.
+
+**Use JWT Token** - 
+Refers to the feature for the connector to use JWT token instead of Username, Password to invoke Pricefx API. It is recommended to use for better performance at the Pricefx server. The token could be retrieved from Get Token operation and would expire in about 30 minutes. When using JWT token authentication, you must specify the token value. You can set the JWT token value using the following document property: JWT Token required only if the **Use JWT Token** option is selected in the Pricefx - Partner connection. The token should be retrieved by the “Get Token” operation.
+
+**Use OAuth Token in process** - 
+Refers to the feature for the connector to access Pricefx API with API protocol version 2. You should first have your Pricefx key before using this option. The token could be retrieved from the “Get Token” operation and would expire in about 60 minutes. When using Oauth token authentication, you must specify the token value. You can set the OAuth token value using the following document property: OAuth Access Token required only if the **Use OAuth Token in process** option is selected in the Pricefx - Partner connection. The token should be retrieved by the “Get Token” operation. You can choose either using JWT token or OAuth token in the connection.
+
+## OAuth Configuration Tab
+
+If **Use OAuth Token in Process** is selected on the **Connection** tab, you will have to configure **OAuth Configuration Tab** as well.
+
+**Client ID** - 
+Refers to the Pricefx API key that you used to access Pricefx API.
+
+**Client Secret** - 
+Refers to the base64 encoded string of `{partition}/{username}:{password}`.
+
+
+<TestConnection />

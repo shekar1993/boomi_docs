@@ -1,0 +1,64 @@
+import OperationEnd from './_operationEnd.md'
+
+# OpenLegacy Hub - Partner operation 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-eab5418f-0d69-4ca4-9499-1f4e5e5c85b6"/>
+</head>
+
+
+An OpenLegacy Hub - Partner operation defines how to interact with APIs created and deployed by OpenLegacy Hub.
+
+Use the Import wizard to define the object you are integrating based on the action you specified. Click **Import Operation**, and follow the wizard to successfully configure an operation and automatically generate the response XML or JSON profile that can include all required base and custom fields.
+
+## Options tab
+
+The following fields appear on the **Options** tab.
+
+**Connector Action** - 
+The Connector Action field is set to **Execute** and is not configurable.
+
+**Object** - 
+An object defines what you want to integrate or the action to execute, which you select in the **Import Wizard**.
+
+**Request/Response Profile** -  
+The XML profile definition represents the structure that is being sent or received by the connector.
+
+**Tracking Direction** - 
+
+Select the document tracking direction for the operation, either **Input Documents** or **Output Documents**. This setting enables you to choose which document appears in **Process Reporting**. Start steps always track output documents regardless of your selection.
+
+:::note
+
+If the tracking direction is read-only, the feature to change the direction is either unavailable or the developer set the configuration to read-only. The default value you see shows you which document appears in **Process Reporting**.
+
+:::
+
+**Error Behavior** - 
+This setting controls whether an application error prevents an operation from completing:
+
+-   If cleared, the process aborts and reports the error on the Process Reporting page.
+-   If selected, processing continues and passes the error response to the next component to be processed as the connection output.
+
+**Path Parameters** - 
+The path parameters that should be appended to the full URL path. You can override this property's values per document using the "Path Parameters" [dynamic operation property](../Process%20building/int-Connector_shape_dialog_dynamic_operation_properties_tab_e473feba-b349-4b3b-8d82-2c3c9f94469b.md).
+
+**Query Parameters** - 
+The query parameters that should be appended to the full URL path. You can override this property's values per document using the "Query Parameters" [dynamic operation property](../Process%20building/int-Connector_shape_dialog_dynamic_operation_properties_tab_e473feba-b349-4b3b-8d82-2c3c9f94469b.md).
+
+**Request Headers** - 
+The key value pairs that should be appended to the HTTP request to the Deployed Application.
+
+:::info Important
+
+The header **x-api-key** must be specified. It is a Runtime API key. The value of this header can be taken from the OpenLegacy Hub. In the Key column, type x-api-key. In the Value column, type the Runtime API key copied from the OpenLegacy Hub. You can find it in the Settings Menu on the upper right corner. Click on **API Keys** to copy it.
+
+:::
+
+## EXECUTE
+
+The OpenLegacy Hub - Partner connector implements an EXECUTE action to perform specific tasks on APIs or operations. EXECUTE is the only connector action supported by the connector. You can use the EXECUTE method to send and receive data.
+
+<OperationEnd />
+

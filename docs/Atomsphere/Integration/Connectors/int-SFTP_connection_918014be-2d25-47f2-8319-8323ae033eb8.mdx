@@ -1,0 +1,104 @@
+# SFTP V2 connection
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-918014be-2d25-47f2-8319-8323ae033eb8"/>
+</head>
+
+
+The SFTP V2 connection represents a single account including login credentials. If you have multiple systems, you need a separate connection for each.
+
+## Connection tab
+
+**Authentication Type** -  Refers to an authentication type that can be selected: simple username/password or SSH \(Secure Shell\) private key authentication. The connector ignores the values provided in fields not required for the selected authentication type.
+
+**Remote Directory \(Optional\)** -  Refers to the directory \(relative or absolute directory path\) on the SFTP server where the connector reads files from or writes files to.
+
+:::note
+
+If you leave this field blank or specify a relative directory path, the connector uses the default working directory configured as the base folder on the SFTP server. You can override this value using the **Remote Directory** input document property. Additionally, if both the target directory document property and **Remote Directory** connection properties are set, the connection property overrides the document property.
+
+:::
+
+**Host** -  Refers to a domain name or IP address of the SFTP host.
+
+**User Name** -  Refers to the username of the account on the SFTP server. This field is mandatory if the **Authentication Type** is username and password.
+
+**Password** -  Refers to the password of the account on the SFTP server. This field is mandatory if the **Authentication Type** is username and password.
+
+**Port** -  Refers to the command port on which the SFTP server listens for incoming connections from the SFTP client. The default port is 22.
+
+**Client SSH Key File Path** -  Refers to the system path where the key is located on the server on which the Atom is running. This is a required field for SSH private key authentication. This field is mandatory if **Authentication Type** is using a Public Key. Typically, the key file can be found here: `C:\Users\<user_name>\.ssh\id_rsa`. The path-based authentication works for the SSH key file generated using all kind of generation techniques like ssh-keygen, putty keygen, etc.
+
+:::note
+
+Store your client SSH keys in a folder other than the SFTP connector and not in the Atom installation directory folders because these folders may be overwritten during updates.
+
+:::
+
+**Key File Password** -  Refers to the password used to protect the key file. This is a required field for SSH private key authentication if key is protected by a passphrase. This field is mandatory if **Authentication Type** is using a Public Key and if the key file is password protected.
+
+**Known Host Entry** -  \(Optional\) Specify the hostname and SSH public key content of the SFTP server for the connector to verify/match against the associated private key and to ensure a secure connection is established to the expected server. Format for Known Host Entry value: `<hostname> <algorithm> <public key content>`. The public key content of the server is typically stored in the `/home/<user>/.ssh/known_host` file. If the host server's public content already contains the algorithm string prefixed to the key content e.g. ssh-rsa AAAAB3Nza. Then, provide `<hostname> <public key content>`.
+
+**Use Max Key Exchange size of 1024** -  \(Optional\) Select this check box, if the SFTP server does not support key exchange size greater than 1024 bits.
+
+**Private Key Content** -  Specify the private key content of the client system. A user can get this content from the client SSH key file. For more information about SSH key file generation and private key, refer to the [Generating an SSH Key](int-Generating_an_ssh_key_6582c850-c632-417e-8187-9d081b3368d0.md) task topic.
+
+**Public Key Content** -  Specify the public key content of the client system. A user can get this content from the client SSH key file. For more information about SSH key file generation and public key, refer to the [Generating an SSH Key](int-Generating_an_ssh_key_6582c850-c632-417e-8187-9d081b3368d0.md) task topic.
+
+**Key Pair Name** -  Specify the name of SSH key pair as used in the server. Your server admin can provide this information.
+
+**Use Keys' content for authentication** -  Select this check box, to use the specified private and public key content for authentication. If a user populates both the key file path and the key content \(public & private\), then the authentication preference will be decided based on the "Use Keys' content for authentication" value.
+
+-   If selected, authentication will be performed based on private & public key content specified, and the Client SSH Key File Path provided will be ignored.
+-   If cleared, authentication will be performed based on the key file placed in the specified Client SSH Key File Path.
+
+**Use Connection Pooling** -  This setting controls the usage of connection pooling feature. If selected, the connector maintains a memory cache of connections and reuses the existing connections each time when a new connection is requested. The connection pooling settings like idle time, maxWait time, minIdle connections, etc., are managed in the back-end. And, when a connection pool has not been used in last three hours and it has no active connections, then the idle connections will be cleared off automatically. Connection pooling may help to increase performance by using resources more efficiently.
+
+:::note
+
+The netstat commands can be used to find the status of active connections on the server.
+
+`watch -n1 "netstat -ant \| grep ':22.\*' \| nl \| tail -n 20“` — Runs every second for latest 20 TCP connections.
+
+`netstat -ant \| grep -c "172.31.0.24:22.\*ESTABLISHED“` — Provides the count of the established TCP connections.
+    
+`netstat -nato \| grep 22` — Provides the status of the established TCP connections.
+
+**Use Proxy** -  Use proxy for connecting to the SFTP server.
+
+:::note
+
+The SFTP V2 connector does not support Proxy feature in the Cloud.
+
+:::
+
+**Choose Proxy Type** -  Proxy type for connecting to the SFTP server.
+
+**Proxy Host** -  Refers to the proxy hostname of the proxy server to connect to SFTP server.
+
+**Proxy Port** -  Refers to the proxy port of the Proxy server to connect to the SFTP server.
+
+**Proxy Username** -  Refers to the proxy Username that can be provided to connect to the SFTP server.
+
+**Proxy Password** -    Refers to the proxy password.
+
+**Connection Timeout \(ms\)** -    Refers to the number of milliseconds that the connector waits to complete the connection handshake until it times out. If field is blank, the connection uses the network timeout settings for the Atom or operating system.
+
+:::note
+
+If the SFTP server configuration includes connection timeout value, then it overrides the value provided here.
+
+:::
+
+**Read Timeout \(ms\)** -  Refers to the number of milliseconds that the connector waits to complete the FTP data transfer until it times out. If you leave this field blank, the connection uses the network timeout settings for the Atom or operating system.
+
+:::note
+
+If the SFTP server configuration includes connection timeout value, then it overrides the value provided here.
+
+:::
+
+import TestConnection from './_TestCon.md'
+
+<TestConnection />

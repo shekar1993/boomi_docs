@@ -1,0 +1,38 @@
+.home-page-content {
+  margin-top: var(--exo-spacing-none);
+}
+
+.home-page-content .boomi-documentation-header {
+  display: flex;
+  justify-content: center;
+  font-family: var(--exo-font-brand);
+  font-size: var(--exo-font-size-7x-large);
+  font-style: normal;
+  font-weight: var(--exo-font-weight-bold);
+  line-height: 125%;
+  color: var(--exo-color-font);
+  text-align: center;
+  margin-bottom: var(--exo-spacing-2x-large);
+  margin-top: calc(var(--exo-spacing-x-large) + var(--exo-spacing-x-small));
+}
+
+@media screen and (max-width: 996px) {
+  .home-page-content .boomi-documentation-header {
+    font-size: var(--exo-font-size-6x-large);
+  }
+}
+
+@media screen and (max-width: 544px) {
+  .home-page-content {
+    height: 100%;
+    padding: var(--exo-spacing-none);
+    overflow: hidden;
+  }
+
+  .home-page-content .boomi-documentation-header {
+    text-align: left;
+    justify-content: flex-start;
+    margin: var(--exo-spacing-2x-large) var(--exo-spacing-large)
+      calc(var(--exo-spacing-x-large) + var(--exo-spacing-x-small));
+  }
+}

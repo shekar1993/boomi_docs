@@ -1,0 +1,291 @@
+import OperationEnd from './_operationEnd.md'
+import TrackingDir from './_TrackObject.md'
+import ReturnErrRes from './_ReturnResponse.md'
+import ReqRes from './_ReqRes.md'
+
+# Pricefx - Partner operation
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-3f0beec9-295f-434a-80d0-c595116dc1f4"/>
+</head>
+
+
+The Pricefx - Partner operation defines how to interact with your Pricefx partition and represents a specific action to perform against a Pricefx object.
+
+Create a separate operation component for each action/object combination that your integration requires. All Pricefx - Partner connector operations use JSON format and support the following actions:
+
+-   **Query** — Retrieve records from the Pricefx Partition based on a filter.
+-   **User Access Operation** — Provide actions relevant to authentication and authorization.
+-   **PA - Truncate Data** — Truncate PA data from Pricefx Partition based on a filter in the request message.
+-   **PA - Data Upload** — Upload PA data in Excel file format to the Pricefx Partition.
+-   **PA - Data Copy** — Copy data from master data to PA tables.
+-   **PA - Dataload Calculation** — Execute a calculation dataload in Pricefx partition.
+-   **Refresh Datamart** — Refresh data from a specific Pricefx Datamart.
+-   **Get** — Retrieve a specific record from Pricefx Partition based on its primary key.
+-   **Metadata** — Retrieve metadata of a specific table from Pricefx Partition.
+-   **Execute Formula** — Execute a logic in Pricefx partition.
+-   **Quote Operations** – Perform various actions on a Pricefx Quote.
+-   **Product Image Operations** – Perform various actions to a Pricefx Product Image.
+-   **Admin Operations** – Perform various administrative actions to a Pricefx Partition.
+-   **Fetch** — Retrieve records from Pricefx Partition based on a filter in the request message.
+-   **Delete** — Delete existing records in Pricefx Partition based on a filter in the request message.
+-   **Delete by key** — Delete existing record in Pricefx partition based on the business key in the request message.
+-   **Upsert** — Create a new record or update an existing record in Pricefx Partition.
+-   **Update** — Update an existing record in Pricefx Partition.
+-   **Bulk Data Load** — Upload data to Pricefx Partition.
+-   **Create** — Create a new record in Pricefx Partition.
+
+For more information about creating a Pricefx operation, see the topic [Creating an Operation](int-Creating_an_Operation_bc324fb1-3e09-481c-9151-dd828b77125d.md).
+
+## Options tab
+
+Click **Import Operation**, then use the Import wizard to select the object to integrate. When you configure an action, the following fields appear on the **Options** tab.
+
+**Object** - 
+An object defines what you want to integrate or the action to execute, which you select in the Import Wizard.
+
+<TrackingDir />
+<ReqRes />
+<ReturnErrRes />
+
+**Last Import Version** - 
+The connector version when the operation was last updated.
+
+**Metadata** - 
+These read-only values describe the meaning of each attribute.
+
+## Query
+
+This operation retrieves records from the Pricefx Partition, optionally based on a filter. When executing a QUERY, you must provide pagination information. You can set the pagination values using the following document properties:
+
+**Page Number** - 
+Required. You can only view the results of a specific page, which can be configured in this property.
+
+**Page Size** - 
+Optional. The default page size is 500; you can set it to any number smaller than the default. When querying an object, you must configure query parameters. Below rules are applied to the parameter value:
+
+-   0 arguments are required for "Is Null" and "Not Null".
+-   Comma-separated arguments are required for "In", "Not In", "Between", "Between inclusive".
+-   1 argument is required for all the other operations.
+
+## User Access Operation
+
+This operation provides actions relevant to authentication and authorization such as updating user access and getting a JWT token. Below actions are supported:
+
+-   **Update Business Roles** - This action allows you to update the business roles of a user. When updating business roles, you must provide the unique key of the role to update. You can set the unique key using the following document property:
+
+    -   Unique Key required.
+    -   The login name of the user for which you would like to update the business roles.
+    When updating business roles, you must provide the request message in JSON. The message consists of two arrays:
+
+    -   The “Add” array contains all the new business roles to be added.
+    -   The “Remove” array contains all the existing business roles to be removed.
+-   **Update User Groups** - This action allows you to update user groups of a user. When updating user groups, you must provide the unique key of the user to update. You can set the unique key using the following document property:
+
+    -   Unique Key required.
+    -   The login name of the user for which you would like to update the user groups.
+    When updating user groups, you must provide the request message in JSON. The message consists of two arrays:
+
+    -   The “Add” array contains all the new user groups to be added.
+    -   The “Remove” array contains all the existing user groups to be removed.
+
+-   **Update Roles** - This action allows you to update roles of a user. When updating roles, you must provide the unique key of the role to update. You can set the unique key using the following document property:
+
+    -   Unique Key required.
+    -   The login name of the user for which you would like to update the user roles.
+    When updating user roles, you must provide the request message in JSON. The message consists of two arrays:
+
+    -   The “Add” array contains all the new roles to be added.
+    -   The “Remove” array contains all the existing roles to be removed.
+
+-   **Get Token** - If the **Use JWT Token**” option is selected in connection, you must first get the token by this operation and use it in other operations. The token can be stored into the database cache and can be shared by all the processes. The database here should be maintained by the user, as it is outside Pricefx. Document cache is not suitable as the cache would not remain active throughout multiple process executions. The token generally expires in 30-40 minutes and it should be refreshed periodically before it expires. The “Get Token” process can be deployed and executed as a separate process running periodically to refresh the stored token in the database. During token refresh, connectors in other running processes using the previous token will return the 401 application error code if **Return Application Error Response** is not selected, or “login failure” message if **Return Application Error Response** is selected. A retry mechanism to get the new token from the database should be implemented. Another approach, if possible, is to schedule all these processes not to run during the time when the token refresh process is executed in Atom Management. After getting the token, you must provide the token to all other operations. You can set the token using the JWT Token document property.
+-   **Logout** - This operation is generally not required as logging out means that the token will become invalid and all other processes using the same token will be getting an authentication error. Use this only when you are using username / password authentication and the process is not frequently executed.
+
+## PA - Truncate Data
+
+This operation truncates Price Analyzer data from the Pricefx Partition, optionally based on a filter in the request message. When truncating a Price Analyzer table, you must provide the request message in JSON.
+
+The JSON schema is imported automatically and is the same for truncating any Pricefx Price Analyzer tables. The truncate request is built using filters. If one record is to be truncated, the filter could be, for example, “name” “equals” “0001”. To find out the supported operators in the request message, refer to [Pricefx documentation - Supported operators in criteria](https://pricefx.atlassian.net/wiki/spaces/KB/pages/3725984086/Appendix+Supported+Operators+in+Criteria).
+
+## PA - Data Upload
+
+This operation uploads data in Excel file format to a Price Analyzer table in the Pricefx Partition. When uploading data to a Price Analyzer table, you must provide the request in a binary file stream. The file must be an XLSX file and the maximum size is 1 MB. It can be provided to the connector via the Disk connector. The first row should be column headers.
+
+## PA - Data Copy
+
+This operation copies master data of the Pricefx partition to the Price Analyzer table, optionally based on a filter in the request message. When copying master data, you must provide the request message in JSON:
+
+-   The JSON schema is imported automatically and is the same for copying any master data to Price Analyzer tables.
+-   The copy request is built using filters. If one record is to be copied, the filter could be, for example, “name” “equals” “0001”.
+
+:::note
+
+To find out the supported operators in the request message, refer to [Pricefx documentation - Supported operators in criteria](https://pricefx.atlassian.net/wiki/spaces/KB/pages/3725984086/Appendix+Supported+Operators+in+Criteria).
+
+:::
+
+## PA - Dataload Calculation
+
+This operation executes calculation dataload of the Pricefx partition, optionally based on a filter in the request message. When executing calculation dataload, you must provide the request message in JSON:
+
+-   The JSON schema is imported automatically and is the same for executing any calculation dataload.
+-   The calculation request is built using filters. If one record is to be calculated, the filter could be, for example, “name” “equals” “0001”.
+
+    :::note
+
+    To find out the supported operators in the request message, refer to [Pricefx documentation - Supported operators in criteria](https://pricefx.atlassian.net/wiki/spaces/KB/pages/3725984086/Appendix+Supported+Operators+in+Criteria).
+
+    :::
+
+
+## Refresh Datamart
+
+This operation refreshes data from a specific Pricefx Datamart. When refreshing data, you can optionally provide an incremental load date. You can set the incremental load date using the following document property:
+
+**Incremental Load Date** - 
+Optional. It is required if you would like to refresh Datamart incrementally from a certain timestamp \(format YYYY-MM-DDTHH:mm:ss\).
+
+## Get
+
+This operation retrieves a specific record from the Pricefx Partition based on its primary key. There are two types of Get Operation:
+
+-   **By business key**: Pricefx objects can be uniquely identified by a business key. To retrieve the record by business key, you have to select the object type that you would like to retrieve from the import wizard and set the business key to the parameter “ID” in the operation. To find out the business key of a specific Pricefx object type, refer to [Pricefx documentation - Business key of Pricefx Object Type](https://pricefx.atlassian.net/wiki/spaces/KB/pages/3727491077/Appendix+Business+key+of+Pricefx+Object+Type).
+-   **By typedId**: All Pricefx objects have a unique surrogate key, namely typedId. You would only see typedId information from the Pricefx event. To retrieve the full record by typedId, you have to select the “Get by typedId” object type from the import wizard and set the typedId to the parameter “ID” in the operation. When executing a GET, you must provide pagination information. You can set the pagination values using the following document properties:
+
+    **Page Number** - 
+    Required. You can only view the results of a specific page, which can be configured in this property.
+
+    **Page Size** - 
+    Optional. The default page size is 500; you can set it to any number smaller than the default. When executing “Get by TypedId” on a matrix price grid item, the price grid ID is required. You can set the price grid ID using the Unique Key.
+
+    **Unique Key** - 
+    Required only when getting the matrix price grid item by “Get by TypedId”. You should provide the price grid ID as the unique key in this case. When executing a GET, you must configure the parameter “ID”.
+
+
+## Metadata
+
+This operation retrieves full metadata of a specific table from the Pricefx Partition. When getting metadata of a Pricefx table, you must provide pagination information. You can set the pagination values using the following document properties:
+
+**Page Number** - 
+Required. You can only view the results of a specific page, which can be configured in this property.
+
+**Page Size** - 
+Optional. The default page size is 500; you can set it to any number smaller than the default. When getting metadata of Price list items, Manual Price List items or Price Grid items, the ID of the parent Price list, Manual Price List or Price Grid must be specified in the **Options** tab of the operation.
+
+## Execute Formula
+
+This operation executes a logic in the Pricefx partition. When executing a Pricefx logic, you must provide the request message in JSON. A sample JSON schema is imported automatically with the logic elements with Display Mode = “Everywhere”. You could add your own elements to the JSON request as well.
+
+## Quote Operations
+
+This operation provides actions relevant to the quote workflow and quote actions such as submitting a quote for approval or copying a quote. Below actions are supported:
+
+-   **Create duplicate** - This action allows you to duplicate a quote.
+-   **Create revision** - This action allows you to create a revision of a quote.
+-   **Submit Quote** - This action allows you to submit a quote for approval.
+-   **Withdraw Quote** - This action allows you to withdraw a quote from approval.
+
+When executing quote actions, you must provide the unique name of the quote. You can set the unique name using the following document property:
+
+**Unique key** - 
+Required. The unique name of the quote.
+
+## Product Image Operations
+
+This operation performs various actions such as uploading or deleting a Pricefx Product Image. Below actions are supported:
+
+-   **Product Image Upload** - This action allows you to upload an image to a product record. When uploading an image to a product record, you must provide the request in a binary file stream. The file must be an image file and the maximum size is 1 MB. It can be provided to the connector via the Disk connector.
+-   **Product Image Delete** - This action allows you to delete an image from a product record.
+-   **Product Image Exists** - This action allows you to check if there is any existing image in a product record.
+
+When executing product image operations, you must provide the Product ID. You can set the Product ID using the following document property:
+
+**Unique key** - 
+Required. The Product ID that you would like to execute product image operations on.
+
+## Admin Operations
+
+This operation performs various administrative actions to a Pricefx Partition such as checking file upload status. Below actions are supported:
+
+-   **Upload Status Check** - This action allows you to check the status and results of a data file upload job. When enquiring about an upload status, you must provide the upload slot ID. You can set the ID using the following document property:
+
+-   **Upload Slot ID** - 
+Required. Retrieved from the response message of a file update operation.
+
+## Fetch
+
+This operation retrieves records from the Pricefx Partition based on a filter in the request message. When fetching Pricefx partition data, you must provide pagination information. You can set the pagination values using the following document properties:
+
+**Page Number** - 
+Required. You can only view the results of a specific page, which can be configured in this property.
+
+**Page Size** - 
+Optional. The default page size is 500; you can set it to any number smaller than the default. When fetching price list items, live price grid items or manual price list items, the ID is required. You can set the ID using the unique key.
+
+**Unique Key** - 
+Required only when fetching the price list or price grid or manual price list items. The unique key is the ID of the price list, price grid or manual price list. To find out how to get the ID, refer to [Pricefx documentation - Fetch Price List Items](https://pricefx.atlassian.net/wiki/spaces/KB/pages/3300229144/Fetch+Price+List+Items).
+
+When fetching Pricefx partition data, you must provide the request message in JSON: The JSON schema is imported automatically and is the same for fetching any Pricefx objects. “sortBy” field is required. To find out the supported operators in the request message, refer to [Pricefx documentation - Supported operators in criteria](https://pricefx.atlassian.net/wiki/spaces/KB/pages/3725984086/Appendix+Supported+Operators+in+Criteria).
+
+## Delete
+
+This operation deletes existing records in the Pricefx Partition based on a filter in the request message. When deleting Pricefx partition data, you must provide the request message in JSON: The JSON schema is imported automatically and is the same for deleting any Pricefx objects. The delete request is built by filters. If one record is to be deleted, the filter could be, for example, ‘name’ ‘equals’ ‘0001’. To find out the supported operators in the request message, refer to [Pricefx documentation - Supported operators in criteria](https://pricefx.atlassian.net/wiki/spaces/KB/pages/3725984086/Appendix+Supported+Operators+in+Criteria).
+
+## Delete by Key
+
+This operation deletes an existing record in the Pricefx partition based on the business key in the request message. When deleting Pricefx partition data, you must provide the request message in JSON:
+
+-   The JSON schema is imported automatically.
+-   The request message consists of all the fields composing the business key.
+
+## Upsert
+
+This operation creates a new record or updates an existing record in the Pricefx Partition. When upserting Pricefx partition data, you must provide the request message in JSON: The JSON schema is imported automatically. Batch Upsert is supported and is the recommended way to upsert multiple records. It is an array of all the records to be upserted.
+
+-   Maximum JSON message size = 1MB
+-   Maximum number of records to be upserted in a batch = 500.
+
+The response message would return all the records successfully upserted. If you do not want to process a big response message, you could select the “Return no of records processed” option in the Import Wizard.
+
+## Update
+
+This operation updates an existing record in the Pricefx Partition. Only Pricefx calculable object types such as quotes are supported in this operation. When updating Pricefx calculable objects, you must provide the request message in JSON. The request message consists of 4 parts:
+
+-   Header attributes
+-   Line Items attributes
+-   Header Inputs Array
+-   Line Items Inputs Array
+
+Each input in the inputs array should contain:
+
+-   Name of the input field to be updated
+-   New value of the input field to be updated \(non object type\)
+-   New value of the input field to be updated \(object type\)
+-   Either value or valueObject should be present
+
+LIMITATIONS - The following update operations are not supported:
+
+-   Add / delete line items.
+-   Add / delete input fields and attributes.
+-   If the record is not in DRAFT state, only header attributes can be updated .
+
+## Bulk Data Load
+
+This operation uploads data to the Pricefx Partition. When loading data to Pricefx partition, you must provide the request message in JSON. The JSON schema is imported automatically and is the same for loading any Pricefx data. The request consists of two arrays, namely header and data. All the fields of the target table have to be specified in the header array. Any fields not specified will be treated as empty. The data array contains the list of multiple records to be inserted to the target table. The order of the data fields must be same as the order of the header.
+
+-   Maximum JSON message size = 1MB
+-   Maximum number of records to be loaded in a batch = 500.
+
+The response message would return a number, which does not mean the number of records loaded here. Please check the data in the Pricefx partition or by a fetch operation.
+
+## Create
+
+This operation creates a new record in the Pricefx Partition. Only Pricefx calculable object types such as quotes are supported in this operation. When creating a Pricefx calculable record, you must provide the request message in JSON. The fields, namely calculableInputDefinition and itemGroupDefinition can be ignored. The request message consists of 4 parts:
+
+-   Header Fields
+-   Header Inputs – JSON element “inputs’. The fields are defined by calculation logic.
+-   Folders – JSON element “folders”. You could specify a list of folders in this string array element. This is not required. All line items are added to ROOT, if no folders are defined.
+-   Line Items - JSON element “lineItems”. Each line item object represents a folder or a line item. The input fields of each line item are defined by the calculation logic in Pricefx. Maximum number of line items = 15.
+
+<OperationEnd />

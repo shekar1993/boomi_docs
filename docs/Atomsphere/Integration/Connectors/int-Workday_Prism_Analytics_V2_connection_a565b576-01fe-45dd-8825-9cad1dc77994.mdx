@@ -1,0 +1,39 @@
+import TestConnection from './_TestCon.md'
+
+# Workday Prism Analytics V2 connection
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-a565b576-01fe-45dd-8825-9cad1dc77994"/>
+</head>
+
+
+The Workday Prism Analytics V2 connection represents and contains all the information that is needed to connect to and log in to a specific Workday account instance.
+
+If you have multiple organizations or sandbox instances, you need a separate connection for each. You can pair a single connection with different Workday Prism Analytics operations to perform a unique action against a Workday instance.
+
+## Connection tab
+
+To establish a connection to Workday, you need your API service endpoint, your client ID and secret, and your refresh token.
+
+:::note
+
+Have the appropriate access rights and permissions to create Workday Prism datasets and tables using the Workday user interface. The API uploads are performed with this user.
+
+:::
+
+  
+**API Service Endpoint** -
+ Enter the URL for the Workday REST API service endpoint. For example, the URL to your data center and production service may be `https://wd2-impl-services1.workday.com/ccx/api/v1/{tenant_id}`. The URL is analyzed to determine and set the base host API and tenant account. You can find the endpoint in Workday using the View API Client task.
+
+**Client ID** -
+ The client ID obtained from Workday to request authorized access to client data. The Client ID is generated in Workday while registering the API client in the tenant using the Register API Client for Integrations task.
+
+**Client Secret** -
+ The client secret obtained from Workday. Enter the alphanumeric client secret that is associated with the Client ID. The Client Secret is generated in Workday while registering the API client in the tenant using the Register API Client for Integrations task.
+
+**Refresh Token** -
+ Enter the refresh token allowing access to Workday. You can generate a refresh token in Workday when you register the API client in your tenant using the Register API Client for Integration task.
+
+
+<TestConnection />

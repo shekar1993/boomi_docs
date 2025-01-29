@@ -1,0 +1,55 @@
+import OperationEnd from './_operationEnd.md'
+
+# Live Optics operation
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-5beb8260-d9ff-46ec-bf27-2e333df30abb"/>
+</head>
+
+
+The Live Optics operation defines how to interact with your Live Optics account and represents a specific action to perform against a specific record.
+
+The Live Optics operation supports the following actions:
+
+-   Get — Used to set up a connector operation associated with PAPI.
+
+
+## Options tab
+
+Click **Import Operation**, then use the Import wizard to select the object with which you want to integrate. When you configure an action, the following fields appear on the Options tab.
+
+**Connector Action**   
+Specify the proper connector action, currently GET is supported. This allows you to import the associated request and response JSON profiles. Depending on how you create the Live Optics Operation component, the action type is either configurable or non-configurable from the drop-down list.
+
+**Object**   
+Defines the object with which you want to integrate, and which was selected in the Import Wizard.
+
+**Response Profile**   
+Select or add a profile component that represents the structure that is being received by the connector.
+
+**Tracking Direction** - 
+Select the document tracking direction for the operation, either **Input Documents** or **Output Documents**. This setting enables you to choose which document appears in **Process Reporting. Start** steps always track output documents regardless of your selection.
+
+:::note
+
+If the tracking direction is read-only, the feature to change the direction is either unavailable or the developer set the configuration to read-only. The default value you see shows you which document appears in **Process Reporting**.
+
+:::
+
+**Return Application Error Responses**   
+This setting controls whether an application error prevents an operation from completing:
+
+- If you clear the setting, the process stops and reports the error on the **Process Reporting** page.
+- If you select the setting, processing continues and passes the error response to the next component processed as the connection output.
+
+ 
+
+**Include Entities**   
+This setting provides individual response summaries of all servers in this project.
+
+  -   If cleared, the process of all the individual response summaries for the servers in this project are not rendered.
+
+  -   If selected, then individual response summaries for servers in this project are rendered.
+
+<OperationEnd />

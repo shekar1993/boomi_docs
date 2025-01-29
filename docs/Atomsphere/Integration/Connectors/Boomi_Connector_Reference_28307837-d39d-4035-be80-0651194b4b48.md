@@ -1,0 +1,105 @@
+# `<Enter the connector name>` connector {#name .reference}
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-28307837-d39d-4035-be80-0651194b4b48"/>
+</head>
+
+
+Enter a short description for the connector. Replace this text with 1-2 sentences \(maximum 50 words\) describing the purpose of the connector. This displays in the output of the topic, as hover text over a link, as Internet search results, and when searching the User Guide in help.boomi.com. For an example, go to help.boomi.com and search for "SAP JCo V2 connector" and "SFTP V2 connector".
+
+Enter additional information for the connector. For good examples, go to help.boomi.com and look at the SAP JCo V2 and SFTP V2 connector topics. If you reference a user interface item \(an element appearing in Boomi Integration such as a field, a tab, the Import Wizard, etc.\), tag it with the **uicontrol** tag. For example: Select a connector action, then use the **Import Wizard** to select the object to integrate. When you configure an action, the following fields appear on the **Options** tab. You can copy/paste this tag and update as necessary.
+
+
+:::note
+
+Do not use the Bold, Italic, Underline, etc. tags!
+
+:::
+
+**Important:** This is a sample note with high importance. When published, it appears in a blue box.
+
+-   Unordered list item
+    -   Child unordered list item
+    -   Child unordered list item
+    -   Child unordered list item
+-   Unordered list item
+-   Unordered list item
+
+1.  Ordered list item
+    1.  Child ordered list item
+    2.  Child ordered list item
+    3.  Child ordered list item
+2.  Ordered list item
+3.  Ordered list item
+
+## Features
+
+This section is optional, but highly recommended. Use it to highlight specific features and/or functionality provided by your connector. For an example, go to help.boomi.com and search for the "SAP JCo V2 connector" topic. If you do not need this section, select and highlight the entire section tag, and delete it.
+
+The `<connector name\>` connector supports the following features to do something:
+
+-   Feature \#1
+-   Feature \#2
+-   Feature \#3
+
+
+:::note
+
+Note sample for the Features section.
+
+:::
+
+## Connector configuration
+
+This section is required, and fill it in using the tagging provided below. For an example, go to help.boomi.com and search for the "SAP JCo V2 connector" and "SFTP V2 connector" topics.
+
+To configure the connector to communicate with `<insert the service name\>`, set up the following components:
+
+-   `<Insert the service name\>` connection
+-   `<Insert the service name\>` operation
+
+This design provides reusable components which contain connection settings and operation settings. After building your connection and operation, set up your connector within a process. When the process is defined properly, Boomi Integration can map to and from virtually any system using the `<insert connector name>` connector to `<add text here for the service, server, etc.>`.
+
+## Prerequisites
+
+This section is optional, but highly recommended. Document any required information necessary for the connection and operations to be successful. For example, required permissions, specific ports that need to be opened, anything necessary for the connector to successfully, Test Connection \(if implemented\) to be successful, and the operations to be successful. For an example, go to help.boomi.com and search for the "SFTP V2 connector" topic. There are many other examples, and you can find them by searching for "Prerequisites".
+
+If you do not need this section, select and highlight the entire section tag, and delete it.
+
+The `<insert connector name>` connector requires the following:
+
+-   Prerequisite \#1
+-   Prerequisite \#2
+-   Prerequisite \#3
+
+## Supported editions
+
+This section is optional, but highly recommended. Document any specific editions and/or versions of the service's API or product that the connector supports. Doc feedback from customers has asked about what version of the API a connector supports, etc. so it is recommended that you include this section. Add/remove as many bullets as necessary. For an example, go to help.boomi.com and search for the "SAP JCo V2 connector" and "SFTP V2 connector" topics. There are many other examples, and you can find them by searching for "Supported editions".
+
+If you do not need this section, select and highlight the entire section tag, and delete it.
+
+The connector supports the following:
+
+-   Edition \#1
+-   Edition \#2
+-   API version XXX
+
+## Tracked properties
+
+This section is required. Document all tracked properties supported in your connector and include the action/operation supporting each tracked property. Do not remove the first paragraph \(it is standard text for all connectors\), or the "Name" and "Description" tags below it; they are necessary for the documentation to publish correctly. For an example, go to help.boomi.com and search for the "SAP JCo V2 connector" and "SFTP V2 connector" topics. There are many other examples, and you can find them by searching for "Tracked properties".
+
+If your connector does not have pre-defined tracked properties, select and delete this entire "Tracked properties" section. By doing so, that leaves the last "Tracked properties" section. Retain that section.
+
+This connector has the following tracked properties that you can set or reference in various step parameters:
+
+
+
+Tracked Property Name \#1
+:   \(Insert the Action\) Description of the tracked property.
+
+Tracked Property Name \#2
+:   \(Insert the Action\) Description of the tracked property.
+
+Tracked Property Name \#3
+:   \(Insert the Action\) Description of the tracked property.

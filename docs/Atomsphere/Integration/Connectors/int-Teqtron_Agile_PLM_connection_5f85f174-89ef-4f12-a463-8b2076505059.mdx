@@ -1,0 +1,125 @@
+import TestConnection from './_TestCon.md'
+
+# Teqtron Agile PLM — Partner connection
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-5f85f174-89ef-4f12-a463-8b2076505059"/>
+</head>
+
+
+The Teqtron Agile PLM connection contains login credentials to access a single Agile PLM system \(Both the Agile content service/SOAP as well as Agile PLM SFTP server\).
+
+## Connection tab
+
+To connect to multiple agile systems, use a separate connection for each system and configure credentials accordingly. Pair a single connection with different available operations to perform desired actions on the Agile PLM system.
+
+The Teqtron Agile PLM connection involves connection with the Agile PLM system, as well as the SFTP server allocated for the Agile PLM system. These settings are common, and are accessible by all operations built into the connector. The Agile PLM connection settings are primarily used to connect with the Agile PLM system’s application interface service operations. The SFTP connection settings are used by the Get and Send operations on the SFTP server allocated for the Agile PLM system.
+
+
+
+**WSDL Url** - 
+  Oracle Agile PLM Custom PXs WSDL Url Extension
+
+**Version** - 
+ Oracle Agile PLM application version
+
+**Protocol Type** - 
+Client Security Protocols
+
+**Host** - 
+Oracle Agile PLM application Host Name
+
+**Port** - 
+**Username** - 
+Oracle Agile PLM application Username
+
+**Password** - 
+ Oracle Agile PLM application Password
+
+**Trust SSL Certificate** - 
+ Trust SSL Application Certificate used in case of https protocol type
+  
+**SFTP Port** - 
+ Agile Content Service SFTP Destination Port
+
+**SFTP Username** - 
+ Agile Content Service SFTP Destination Username
+
+**SFTP Password** -   
+Agile Content Service SFTP Destination Password
+
+## Teqtron Agile PLM connection settings
+
+This type of connection involves users to enter Oracle Agile PLM related connection information such as:
+
+   
+
+
+**WSDL Url** -    
+Users can use this field to provide the custom web service url extension needed to access custom web services created in the Oracle Agile PLM system.
+
+ -   Example of WSDL Url: `extension/custom/webservice?wsdl`
+ -   Type: String
+
+:::note
+
+The WSDL is fetched by making the SOAP call using the Connection endpoints URL that is used while importing the profile. In order to modify the Connection or WSDL (for switching between environments or endpoints), you must reimport the profile with the changed endpoint or connection.
+
+:::
+
+**Version** - 
+ Users can select from a list of values, the version of the Oracle Agile PLM application.
+
+-   Type: List
+
+**Host** - 
+ Host Information required to connect to Oracle Agile PLM System.
+
+ -   Type : String
+
+**Port** - 
+ Port Number required to connect to Oracle Agile PLM System.
+
+-   Type : Integer
+
+**Protocol Type** - 
+This involves choosing security types among the list below which also need to be enabled in the Agile PLM system to use.
+
+ -   http
+ -   https
+ -   Type: List
+
+**Username** - 
+Username Information required to connect to Oracle Agile PLM System.
+
+ -   Type : String
+
+**Password** - 
+Password Information required to connect to Oracle Agile PLM System.
+
+ -   Type : Password
+
+**Trust SSL Certificate**   
+Users can provide a trusted SSL application certificate to authenticate and encrypt data sent to Oracle Agile PLM system in cases of the protocol type as https.
+
+ -   Type: Certificate
+
+## SSH File Transfer Protocol connection settings
+
+**SFTP Port** - 
+Port Number required to connect to the SFTP server allocated for Oracle Agile PLM.
+
+ -   Type: Integer
+
+**SFTP Username** - 
+Username Information required to connect to the SFTP server allocated for Oracle Agile PLM.
+
+ -   Type: String
+
+**SFTP Password** - 
+Password Information required to connect to the SFTP server allocated for Oracle Agile PLM.
+
+-  Type: Password
+
+<TestConnection />

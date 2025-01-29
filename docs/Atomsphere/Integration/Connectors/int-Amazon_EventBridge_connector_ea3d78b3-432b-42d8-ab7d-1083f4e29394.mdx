@@ -1,0 +1,55 @@
+import TrackedProperties from './_TrackedProperties.md'
+
+# Amazon EventBridge connector
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-ea3d78b3-432b-42d8-ab7d-1083f4e29394"/>
+</head>
+
+
+The Amazon EventBridge connector allows you to transfer any number of events \(data\) in JSON format to any Amazon services by connecting through Amazon EventBridge.
+
+Amazon EventBridge is a serverless event bus that sends events real-time from a number of partner event sources and over ninety-five different event services, and can target AWS services such as AWS Lambda, Amazon SQS, and Amazon SNS.
+
+
+:::note
+
+- This is an open source connector and you can access the code in the [Amazon EventBridge](https://bitbucket.org/officialboomi/amazon-eventbridge) connector repository.
+
+- This connector only supports **Event**.
+
+:::
+
+## Connector configuration
+
+To configure the connector to communicate with Amazon EventBridge, set up two components:
+
+-   Amazon EventBridge connection
+-   Amazon EventBridge operation
+
+This approach creates reusable components which contain connection settings and operation settings. After building your connection and operation, set up your Amazon EventBridge connector within a process. When the process is defined properly, Integration can map to virtually any system using the Amazon EventBridge connector to send events to event buses on AWS.
+
+## Prerequisites
+
+To implement a connection to your Amazon EventBridge account from Integration, make sure you have the following:
+
+-   An Atom deployed on your local machine, or hosted with Boomi Integration.
+
+-   Your AWS access key and AWS secret key.
+
+-   Amazon EventBridge access for your account if using an AWS Identity and Access Management \(IAM\) account \(recommended\).
+
+-   Event buses and rules set up on your Amazon EventBridge service \(minimal implementation requires the default event bus and one rule specified with a target service\).
+
+
+
+:::note
+
+When using a Windows environment and a local Atom, add the following line in the `atom.vmoptions` file inside the Atom/bin folder so the Greek letters are processed successfully: `-Dfile.encoding=UTF-8`
+
+:::
+
+You must add this line because by default, Windows uses Windows-1252 character encoding where Greek letters are not encoded properly. UTF-8 encoding \(default in Linux\) is required to successfully encode the characters.
+
+<TrackedProperties />

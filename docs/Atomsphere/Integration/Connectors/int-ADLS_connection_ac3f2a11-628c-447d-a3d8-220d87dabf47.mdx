@@ -1,0 +1,41 @@
+import TestConnection from './_TestCon.md'
+
+# Microsoft Azure Data Lake Storage connection 
+
+<head>
+  <meta name="guidename" content="Integration"/>
+  <meta name="context" content="GUID-ac3f2a11-628c-447d-a3d8-220d87dabf47"/>
+</head>
+
+
+Azure Data Lake Storage \(ADLS\) connector enables you to access and interact with your ADLS Gen2 storage using the ADLS Gen2 REST APIs.
+
+The Microsoft ADLS connector's connection represents a single account including login credentials. If you have multiple systems, you need a separate connection for each. The connector supports the OAuth 2.0 authentication type.
+
+## Connection tab 
+
+**Endpoint Suffix** - 
+Displays the endpoint suffix for the ADLS service. Default value is `core.windows.net` and it is not recommended to modify it.
+
+**Storage Account**   
+Enter the name of your ADLS Gen2 storage account.
+
+**Response Timeout**   
+Provide the maximum time \(in milliseconds\) that the connector can wait to receive an operation response from the ADLS Gen2 REST APIs.
+
+**Authentication Type**   
+Displays the supported authentication type "OAuth 2.0".
+
+**Client ID**    
+Provide the unique application ID of your client app assigned by the Azure portal at the time of your app registration. You can get this ID from the Azure Active Directory — Manage — App Registrations — client app Overview page.
+
+**Client Secret**   
+Click to open the Password window, enter or paste your client secret, and click **Apply**.
+
+**Scope**   
+Provide the URL that defines the ADLS Gen2 storage account access permissions granted for the given client ID. In general, .default scope will be displayed `https://storage.azure.com/.default`.
+
+**Access Token URL**   
+Provide the URL to retrieve the encrypted access token from the Azure portal, to access the ADLS Gen2 storage account. This URL can be found in the Azure AD \(Endpoints page of the client app — OAuth 2.0 token endpoint \(v2\)\).
+
+<TestConnection />
